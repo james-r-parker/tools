@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetHelp.DevTools.Web", "DotnetHelp.DevTools.Web\DotnetHelp.DevTools.Web.csproj", "{73E73EBE-C018-4F5C-B9F4-B00CF372D73F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetHelp.DevTools.Api", "DotnetHelp.DevTools.Api\DotnetHelp.DevTools.Api.csproj", "{3770DBFB-660F-4026-9292-CA21C17D64BA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{73E73EBE-C018-4F5C-B9F4-B00CF372D73F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73E73EBE-C018-4F5C-B9F4-B00CF372D73F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73E73EBE-C018-4F5C-B9F4-B00CF372D73F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73E73EBE-C018-4F5C-B9F4-B00CF372D73F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3770DBFB-660F-4026-9292-CA21C17D64BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3770DBFB-660F-4026-9292-CA21C17D64BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3770DBFB-660F-4026-9292-CA21C17D64BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3770DBFB-660F-4026-9292-CA21C17D64BA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
