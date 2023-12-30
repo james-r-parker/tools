@@ -8,11 +8,30 @@
         <PublishAot>true</PublishAot>
         <SelfContained>true</SelfContained>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <TrimMode>full</TrimMode>
+        <PublishTrimmed>true</PublishTrimmed>
+        <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)'=='Release'">
+        <DebugSymbols>false</DebugSymbols>
+        <DebugType>None</DebugType>
+        <StripSymbols>true</StripSymbols>
     </PropertyGroup>
 
     <ItemGroup>
-      <_ContentIncludedByDefault Remove="app\appsettings.Development.json" />
-      <_ContentIncludedByDefault Remove="app\appsettings.json" />
+        <_ContentIncludedByDefault Remove="app\appsettings.Development.json"/>
+        <_ContentIncludedByDefault Remove="app\appsettings.json"/>
+        <_ContentIncludedByDefault Remove="out\appsettings.Development.json" />
+        <_ContentIncludedByDefault Remove="out\appsettings.json" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\DotnetHelp.DevTools.Shared\DotnetHelp.DevTools.Shared.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.0.3" />
     </ItemGroup>
 
 </Project>

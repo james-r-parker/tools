@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetHelp.DevTools.Web", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetHelp.DevTools.Api", "DotnetHelp.DevTools.Api\DotnetHelp.DevTools.Api.csproj", "{3770DBFB-660F-4026-9292-CA21C17D64BA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetHelp.DevTools.Shared", "DotnetHelp.DevTools.Shared\DotnetHelp.DevTools.Shared.csproj", "{45D33682-5C2A-4E74-8AC6-41A96E1031EE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{3770DBFB-660F-4026-9292-CA21C17D64BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3770DBFB-660F-4026-9292-CA21C17D64BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3770DBFB-660F-4026-9292-CA21C17D64BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45D33682-5C2A-4E74-8AC6-41A96E1031EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45D33682-5C2A-4E74-8AC6-41A96E1031EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45D33682-5C2A-4E74-8AC6-41A96E1031EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45D33682-5C2A-4E74-8AC6-41A96E1031EE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
