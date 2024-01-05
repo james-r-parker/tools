@@ -1,26 +1,27 @@
-﻿FROM alpine:3.18 AS base
-USER $APP_UID
-WORKDIR /app
-EXPOSE 5000
+﻿FROM public.ecr.aws/lambda/provided:al2023 AS build
+RUN dnf install clang-15.0.6-3.amzn2023.0.2.x86_64 --assumeyes
+RUN dnf install libicu-67.1-7.amzn2023.0.3.x86_64 --assumeyes
+RUN dnf install zlib-devel-1.2.11-33.amzn2023.0.4.x86_64 --assumeyes
+RUN dnf install wget --assumeyes
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine3.18-amd64 AS build
-RUN apk update && apk upgrade
-RUN apk add --no-cache clang build-base zlib-dev libssl1.1
+RUN rpm --import https://packages.microsoft.com/keys/microsoft.asc
+RUN wget -O /etc/yum.repos.d/microsoft-prod.repo https://packages.microsoft.com/config/fedora/37/prod.repo
+RUN dnf install -y dotnet-sdk-8.0
+
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["DotnetHelp.DevTools.csproj", "./"]
-RUN dotnet restore "DotnetHelp.DevTools.csproj"
+COPY ["DotnetHelp.DevTools.Api/DotnetHelp.DevTools.Api.csproj", "DotnetHelp.DevTools.Api/"]
+COPY ["DotnetHelp.DevTools.Shared/DotnetHelp.DevTools.Shared.csproj", "DotnetHelp.DevTools.Shared/"]
+RUN dotnet restore "DotnetHelp.DevTools.Api/DotnetHelp.DevTools.Api.csproj"
 COPY . .
-WORKDIR "/src/"
-RUN dotnet build "DotnetHelp.DevTools.csproj" -c $BUILD_CONFIGURATION -o /app/build
+WORKDIR "/src/DotnetHelp.DevTools.Api"
+RUN dotnet build "DotnetHelp.DevTools.Api.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
-FROM build AS publish
+WORKDIR /src/DotnetHelp.DevTools.Api
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "DotnetHelp.DevTools.csproj" -c $BUILD_CONFIGURATION -o /app/publish
+RUN dotnet publish -c $BUILD_CONFIGURATION -o /app/publish
 
-FROM base AS final
-RUN apk update && apk upgrade
-RUN apk add --no-cache libstdc++
+FROM scratch AS final
 WORKDIR /app
-COPY --from=publish /app/publish .
-ENTRYPOINT ["/app/DotnetHelp.DevTools"]
+COPY --from=build /app/publish .
+

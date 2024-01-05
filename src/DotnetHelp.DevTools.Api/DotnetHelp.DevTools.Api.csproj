@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
@@ -20,18 +20,36 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <_ContentIncludedByDefault Remove="app\appsettings.Development.json"/>
-        <_ContentIncludedByDefault Remove="app\appsettings.json"/>
+        <_ContentIncludedByDefault Remove="app\appsettings.Development.json" />
+        <_ContentIncludedByDefault Remove="app\appsettings.json" />
         <_ContentIncludedByDefault Remove="out\appsettings.Development.json" />
         <_ContentIncludedByDefault Remove="out\appsettings.json" />
+        <_ContentIncludedByDefault Remove="out\out\appsettings.Development.json" />
+        <_ContentIncludedByDefault Remove="out\out\appsettings.json" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\DotnetHelp.DevTools.Shared\DotnetHelp.DevTools.Shared.csproj"/>
+        <ProjectReference Include="..\DotnetHelp.DevTools.Shared\DotnetHelp.DevTools.Shared.csproj" />
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="Amazon.Lambda.AspNetCoreServer.Hosting" Version="1.6.1" />
       <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.0.3" />
     </ItemGroup>
+
+	<ItemGroup>
+		<TrimmerRootAssembly Include="Amazon.Lambda.AspNetCoreServer" />
+		<TrimmerRootAssembly Include="Amazon.Lambda.AspNetCoreServer.Hosting" />
+		<TrimmerRootAssembly Include="Amazon.Lambda.Serialization.SystemTextJson" />
+		<TrimmerRootAssembly Include="Amazon.Lambda.APIGatewayEvents" />
+		<TrimmerRootAssembly Include="DotnetHelp.DevTools.Api" />
+		<TrimmerRootAssembly Include="DotnetHelp.DevTools.Shared" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="..\.dockerignore">
+	    <Link>.dockerignore</Link>
+	  </Content>
+	</ItemGroup>
 
 </Project>

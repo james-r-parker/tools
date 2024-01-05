@@ -1,5 +1,3 @@
-using DotnetHelp.DevTools.Api.Handlers;
-
 var builder = WebApplication.CreateSlimBuilder(args);
 
 builder.Services.ConfigureHttpJsonOptions(options =>
@@ -7,6 +5,10 @@ builder.Services.ConfigureHttpJsonOptions(options =>
     options.SerializerOptions.TypeInfoResolverChain.Insert(0, AppJsonSerializerContext.Default);
 });
 
+builder.Services.AddAWSLambdaHosting(LambdaEventSource.HttpApi, (c) =>
+{
+    c.Serializer = new Amazon.Lambda.Serialization.SystemTextJson.SourceGeneratorLambdaJsonSerializer<AppJsonSerializerContext>();
+});
 builder.Services.AddHttpClient();
 
 var app = builder.Build();
