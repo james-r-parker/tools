@@ -23,6 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      id-token: write
     needs: [test]
     steps:
 
@@ -35,16 +36,6 @@ jobs:
       - working-directory: ./src
         name: Rename Bootstrap
         run: mv ./app/DotnetHelp.DevTools.Api ./app/bootstrap
-        
-      - working-directory: ./src
-        name : Zip API
-        run: zip -r api.zip ./app/
-        
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: api
-          path: ./src/api.zip
           
       - uses: actions/setup-node@v4
         with:
