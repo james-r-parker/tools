@@ -22,10 +22,6 @@
     <ItemGroup>
         <_ContentIncludedByDefault Remove="app\appsettings.Development.json" />
         <_ContentIncludedByDefault Remove="app\appsettings.json" />
-        <_ContentIncludedByDefault Remove="out\appsettings.Development.json" />
-        <_ContentIncludedByDefault Remove="out\appsettings.json" />
-        <_ContentIncludedByDefault Remove="out\out\appsettings.Development.json" />
-        <_ContentIncludedByDefault Remove="out\out\appsettings.json" />
     </ItemGroup>
 
     <ItemGroup>
