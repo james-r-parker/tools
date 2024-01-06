@@ -40,8 +40,8 @@ jobs:
         name: Rename Bootstrap
         run: mv ./app/DotnetHelp.DevTools.Api ./app/bootstrap
         
-      - uses: actions/upload-artifact@v2
-        name : Upload Artifacts
+      - name : Upload Artifacts
+        uses: actions/upload-artifact@v2
         working-directory: ./src    
         with:
           name: api
