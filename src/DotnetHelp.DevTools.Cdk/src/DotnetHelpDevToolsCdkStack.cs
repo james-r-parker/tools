@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using Amazon.CDK;
 using Amazon.CDK.AWS.CodeDeploy;
+using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.Lambda;
 using Constructs;
 
@@ -19,7 +21,17 @@ public class DotnetHelpDevToolsStack : Stack
             Code = Code.FromAsset("../app/"),
             Timeout = Duration.Seconds(20),
         });
-        
+
+        var preTafficRole = new Role(this, "PreTrafficRole", new RoleProps
+        {
+            AssumedBy = new ServicePrincipal("codedeploy.amazonaws.com"),
+            ManagedPolicies = new IManagedPolicy[]
+            {
+                ManagedPolicy.FromAwsManagedPolicyName("service-role/AWSCodeDeployRoleForLambda"),
+                ManagedPolicy.FromAwsManagedPolicyName("AWSLambdaRole")
+            }
+        });
+
         var apiPreTrafficFunction = new Function(this, "API-PreTraffic", new FunctionProps
         {
             Architecture = Architecture.X86_64,
@@ -29,6 +41,12 @@ public class DotnetHelpDevToolsStack : Stack
             Handler = "bootstrap",
             Code = Code.FromAsset("../pre-traffic/"),
             Timeout = Duration.Seconds(60),
+            Environment = new Dictionary<string, string>()
+            {
+                { "API_FUNCTION_NAME", apiFunction.FunctionName },
+                { "API_FUNCTION_VERSION", apiFunction.CurrentVersion.Version }
+            },
+            Role = preTafficRole
         });
 
         var stage = new Alias(this, "Stage", new AliasProps()
@@ -36,7 +54,7 @@ public class DotnetHelpDevToolsStack : Stack
             AliasName = "live",
             Version = apiFunction.CurrentVersion
         });
-        
+
         var url = new FunctionUrl(this, "URL", new FunctionUrlProps
         {
             Function = stage,
@@ -50,7 +68,7 @@ public class DotnetHelpDevToolsStack : Stack
             DeploymentConfig = LambdaDeploymentConfig.ALL_AT_ONCE,
             DeploymentGroupName = "DotnetHelp.DevTools.API",
         });
-        
+
         new CfnOutput(this, "API_URL", new CfnOutputProps
         {
             Value = url.Url
