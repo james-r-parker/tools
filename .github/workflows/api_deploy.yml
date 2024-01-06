@@ -27,7 +27,7 @@ jobs:
   
   build:
     runs-on: ubuntu-latest
-    requires: [install-tools]
+    needs: [install-tools]
     steps:
       
       - uses: actions/checkout@v4
