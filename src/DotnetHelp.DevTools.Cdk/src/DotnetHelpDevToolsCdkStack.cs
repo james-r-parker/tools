@@ -1,7 +1,6 @@
 using Amazon.CDK;
 using Amazon.CDK.AWS.CodeDeploy;
 using Amazon.CDK.AWS.Lambda;
-using Amazon.CDK.AWS.Logs;
 using Constructs;
 
 namespace DotnetHelp.DevTools.Cdk;
@@ -19,6 +18,17 @@ public class DotnetHelpDevToolsStack : Stack
             Handler = "bootstrap",
             Code = Code.FromAsset("../app/"),
             Timeout = Duration.Seconds(20),
+        });
+        
+        var apiPreTrafficFunction = new Function(this, "API-PreTraffic", new FunctionProps
+        {
+            Architecture = Architecture.X86_64,
+            Runtime = Runtime.PROVIDED_AL2023,
+            MemorySize = 256,
+            Description = "DotnetHelp.DevTools.API.PreTraffic",
+            Handler = "bootstrap",
+            Code = Code.FromAsset("../pre-traffic/"),
+            Timeout = Duration.Seconds(60),
         });
 
         var stage = new Alias(this, "Stage", new AliasProps()

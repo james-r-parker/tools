@@ -42,10 +42,28 @@ jobs:
         with:
           name: api
           path: ./src/app/
+  
+  build-pre-traffic:
+    runs-on: ubuntu-latest
+    needs: [ test ]
+    steps:
+
+      - uses: actions/checkout@v4
+        name: Checkout
+
+      - working-directory: ./src
+        name: Build Docker
+        run: docker build . -f ./DotnetHelp.DevTools.Api.PreTraffic/Dockerfile -t api_pre_traffic_aot_build --output=. --target=final
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: api
+          path: ./src/pre-traffic/
         
   deploy:
     runs-on: ubuntu-latest
-    needs: [build]
+    needs: [build,build-pre-traffic]
     permissions:
       contents: read
       id-token: write
