@@ -42,10 +42,9 @@ jobs:
         
       - name : Upload Artifacts
         uses: actions/upload-artifact@v2
-        working-directory: ./src    
         with:
           name: api
-          path: ./app/
+          path: .src/app/
         
     deploy:
         runs-on: ubuntu-latest
@@ -59,7 +58,7 @@ jobs:
             uses: actions/download-artifact@v2
             with:
               name: api
-              path: ./src/app
+              path: ./src/app/
 
           - uses: actions/setup-node@v4
             name : Install node
