@@ -27,7 +27,11 @@ jobs:
   
   build:
     runs-on: ubuntu-latest
+    permissions: id-token
+    requires: [install-tools]
     steps:
+      
+      - uses: actions/checkout@v4
       
       - working-directory: ./src
         name: Build API
