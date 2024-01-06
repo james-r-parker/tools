@@ -46,34 +46,34 @@ jobs:
           name: api
           path: .src/app/
         
-    deploy:
-        runs-on: ubuntu-latest
-        needs: [build]
-        steps:
-        
-          - uses: actions/checkout@v4
-            name : Checkout
-            
-          - name: Download Artifacts
-            uses: actions/download-artifact@v2
-            with:
-              name: api
-              path: ./src/app/
-
-          - uses: actions/setup-node@v4
-            name : Install node
-            with:
-              node-version: 20
-
-          - run: npm install -g aws-cdk
-            name : Install CDK
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
     
-          - name: Configure AWS credentials
-            uses: aws-actions/configure-aws-credentials@v4
-            with:
-                role-to-assume: ${{ secrets.AWS_ROLE }}
-                aws-region: eu-west-2
-                
-          - name : Deploy API
-            working-directory: ./src/DotnetHelp.DevTools.Cdk
-            run: cdk deploy --require-approval never
+      - uses: actions/checkout@v4
+        name : Checkout
+        
+      - name: Download Artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: api
+          path: ./src/app/
+
+      - uses: actions/setup-node@v4
+        name : Install node
+        with:
+          node-version: 20
+
+      - run: npm install -g aws-cdk
+        name : Install CDK
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+            role-to-assume: ${{ secrets.AWS_ROLE }}
+            aws-region: eu-west-2
+            
+      - name : Deploy API
+        working-directory: ./src/DotnetHelp.DevTools.Cdk
+        run: cdk deploy --require-approval never
