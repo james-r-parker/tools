@@ -36,6 +36,8 @@
     <ItemGroup>
         <TrimmerRootAssembly Include="Amazon.Lambda.Serialization.SystemTextJson" />
         <TrimmerRootAssembly Include="Amazon.Lambda.APIGatewayEvents" />
+        <TrimmerRootAssembly Include="AWSSDK.Lambda" />
+        <TrimmerRootAssembly Include="AWSSDK.CodeDeploy" />
     </ItemGroup>
 
     <ItemGroup>

@@ -28,7 +28,8 @@ public class DotnetHelpDevToolsStack : Stack
             ManagedPolicies = new IManagedPolicy[]
             {
                 ManagedPolicy.FromAwsManagedPolicyName("service-role/AWSCodeDeployRoleForLambda"),
-                ManagedPolicy.FromAwsManagedPolicyName("AWSLambdaRole")
+                ManagedPolicy.FromAwsManagedPolicyName("service-role/AWSLambdaRole"),
+                ManagedPolicy.FromAwsManagedPolicyName("AWSCodeDeployFullAccess")
             }
         });
 

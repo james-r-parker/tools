@@ -38,7 +38,7 @@ jobs:
         run: mv ./app/DotnetHelp.DevTools.Api ./app/bootstrap
         
       - name : Upload Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: api
           path: ./src/app/
@@ -56,7 +56,7 @@ jobs:
         run: docker build . -f ./DotnetHelp.DevTools.Api.PreTraffic/Dockerfile -t api_pre_traffic_aot_build --output=. --target=final
 
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: pre-traffic
           path: ./src/pre-traffic/bootstrap
@@ -73,13 +73,13 @@ jobs:
         name : Checkout
         
       - name: Download API Artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: api
           path: ./src/app/
           
       - name: Download PreTraffic Artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: pre-traffic
           path: ./src/pre-traffic/
