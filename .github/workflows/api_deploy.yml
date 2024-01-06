@@ -28,20 +28,11 @@ jobs:
 
       - uses: actions/checkout@v4
         name : Checkout
+
+      - working-directory: ./src
+        name: Build Docker
+        run: docker build . -f ./DotnetHelp.DevTools.Api/Dockerfile -t api_aot_build --output=. --target=final
         
-      - uses: docker/setup-buildx-action@v3
-        name : Setup Docker
-
-      - uses: docker/build-push-action@v5
-        with:
-          context: .
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          push: false
-          file: ./src/DotnetHelp.DevTools.Api/Dockerfile
-          tags: api_aot_build
-          outputs: path=.,target=final
-
       - working-directory: ./src
         name: Rename Bootstrap
         run: mv ./app/DotnetHelp.DevTools.Api ./app/bootstrap
