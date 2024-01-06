@@ -17,6 +17,11 @@ public class Function
         var functionName = Environment.GetEnvironmentVariable("API_FUNCTION_NAME");
         var functionVersion = Environment.GetEnvironmentVariable("API_FUNCTION_VERSION");
 
+        context.Logger.LogInformation($"API_FUNCTION_NAME: {functionName}");
+        context.Logger.LogInformation($"API_FUNCTION_VERSION: {functionVersion}");
+        context.Logger.LogInformation($"DeploymentId: {input.DeploymentId}");
+        context.Logger.LogInformation($"LifecycleEventHookExecutionId: {input.LifecycleEventHookExecutionId}");
+
         using var codeDeploy = new AmazonCodeDeployClient();
 
         if (string.IsNullOrWhiteSpace(functionName) ||
@@ -57,6 +62,8 @@ public class Function
         };
 
         var response = await lambda.InvokeAsync(request);
+        
+        context.Logger.LogInformation($"StatusCode: {response.StatusCode}");
 
         var responsePayload =
             JsonSerializer.Deserialize(
@@ -90,6 +97,7 @@ public record CodeDeployPreTafficRequest(string DeploymentId, string LifecycleEv
 
 [JsonSerializable(typeof(APIGatewayHttpApiV2ProxyResponse))]
 [JsonSerializable(typeof(APIGatewayHttpApiV2ProxyRequest))]
+[JsonSerializable(typeof(CodeDeployPreTafficRequest))]
 public partial class AppJsonSerializerContext : JsonSerializerContext
 {
 }

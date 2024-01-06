@@ -38,6 +38,7 @@
         <TrimmerRootAssembly Include="Amazon.Lambda.APIGatewayEvents" />
         <TrimmerRootAssembly Include="AWSSDK.Lambda" />
         <TrimmerRootAssembly Include="AWSSDK.CodeDeploy" />
+        <TrimmerRootAssembly Include="AWSSDK.Core" />
     </ItemGroup>
 
     <ItemGroup>

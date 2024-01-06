@@ -24,12 +24,12 @@ public class DotnetHelpDevToolsStack : Stack
 
         var preTafficRole = new Role(this, "PreTrafficRole", new RoleProps
         {
-            AssumedBy = new ServicePrincipal("codedeploy.amazonaws.com"),
+            AssumedBy = new ServicePrincipal("lambda.amazonaws.com"),
             ManagedPolicies = new IManagedPolicy[]
             {
-                ManagedPolicy.FromAwsManagedPolicyName("service-role/AWSCodeDeployRoleForLambda"),
                 ManagedPolicy.FromAwsManagedPolicyName("service-role/AWSLambdaRole"),
-                ManagedPolicy.FromAwsManagedPolicyName("AWSCodeDeployFullAccess")
+                ManagedPolicy.FromAwsManagedPolicyName("AWSCodeDeployFullAccess"),
+                ManagedPolicy.FromAwsManagedPolicyName("service-role/AWSLambdaBasicExecutionRole")
             }
         });
 
@@ -68,6 +68,7 @@ public class DotnetHelpDevToolsStack : Stack
             Alias = stage,
             DeploymentConfig = LambdaDeploymentConfig.ALL_AT_ONCE,
             DeploymentGroupName = "DotnetHelp.DevTools.API",
+            PreHook = apiPreTrafficFunction
         });
 
         new CfnOutput(this, "API_URL", new CfnOutputProps
