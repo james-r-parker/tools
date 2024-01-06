@@ -10,7 +10,7 @@ RUN dnf install -y dotnet-sdk-8.0
 
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["DotnetHelp.DevTools.Api.PreTraffic.csproj", "DotnetHelp.DevTools.Api.PreTraffic/"]
+COPY ["DotnetHelp.DevTools.Api.PreTraffic/DotnetHelp.DevTools.Api.PreTraffic.csproj", "DotnetHelp.DevTools.Api.PreTraffic/"]
 RUN dotnet restore "DotnetHelp.DevTools.Api.PreTraffic/DotnetHelp.DevTools.Api.PreTraffic.csproj"
 COPY . .
 WORKDIR "/src/DotnetHelp.DevTools.Api.PreTraffic"

@@ -58,7 +58,7 @@ jobs:
       - name: Upload Artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: api
+          name: pre-traffic
           path: ./src/pre-traffic/
         
   deploy:
@@ -72,11 +72,17 @@ jobs:
       - uses: actions/checkout@v4
         name : Checkout
         
-      - name: Download Artifacts
+      - name: Download API Artifacts
         uses: actions/download-artifact@v2
         with:
           name: api
           path: ./src/app/
+          
+      - name: Download PreTraffic Artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: pre-traffic
+          path: ./src/pre-traffic/
 
       - uses: actions/setup-node@v4
         name : Install node
