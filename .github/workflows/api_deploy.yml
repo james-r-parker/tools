@@ -7,6 +7,9 @@ jobs:
   
   install-tools:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     steps:
       
       - uses: actions/setup-dotnet@v3
@@ -27,6 +30,8 @@ jobs:
   
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     needs: [install-tools]
     steps:
       
