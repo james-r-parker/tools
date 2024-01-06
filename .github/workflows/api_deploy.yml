@@ -22,12 +22,11 @@ jobs:
       - name: Configure AWS credentials from Test account
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_ROLE }}}
+          role-to-assume: ${{ secrets.AWS_ROLE }}
           aws-region: eu-west-2
   
   build:
     runs-on: ubuntu-latest
-    permissions: id-token
     requires: [install-tools]
     steps:
       
