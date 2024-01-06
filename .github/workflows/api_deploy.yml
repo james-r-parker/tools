@@ -59,7 +59,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: pre-traffic
-          path: ./src/pre-traffic/
+          path: ./src/pre-traffic/bootstrap
         
   deploy:
     runs-on: ubuntu-latest

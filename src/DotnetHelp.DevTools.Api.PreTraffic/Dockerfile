@@ -21,6 +21,6 @@ ARG BUILD_CONFIGURATION=Release
 RUN dotnet publish -c $BUILD_CONFIGURATION -o /pre-traffic/publish
 
 FROM scratch AS final
-WORKDIR /app
+WORKDIR /pre-traffic
 COPY --from=build /pre-traffic/publish .
 
