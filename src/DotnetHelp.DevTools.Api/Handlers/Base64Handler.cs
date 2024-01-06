@@ -1,6 +1,6 @@
 ﻿namespace DotnetHelp.DevTools.Api.Handlers;
 
-public class Base64Handler
+public static class Base64Handler
 {
     internal static IResult Encode([FromBody]TextApiRequest request)
     {

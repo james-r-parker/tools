@@ -8,6 +8,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetHelp.DevTools.Shared"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetHelp.DevTools.Cdk", "DotnetHelp.DevTools.Cdk\src\DotnetHelp.DevTools.Cdk.csproj", "{8005411E-E623-4E4C-9F48-E499F8F3CEB4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetHelp.DevTools.Api.Tests", "DotnetHelp.DevTools.Api.Tests\DotnetHelp.DevTools.Api.Tests.csproj", "{5CB37C1B-4C3C-474F-93EA-5CCD9BCDBFC0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GitHub", "GitHub", "{821B4F81-012F-454F-8612-E75E8DC84B8E}"
+	ProjectSection(SolutionItems) = preProject
+		..\.github\workflows\api_deploy.yml = ..\.github\workflows\api_deploy.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +37,9 @@ Global
 		{8005411E-E623-4E4C-9F48-E499F8F3CEB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8005411E-E623-4E4C-9F48-E499F8F3CEB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8005411E-E623-4E4C-9F48-E499F8F3CEB4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5CB37C1B-4C3C-474F-93EA-5CCD9BCDBFC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5CB37C1B-4C3C-474F-93EA-5CCD9BCDBFC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5CB37C1B-4C3C-474F-93EA-5CCD9BCDBFC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5CB37C1B-4C3C-474F-93EA-5CCD9BCDBFC0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -1,0 +1,34 @@
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  
+  install-tools:
+    runs-on: ubuntu-latest
+    steps:
+      
+      - uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8
+      
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          
+      - run: npm install -g aws-cdk
+
+      - name: Configure AWS credentials from Test account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: {{ github.secrets.AWS_ROLE }}}
+          aws-region: eu-west-2
+  
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      
+      - working-directory: ./src
+        name: Build API
+        run: docker build . -f ./DotnetHelp.DevTools.Api/Dockerfile -t api_aot_build --output=. --target=final
