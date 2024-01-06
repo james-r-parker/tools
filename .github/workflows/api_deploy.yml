@@ -5,7 +5,7 @@ on:
 
 jobs:
   
-  install-tools:
+  setup:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -27,16 +27,39 @@ jobs:
         with:
           role-to-assume: ${{ secrets.AWS_ROLE }}
           aws-region: eu-west-2
+          
+      - uses: actions/checkout@v4
+        
+  test:
+    runs-on: ubuntu-latest
+    needs: [setup]
+    steps:
+      
+      - working-directory: ./src
+        name: Test API
+        run: dotnet test ./DotnetHelp.DevTools.Api.Tests/DotnetHelp.DevTools.Api.Tests.csproj --logger "trx;LogFileName=TestResults.trx" --collect:"XPlat Code Coverage"
   
   build:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-    needs: [install-tools]
+    needs: [test]
     steps:
-      
-      - uses: actions/checkout@v4
-      
+
       - working-directory: ./src
         name: Build API
         run: docker build . -f ./DotnetHelp.DevTools.Api/Dockerfile -t api_aot_build --output=. --target=final
+        
+      - working-directory: ./src
+        name: Rename
+        run: mv ./app/DotnetHelp.DevTools.Api ./app/bootstrap
+        
+      - working-directory: ./src
+        name : Zip
+        run: zip -r api.zip ./app/
+        
+      - name: Upload API
+        uses: actions/upload-artifact@v2
+        with:
+          name: api
+          path: ./src/api.zip
