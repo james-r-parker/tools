@@ -44,7 +44,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: api
-          path: .src/app/
+          path: ./src/app/
         
   deploy:
     runs-on: ubuntu-latest
