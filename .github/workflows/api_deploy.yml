@@ -10,8 +10,10 @@ jobs:
     steps:
 
       - uses: actions/checkout@v4
+        name : Checkout
 
       - uses: actions/setup-dotnet@v3
+        name : Install dotnet
         with:
           dotnet-version: 8
       
@@ -28,6 +30,7 @@ jobs:
     steps:
 
       - uses: actions/checkout@v4
+        name : Checkout
 
       - working-directory: ./src
         name: Build Docker
@@ -36,19 +39,42 @@ jobs:
       - working-directory: ./src
         name: Rename Bootstrap
         run: mv ./app/DotnetHelp.DevTools.Api ./app/bootstrap
-          
-      - uses: actions/setup-node@v4
+        
+      - uses: actions/upload-artifact@v2
+        name : Upload Artifacts
+        working-directory: ./src    
         with:
-          node-version: 20
+          name: api
+          path: ./app/
+        
+    deploy:
+        runs-on: ubuntu-latest
+        needs: [build]
+        steps:
+        
+          - uses: actions/checkout@v4
+            name : Checkout
+            
+          - name: Download Artifacts
+            uses: actions/download-artifact@v2
+            with:
+              name: api
+              path: ./src/app
 
-      - run: npm install -g aws-cdk
+          - uses: actions/setup-node@v4
+            name : Install node
+            with:
+              node-version: 20
 
-      - name: Configure AWS credentials from Test account
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ secrets.AWS_ROLE }}
-          aws-region: eu-west-2
-          
-      - name : Deploy API
-        working-directory: ./src/DotnetHelp.DevTools.Cdk
-        run: cdk deploy --require-approval never
+          - run: npm install -g aws-cdk
+            name : Install CDK
+    
+          - name: Configure AWS credentials
+            uses: aws-actions/configure-aws-credentials@v4
+            with:
+                role-to-assume: ${{ secrets.AWS_ROLE }}
+                aws-region: eu-west-2
+                
+          - name : Deploy API
+            working-directory: ./src/DotnetHelp.DevTools.Cdk
+            run: cdk deploy --require-approval never
