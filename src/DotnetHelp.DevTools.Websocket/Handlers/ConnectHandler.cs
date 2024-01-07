@@ -14,15 +14,17 @@ public static class ConnectHandler
 
     public static async Task HandleAsync(APIGatewayProxyRequest input, ILambdaContext context)
     {
-        context.Logger.LogInformation($"Bucket: {input.Headers["x-bucket"]}");
-        
+        input.Headers.TryGetValue("x-bucket", out var bucket);
+
+        context.Logger.LogInformation($"Bucket: {bucket}");
+
         await Db.PutItemAsync(new PutItemRequest
         {
             TableName = Constants.ConnectionTableName,
             Item = new Dictionary<string, AttributeValue>
             {
                 { "connectionId", new AttributeValue(input.RequestContext.ConnectionId) },
-                { "bucket", new AttributeValue(input.Headers["x-bucket"]) },
+                { "bucket", bucket is null ? new AttributeValue { NULL = true } : new AttributeValue(bucket) },
                 { "createdAt", new AttributeValue { N = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString() } }
             }
         });

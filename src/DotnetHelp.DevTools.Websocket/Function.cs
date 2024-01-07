@@ -12,8 +12,7 @@ public class Function
             .Build()
             .RunAsync();
     }
-
-    [Logging(LogEvent = true, Service = "wss")]
+    
     public static async Task<APIGatewayProxyResponse> FunctionHandler(APIGatewayProxyRequest input,
         ILambdaContext context)
     {
