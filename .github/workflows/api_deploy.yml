@@ -2,6 +2,12 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'src/DotnetHelp.DevTools.Api/**'
+      - 'src/DotnetHelp.DevTools.Api.Cdk/**'
+      - 'src/DotnetHelp.DevTools.Api.PreTraffic/**'
+      - 'src/DotnetHelp.DevTools.Api.Tests/**'
+      - '.github/workflows/api_deploy.yml'
 
 jobs:
     

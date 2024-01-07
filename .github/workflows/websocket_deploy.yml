@@ -2,6 +2,11 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'src/DotnetHelp.DevTools.Websocket/**'
+      - 'src/DotnetHelp.DevTools.Websocket.Cdk/**'
+      - 'src/Dotnethelp.DevTools.Websocket.Tests/**'
+      - '.github/workflows/websocket_deploy.yml'
 
 jobs:
   

@@ -2,6 +2,10 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'src/DotnetHelp.DevTools.Web/**'
+      - 'src/DotnetHelp.DevTools.Web.Cdk/**'
+      - '.github/workflows/web_deploy.yml'
 
 jobs:
   
