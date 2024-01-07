@@ -32,7 +32,7 @@ public class DotnetHelpDevToolsWebsocketStack : Stack
             ProjectionType = ProjectionType.KEYS_ONLY,
         });
         
-        var dbPolicy = new Policy(this, "DBPolicy", new PolicyProps());
+        var dbPolicy = new ManagedPolicy(this, "DBPolicy", new ManagedPolicyProps());
         connectionTable.GrantReadData(dbPolicy);
 
         var websocketFunction = new Function(this, "WebSocketFunction", new FunctionProps
@@ -82,7 +82,7 @@ public class DotnetHelpDevToolsWebsocketStack : Stack
 
         api.GrantManageConnections(websocketFunction);
 
-        var apiPolicy = new Policy(this, "APIPolicy", new PolicyProps());
+        var apiPolicy = new ManagedPolicy(this, "APIPolicy", new ManagedPolicyProps());
         api.GrantManageConnections(apiPolicy);
         
         new CfnOutput(this, "WSS_URL", new CfnOutputProps
@@ -105,13 +105,13 @@ public class DotnetHelpDevToolsWebsocketStack : Stack
         
         new CfnOutput(this, "WSS_DB_POLICY", new CfnOutputProps
         {
-            Value = dbPolicy.PolicyName,
+            Value = dbPolicy.ManagedPolicyName,
             ExportName = "DOTNETHELP:DEVTOOLS:WSS:DB:POLICY",
         });
         
         new CfnOutput(this, "WSS_API_POLICY", new CfnOutputProps
         {
-            Value = apiPolicy.PolicyName,
+            Value = apiPolicy.ManagedPolicyName,
             ExportName = "DOTNETHELP:DEVTOOLS:WSS:API:POLICY",
         });
     }
