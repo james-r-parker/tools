@@ -7,9 +7,9 @@ using Constructs;
 
 namespace DotnetHelp.DevTools.Cdk;
 
-public class DotnetHelpDevToolsStack : Stack
+public class DotnetHelpDevToolsApiStack : Stack
 {
-    internal DotnetHelpDevToolsStack(Construct scope, string id, IStackProps props = null) : base(scope, id, props)
+    internal DotnetHelpDevToolsApiStack(Construct scope, string id, IStackProps props = null) : base(scope, id, props)
     {
         var apiFunction = new Function(this, "API", new FunctionProps
         {
@@ -73,7 +73,8 @@ public class DotnetHelpDevToolsStack : Stack
 
         new CfnOutput(this, "API_URL", new CfnOutputProps
         {
-            Value = url.Url
+            Value = url.Url,
+            ExportName = "DOTNETHELP:DEVTOOLS:API:URL",
         });
     }
 }

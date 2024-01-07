@@ -21,6 +21,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Actions", "Actions", "{A8AFAD1D-9894-4F3B-A69F-84DD7F38AE22}"
 	ProjectSection(SolutionItems) = preProject
 		..\.github\workflows\api_deploy.yml = ..\.github\workflows\api_deploy.yml
+		..\.github\workflows\web_deploy.yml = ..\.github\workflows\web_deploy.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{EEB68E3F-2651-410D-AC59-B2278B6C7189}"

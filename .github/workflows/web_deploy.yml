@@ -1,0 +1,66 @@
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  
+  build:
+    runs-on: ubuntu-latest
+    steps:
+
+      - uses: actions/checkout@v4
+        name : Checkout
+
+      - uses: actions/setup-dotnet@v3
+        name : Install dotnet
+        with:
+          dotnet-version: 8
+          
+      - name: Tools
+        run: dotnet workload install wasm-tools
+      
+      - working-directory: ./src/DotnetHelp.DevTools.Web
+        name: Build
+        run: dotnet publish -c Release -o out
+        
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: www
+          path: ./src/DotnetHelp.DevTools.Web/out/wwwroot
+        
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [build]
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+    
+      - uses: actions/checkout@v4
+        name : Checkout
+        
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: www
+          path: ./src/DotnetHelp.DevTools.Web/out/wwwroot
+
+      - uses: actions/setup-node@v4
+        name : Install node
+        with:
+          node-version: 20
+
+      - run: npm install -g aws-cdk
+        name : Install CDK
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+            role-to-assume: ${{ secrets.AWS_ROLE }}
+            aws-region: eu-west-2
+            
+      - name : Deploy API
+        working-directory: ./src/DotnetHelp.DevTools.Cdk
+        run: cdk deploy DotnetHelpDevToolsWebStack --require-approval never

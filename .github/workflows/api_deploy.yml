@@ -100,4 +100,4 @@ jobs:
             
       - name : Deploy API
         working-directory: ./src/DotnetHelp.DevTools.Cdk
-        run: cdk deploy --require-approval never
+        run: cdk deploy DotnetHelpDevToolsApiStack --require-approval never
