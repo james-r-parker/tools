@@ -16,7 +16,7 @@ COPY . .
 WORKDIR "/src/DotnetHelp.DevTools.Websocket"
 RUN dotnet build "DotnetHelp.DevTools.Websocket.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
-WORKDIR /src/DotnetHelp.DevTools.Api.PreTraffic
+WORKDIR /src/DotnetHelp.DevTools.Websocket
 ARG BUILD_CONFIGURATION=Release
 RUN dotnet publish -c $BUILD_CONFIGURATION -o /web-socket/publish
 

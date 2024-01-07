@@ -4,15 +4,16 @@ public class Function
 {
     private static async Task Main(string[] args)
     {
-        Func<string, ILambdaContext, string> handler = FunctionHandler;
+        Func<APIGatewayHttpApiV2ProxyRequest, ILambdaContext, Task> handler = FunctionHandler;
         await LambdaBootstrapBuilder.Create(handler, new SourceGeneratorLambdaJsonSerializer<AppJsonSerializerContext>())
             .Build()
             .RunAsync();
     }
 
-    public static string FunctionHandler(string input, ILambdaContext context)
+    public static Task FunctionHandler(APIGatewayHttpApiV2ProxyRequest input, ILambdaContext context)
     {
-        return input.ToUpper();
+        context.Logger.LogInformation(input.RouteKey);
+        return Task.CompletedTask;
     }
 }
 
