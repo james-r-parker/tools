@@ -69,10 +69,9 @@ public class DotnetHelpDevToolsApiStack : Stack
                             new PolicyStatement(new PolicyStatementProps
                             {
                                 Effect = Effect.ALLOW,
-                                Actions = new[] { "dynamodb:PutItem", "dynamodb:DeleteItem" },
+                                Actions = new[] { "dynamodb:Query" },
                                 Resources = new[]
                                 {
-                                    connectionTable.TableArn,
                                     Fn.Join("", new[] { connectionTable.TableArn, "/index/*" }),
                                 }
                             })
