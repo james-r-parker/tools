@@ -30,6 +30,8 @@
 
     <ItemGroup>
       <PackageReference Include="Amazon.Lambda.AspNetCoreServer.Hosting" Version="1.6.1" />
+      <PackageReference Include="AWSSDK.ApiGatewayManagementApi" Version="3.7.300.31" />
+      <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.300.31" />
       <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.0.3" />
     </ItemGroup>
 
@@ -40,6 +42,9 @@
 		<TrimmerRootAssembly Include="Amazon.Lambda.APIGatewayEvents" />
 		<TrimmerRootAssembly Include="DotnetHelp.DevTools.Api" />
 		<TrimmerRootAssembly Include="DotnetHelp.DevTools.Shared" />
+        <TrimmerRootAssembly Include="AWSSDK.ApiGatewayManagementApi" />
+        <TrimmerRootAssembly Include="AWSSDK.DynamoDBv2" />
+        <TrimmerRootAssembly Include="AWSSDK.Core" />
 	</ItemGroup>
 
 	<ItemGroup>

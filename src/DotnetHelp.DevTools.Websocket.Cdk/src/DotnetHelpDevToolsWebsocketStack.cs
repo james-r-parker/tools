@@ -19,7 +19,16 @@ public class DotnetHelpDevToolsWebsocketStack : Stack
             BillingMode = BillingMode.PAY_PER_REQUEST,
             RemovalPolicy = RemovalPolicy.DESTROY,
             Encryption = TableEncryption.AWS_MANAGED,
-            PointInTimeRecovery = false
+            PointInTimeRecovery = false,
+            TimeToLiveAttribute = "ttl",
+        });
+
+        connectionTable.AddGlobalSecondaryIndex(new GlobalSecondaryIndexProps
+        {
+            IndexName = "ix_bucket_connection",
+            PartitionKey = new Attribute { Name = "bucket", Type = AttributeType.STRING, },
+            SortKey = new Attribute { Name = "connectionId", Type = AttributeType.STRING, },
+            ProjectionType = ProjectionType.KEYS_ONLY,
         });
 
         var websocketFunction = new Function(this, "WebSocketFunction", new FunctionProps
@@ -74,7 +83,7 @@ public class DotnetHelpDevToolsWebsocketStack : Stack
             Value = stage.Url,
             ExportName = "DOTNETHELP:DEVTOOLS:WSS:URL",
         });
-        
+
         new CfnOutput(this, "WSS_TABLE", new CfnOutputProps
         {
             Value = connectionTable.TableName,

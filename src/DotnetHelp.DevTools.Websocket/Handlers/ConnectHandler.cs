@@ -25,7 +25,8 @@ public static class ConnectHandler
             {
                 { "connectionId", new AttributeValue(input.RequestContext.ConnectionId) },
                 { "bucket", bucket is null ? new AttributeValue { NULL = true } : new AttributeValue(bucket) },
-                { "createdAt", new AttributeValue { N = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString() } }
+                { "createdAt", new AttributeValue { N = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString() } },
+                { "ttl", new AttributeValue { N = DateTimeOffset.UtcNow.AddDays(1).ToUnixTimeSeconds().ToString() } },
             }
         });
     }

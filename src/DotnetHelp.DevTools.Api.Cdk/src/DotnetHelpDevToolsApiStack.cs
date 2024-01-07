@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Amazon.CDK;
 using Amazon.CDK.AWS.CodeDeploy;
+using Amazon.CDK.AWS.DynamoDB;
 using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.Lambda;
 using Constructs;
@@ -11,6 +12,17 @@ public class DotnetHelpDevToolsApiStack : Stack
 {
     internal DotnetHelpDevToolsApiStack(Construct scope, string id, IStackProps props = null) : base(scope, id, props)
     {
+        var httpRequestTable = new Table(this, "APIHttpRequestTable", new TableProps()
+        {
+            PartitionKey = new Attribute() { Name = "bucket", Type = AttributeType.STRING },
+            SortKey = new Attribute() { Name = "created", Type = AttributeType.NUMBER },
+            BillingMode = BillingMode.PAY_PER_REQUEST,
+            RemovalPolicy = RemovalPolicy.DESTROY,
+            Encryption = TableEncryption.AWS_MANAGED,
+            PointInTimeRecovery = false,
+            TimeToLiveAttribute = "ttl",
+        });
+
         var apiFunction = new Function(this, "API", new FunctionProps
         {
             Architecture = Architecture.X86_64,
@@ -20,7 +32,15 @@ public class DotnetHelpDevToolsApiStack : Stack
             Handler = "bootstrap",
             Code = Code.FromAsset("../app/"),
             Timeout = Duration.Seconds(20),
+            Environment = new Dictionary<string, string>()
+            {
+                { "CONNECTION_TABLE_NAME", Fn.ImportValue("DOTNETHELP:DEVTOOLS:WSS:TABLE") },
+                { "HTTP_REQUEST_TABLE_NAME", httpRequestTable.TableName },
+                { "WEBSOCKET_URL", Fn.ImportValue("DOTNETHELP:DEVTOOLS:WSS:URL") }
+            }
         });
+
+        httpRequestTable.GrantReadWriteData(apiFunction);
 
         var preTafficRole = new Role(this, "PreTrafficRole", new RoleProps
         {
