@@ -3,6 +3,7 @@ using Amazon.CDK;
 using Amazon.CDK.AWS.Apigatewayv2;
 using Amazon.CDK.AwsApigatewayv2Integrations;
 using Amazon.CDK.AWS.DynamoDB;
+using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.Lambda;
 using Constructs;
 
@@ -30,6 +31,9 @@ public class DotnetHelpDevToolsWebsocketStack : Stack
             SortKey = new Attribute { Name = "connectionId", Type = AttributeType.STRING, },
             ProjectionType = ProjectionType.KEYS_ONLY,
         });
+        
+        var dbPolicy = new Policy(this, "DBPolicy", new PolicyProps());
+        connectionTable.GrantReadData(dbPolicy);
 
         var websocketFunction = new Function(this, "WebSocketFunction", new FunctionProps
         {
@@ -78,6 +82,9 @@ public class DotnetHelpDevToolsWebsocketStack : Stack
 
         api.GrantManageConnections(websocketFunction);
 
+        var apiPolicy = new Policy(this, "APIPolicy", new PolicyProps());
+        api.GrantManageConnections(apiPolicy);
+        
         new CfnOutput(this, "WSS_URL", new CfnOutputProps
         {
             Value = stage.Url,
@@ -94,6 +101,18 @@ public class DotnetHelpDevToolsWebsocketStack : Stack
         {
             Value = api.ApiId,
             ExportName = "DOTNETHELP:DEVTOOLS:WSS:API",
+        });
+        
+        new CfnOutput(this, "WSS_DB_POLICY", new CfnOutputProps
+        {
+            Value = dbPolicy.PolicyName,
+            ExportName = "DOTNETHELP:DEVTOOLS:WSS:DB:POLICY",
+        });
+        
+        new CfnOutput(this, "WSS_API_POLICY", new CfnOutputProps
+        {
+            Value = apiPolicy.PolicyName,
+            ExportName = "DOTNETHELP:DEVTOOLS:WSS:API:POLICY",
         });
     }
 }
