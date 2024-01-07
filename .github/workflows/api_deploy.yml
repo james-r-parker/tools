@@ -99,5 +99,5 @@ jobs:
             aws-region: eu-west-2
             
       - name : Deploy API
-        working-directory: ./src/DotnetHelp.DevTools.Cdk
-        run: cdk deploy DotnetHelpDevToolsApiStack --require-approval never
+        working-directory: ./src/DotnetHelp.DevTools.Api.Cdk
+        run: cdk deploy --require-approval never

@@ -1,5 +1,5 @@
 {
-  "app": "dotnet run --project src/DotnetHelp.DevTools.Cdk.csproj",
+  "app": "dotnet run --project src/DotnetHelp.DevTools.Web.Cdk.csproj",
   "watch": {
     "include": [
       "**"

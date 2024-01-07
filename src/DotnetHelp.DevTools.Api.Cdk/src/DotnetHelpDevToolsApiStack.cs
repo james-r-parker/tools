@@ -5,7 +5,7 @@ using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.Lambda;
 using Constructs;
 
-namespace DotnetHelp.DevTools.Cdk;
+namespace DotnetHelp.DevTools.Api.Cdk;
 
 public class DotnetHelpDevToolsApiStack : Stack
 {

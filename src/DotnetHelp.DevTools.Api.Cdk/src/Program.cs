@@ -1,6 +1,6 @@
 ﻿using Amazon.CDK;
 
-namespace DotnetHelp.DevTools.Cdk;
+namespace DotnetHelp.DevTools.Api.Cdk;
 
 sealed class Program
 {
@@ -8,7 +8,6 @@ sealed class Program
     {
         var app = new App();
         new DotnetHelpDevToolsApiStack(app, "DotnetHelpDevToolsApiStack", new StackProps());
-        new DotnetHelpDevToolsWebStack(app, "DotnetHelpDevToolsWebStack", new StackProps());
         app.Synth();
     }
 }
