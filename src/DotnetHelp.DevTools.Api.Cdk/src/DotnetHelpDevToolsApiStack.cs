@@ -59,6 +59,25 @@ public class DotnetHelpDevToolsApiStack : Stack
                             })
                         }
                     })
+                },
+                {
+                    "WSS_DB",
+                    new PolicyDocument(new PolicyDocumentProps
+                    {
+                        Statements = new[]
+                        {
+                            new PolicyStatement(new PolicyStatementProps
+                            {
+                                Effect = Effect.ALLOW,
+                                Actions = new[] { "dynamodb:PutItem", "dynamodb:DeleteItem" },
+                                Resources = new[]
+                                {
+                                    connectionTable.TableArn,
+                                    Fn.Join("", new[] { connectionTable.TableArn, "/index/*" }),
+                                }
+                            })
+                        }
+                    })
                 }
             }
         });
@@ -82,7 +101,6 @@ public class DotnetHelpDevToolsApiStack : Stack
         });
 
         httpRequestTable.GrantReadWriteData(apiRole);
-        connectionTable.GrantReadWriteData(apiRole);
 
         var preTrafficRole = new Role(this, "PreTrafficRole", new RoleProps
         {
