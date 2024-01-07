@@ -19,7 +19,7 @@ jobs:
 
       - working-directory: ./src
         name: Test API
-        run: dotnet test ./DotnetHelp.DevTools.Websocket.Tests/DotnetHelp.DevTools.Websocket.Tests.csproj --logger "trx;LogFileName=TestResults.trx" --collect:"XPlat Code Coverage"
+        run: dotnet test ./Dotnethelp.DevTools.Websocket.Tests/Dotnethelp.DevTools.Websocket.Tests.csproj --logger "trx;LogFileName=TestResults.trx" --collect:"XPlat Code Coverage"
   
   build:
     runs-on: ubuntu-latest
