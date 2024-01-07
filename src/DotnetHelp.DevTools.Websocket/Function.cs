@@ -1,23 +1,58 @@
+using System.Diagnostics;
+
 namespace DotnetHelp.DevTools.Websocket;
 
 public class Function
 {
     private static async Task Main(string[] args)
     {
-        Func<APIGatewayHttpApiV2ProxyRequest, ILambdaContext, Task> handler = FunctionHandler;
-        await LambdaBootstrapBuilder.Create(handler, new SourceGeneratorLambdaJsonSerializer<AppJsonSerializerContext>())
+        Func<APIGatewayProxyRequest, ILambdaContext, Task<APIGatewayProxyResponse>> handler = FunctionHandler;
+        await LambdaBootstrapBuilder
+            .Create(handler, new SourceGeneratorLambdaJsonSerializer<AppJsonSerializerContext>())
             .Build()
             .RunAsync();
     }
 
-    public static Task FunctionHandler(APIGatewayHttpApiV2ProxyRequest input, ILambdaContext context)
+    [Logging(LogEvent = true, Service = "wss")]
+    public static async Task<APIGatewayProxyResponse> FunctionHandler(APIGatewayProxyRequest input,
+        ILambdaContext context)
     {
-        context.Logger.LogInformation(input.RouteKey);
-        return Task.CompletedTask;
+        try
+        {
+            context.Logger.LogInformation($"Connection: {input.RequestContext.ConnectionId}");
+            context.Logger.LogInformation($"Route: {input.RequestContext.RouteKey}");
+            
+            Task processor = input.RequestContext.RouteKey switch
+            {
+                "$connect" => ConnectHandler.HandleAsync(input, context),
+                "$disconnect" => DisconnectHandler.HandleAsync(input, context),
+                _ => DefaultHandler.HandleAsync(input, context)
+            };
+
+            await processor;
+
+            return new APIGatewayProxyResponse
+            {
+                Body = "OK",
+                StatusCode = 200
+            };
+        }
+        catch (Exception e)
+        {
+            context.Logger.LogError(e.Message);
+
+            return new APIGatewayProxyResponse
+            {
+                Body = e.Message,
+                StatusCode = 500,
+                Headers = new Dictionary<string, string> { { "Content-Type", "application/json" } }
+            };
+        }
     }
 }
 
-[JsonSerializable(typeof(APIGatewayHttpApiV2ProxyRequest))]
+[JsonSerializable(typeof(APIGatewayProxyRequest))]
+[JsonSerializable(typeof(APIGatewayProxyResponse))]
 public partial class AppJsonSerializerContext : JsonSerializerContext
 {
 }
