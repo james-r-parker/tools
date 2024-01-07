@@ -14,7 +14,7 @@ public static class ConnectHandler
 
     public static async Task HandleAsync(APIGatewayProxyRequest input, ILambdaContext context)
     {
-        input.Headers.TryGetValue("x-bucket", out var bucket);
+        input.QueryStringParameters.TryGetValue("bucket", out var bucket);
 
         context.Logger.LogInformation($"Bucket: {bucket}");
 

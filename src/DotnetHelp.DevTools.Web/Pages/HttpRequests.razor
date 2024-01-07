@@ -1,0 +1,43 @@
+﻿@page "/requests"
+@using System.Net.WebSockets
+@using System.Text
+@implements IDisposable
+
+<h3>Http Requests</h3>
+<h3>State: @_webSocket.State</h3>
+@foreach (var message in _messages)
+{
+    <pre>@message</pre>
+}
+
+@code {
+    readonly CancellationTokenSource _disposalTokenSource = new CancellationTokenSource();
+    readonly ClientWebSocket _webSocket = new ClientWebSocket();
+    readonly ICollection<string> _messages = new List<string>();
+
+    //--- Methods ---
+    protected override async Task OnInitializedAsync()
+    {
+        await _webSocket.ConnectAsync(new Uri("wss://c4qrksmig8.execute-api.eu-west-2.amazonaws.com/wss?bucket=123"), _disposalTokenSource.Token);
+        _ = ReceiveLoop();
+    }
+
+    private async Task ReceiveLoop()
+    {
+        var buffer = new ArraySegment<byte>(new byte[1024]);
+        while (!_disposalTokenSource.IsCancellationRequested)
+        {
+            var received = await _webSocket.ReceiveAsync(buffer, _disposalTokenSource.Token);
+            var receivedAsText = Encoding.UTF8.GetString(buffer.Array, 0, received.Count);
+            _messages.Add(receivedAsText);
+            StateHasChanged();
+        }
+    }
+
+    public void Dispose()
+    {
+        _disposalTokenSource.Cancel();
+        _ = _webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Bye", CancellationToken.None);
+    }
+
+}
