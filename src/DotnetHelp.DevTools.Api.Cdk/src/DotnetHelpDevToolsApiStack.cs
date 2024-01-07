@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Amazon.CDK;
+using Amazon.CDK.AWS.Apigatewayv2;
 using Amazon.CDK.AWS.CodeDeploy;
 using Amazon.CDK.AWS.DynamoDB;
 using Amazon.CDK.AWS.IAM;
@@ -23,6 +24,9 @@ public class DotnetHelpDevToolsApiStack : Stack
             TimeToLiveAttribute = "ttl",
         });
 
+        var connectionTable = 
+            Table.FromTableName(this, "WSS_CONNECTION_TABLE", Fn.ImportValue("DOTNETHELP:DEVTOOLS:WSS:TABLE"));
+
         var apiFunction = new Function(this, "API", new FunctionProps
         {
             Architecture = Architecture.X86_64,
@@ -34,15 +38,16 @@ public class DotnetHelpDevToolsApiStack : Stack
             Timeout = Duration.Seconds(20),
             Environment = new Dictionary<string, string>()
             {
-                { "CONNECTION_TABLE_NAME", Fn.ImportValue("DOTNETHELP:DEVTOOLS:WSS:TABLE") },
+                { "CONNECTION_TABLE_NAME", connectionTable.TableName },
                 { "HTTP_REQUEST_TABLE_NAME", httpRequestTable.TableName },
                 { "WEBSOCKET_URL", Fn.ImportValue("DOTNETHELP:DEVTOOLS:WSS:URL") }
             }
         });
 
         httpRequestTable.GrantReadWriteData(apiFunction);
+        connectionTable.GrantReadWriteData(apiFunction);
 
-        var preTafficRole = new Role(this, "PreTrafficRole", new RoleProps
+        var preTrafficRole = new Role(this, "PreTrafficRole", new RoleProps
         {
             AssumedBy = new ServicePrincipal("lambda.amazonaws.com"),
             ManagedPolicies = new IManagedPolicy[]
@@ -67,7 +72,7 @@ public class DotnetHelpDevToolsApiStack : Stack
                 { "API_FUNCTION_NAME", apiFunction.FunctionName },
                 { "API_FUNCTION_VERSION", apiFunction.CurrentVersion.Version }
             },
-            Role = preTafficRole
+            Role = preTrafficRole
         });
 
         var stage = new Alias(this, "Stage", new AliasProps()

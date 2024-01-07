@@ -89,5 +89,11 @@ public class DotnetHelpDevToolsWebsocketStack : Stack
             Value = connectionTable.TableName,
             ExportName = "DOTNETHELP:DEVTOOLS:WSS:TABLE",
         });
+        
+        new CfnOutput(this, "WSS_TABLE", new CfnOutputProps
+        {
+            Value = api.ApiId,
+            ExportName = "DOTNETHELP:DEVTOOLS:WSS:API",
+        });
     }
 }
