@@ -24,8 +24,44 @@ public class DotnetHelpDevToolsApiStack : Stack
             TimeToLiveAttribute = "ttl",
         });
 
-        var connectionTable = 
+        var connectionTable =
             Table.FromTableName(this, "WSS_CONNECTION_TABLE", Fn.ImportValue("DOTNETHELP:DEVTOOLS:WSS:TABLE"));
+
+        var apiRole = new Role(this, "ApiRole", new RoleProps
+        {
+            AssumedBy = new ServicePrincipal("lambda.amazonaws.com"),
+            ManagedPolicies = new IManagedPolicy[]
+            {
+                ManagedPolicy.FromAwsManagedPolicyName("service-role/AWSLambdaBasicExecutionRole")
+            },
+            InlinePolicies = new Dictionary<string, PolicyDocument>()
+            {
+                {
+                    "WSS",
+                    new PolicyDocument(new PolicyDocumentProps
+                    {
+                        Statements = new[]
+                        {
+                            new PolicyStatement(new PolicyStatementProps
+                            {
+                                Effect = Effect.ALLOW,
+                                Actions = new[] { "execute-api:ManageConnections" },
+                                Resources = new[]
+                                {
+                                    Fn.Join("",
+                                        new[]
+                                        {
+                                            "arn:aws:execute-api:", Fn.Ref("AWS::Region"), ":",
+                                            Fn.Ref("AWS::AccountId"), ":",
+                                            Fn.ImportValue("DOTNETHELP:DEVTOOLS:WSS:API"), "/*"
+                                        })
+                                }
+                            })
+                        }
+                    })
+                }
+            }
+        });
 
         var apiFunction = new Function(this, "API", new FunctionProps
         {
@@ -36,6 +72,7 @@ public class DotnetHelpDevToolsApiStack : Stack
             Handler = "bootstrap",
             Code = Code.FromAsset("../app/"),
             Timeout = Duration.Seconds(20),
+            Role = apiRole,
             Environment = new Dictionary<string, string>()
             {
                 { "CONNECTION_TABLE_NAME", connectionTable.TableName },
@@ -44,8 +81,8 @@ public class DotnetHelpDevToolsApiStack : Stack
             }
         });
 
-        httpRequestTable.GrantReadWriteData(apiFunction);
-        connectionTable.GrantReadWriteData(apiFunction);
+        httpRequestTable.GrantReadWriteData(apiRole);
+        connectionTable.GrantReadWriteData(apiRole);
 
         var preTrafficRole = new Role(this, "PreTrafficRole", new RoleProps
         {
