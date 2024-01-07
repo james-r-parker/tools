@@ -32,53 +32,10 @@ public class DotnetHelpDevToolsApiStack : Stack
             AssumedBy = new ServicePrincipal("lambda.amazonaws.com"),
             ManagedPolicies = new IManagedPolicy[]
             {
-                ManagedPolicy.FromAwsManagedPolicyName("service-role/AWSLambdaBasicExecutionRole")
+                ManagedPolicy.FromAwsManagedPolicyName("service-role/AWSLambdaBasicExecutionRole"),
+                ManagedPolicy.FromManagedPolicyName(this, "WSS_DB_POLICY",Fn.ImportValue("DOTNETHELP:DEVTOOLS:WSS:DB:POLICY")),
+                ManagedPolicy.FromManagedPolicyName(this, "WSS_API_POLICY",Fn.ImportValue("DOTNETHELP:DEVTOOLS:WSS:API:POLICY"))
             },
-            InlinePolicies = new Dictionary<string, PolicyDocument>()
-            {
-                {
-                    "WSS",
-                    new PolicyDocument(new PolicyDocumentProps
-                    {
-                        Statements = new[]
-                        {
-                            new PolicyStatement(new PolicyStatementProps
-                            {
-                                Effect = Effect.ALLOW,
-                                Actions = new[] { "execute-api:ManageConnections" },
-                                Resources = new[]
-                                {
-                                    Fn.Join("",
-                                        new[]
-                                        {
-                                            "arn:aws:execute-api:", Fn.Ref("AWS::Region"), ":",
-                                            Fn.Ref("AWS::AccountId"), ":",
-                                            Fn.ImportValue("DOTNETHELP:DEVTOOLS:WSS:API"), "/*"
-                                        })
-                                }
-                            })
-                        }
-                    })
-                },
-                {
-                    "WSS_DB",
-                    new PolicyDocument(new PolicyDocumentProps
-                    {
-                        Statements = new[]
-                        {
-                            new PolicyStatement(new PolicyStatementProps
-                            {
-                                Effect = Effect.ALLOW,
-                                Actions = new[] { "dynamodb:Query" },
-                                Resources = new[]
-                                {
-                                    Fn.Join("", new[] { connectionTable.TableArn, "/index/*" }),
-                                }
-                            })
-                        }
-                    })
-                }
-            }
         });
 
         var apiFunction = new Function(this, "API", new FunctionProps
@@ -139,7 +96,7 @@ public class DotnetHelpDevToolsApiStack : Stack
         {
             Function = stage,
             AuthType = FunctionUrlAuthType.NONE,
-            InvokeMode = InvokeMode.RESPONSE_STREAM,
+            InvokeMode = InvokeMode.BUFFERED,
         });
 
         var group = new LambdaDeploymentGroup(this, "DeploymentGroup", new LambdaDeploymentGroupProps()
