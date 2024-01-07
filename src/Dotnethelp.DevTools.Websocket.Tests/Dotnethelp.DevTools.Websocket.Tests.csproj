@@ -22,8 +22,4 @@
         </PackageReference>
     </ItemGroup>
 
-    <ItemGroup>
-        <ProjectReference Include="..\DotnetHelp.DevTools.Api\DotnetHelp.DevTools.Websocket.csproj" />
-    </ItemGroup>
-
 </Project>

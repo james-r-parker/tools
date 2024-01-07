@@ -5,7 +5,7 @@ on:
 
 jobs:
   
-  build:
+  test:
     runs-on: ubuntu-latest
     steps:
 
@@ -16,19 +16,28 @@ jobs:
         name : Install dotnet
         with:
           dotnet-version: 8
-          
-      - name: Tools
-        run: dotnet workload install wasm-tools
-      
-      - working-directory: ./src/DotnetHelp.DevTools.Web
-        name: Build
-        run: dotnet publish -c Release -o out
-        
-      - name: Upload Artifacts
+
+      - working-directory: ./src
+        name: Test API
+        run: dotnet test ./DotnetHelp.DevTools.Websocket.Tests/DotnetHelp.DevTools.Websocket.Tests.csproj --logger "trx;LogFileName=TestResults.trx" --collect:"XPlat Code Coverage"
+  
+  build:
+    runs-on: ubuntu-latest
+    needs: [test]
+    steps:
+
+      - uses: actions/checkout@v4
+        name : Checkout
+
+      - working-directory: ./src
+        name: Build Docker
+        run: docker build . -f ./DotnetHelp.DevTools.Websocket/Dockerfile -t wss_aot_build --output=. --target=final
+
+      - name : Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: www
-          path: ./src/DotnetHelp.DevTools.Web/out/wwwroot
+          name: wss
+          path: ./src/web-socket/bootstrap
         
   deploy:
     runs-on: ubuntu-latest
@@ -44,8 +53,8 @@ jobs:
       - name: Download Artifacts
         uses: actions/download-artifact@v4
         with:
-          name: www
-          path: ./src/DotnetHelp.DevTools.Web/out/wwwroot
+          name: wss
+          path: ./src/web-socket/
 
       - uses: actions/setup-node@v4
         name : Install node
@@ -62,5 +71,5 @@ jobs:
             aws-region: eu-west-2
             
       - name : Deploy
-        working-directory: ./src/DotnetHelp.DevTools.Web.Cdk
+        working-directory: ./src/DotnetHelp.DevTools.Websocket.Cdk
         run: cdk deploy --require-approval never

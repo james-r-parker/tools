@@ -20,13 +20,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Actions", "Actions", "{A8AF
 	ProjectSection(SolutionItems) = preProject
 		..\.github\workflows\api_deploy.yml = ..\.github\workflows\api_deploy.yml
 		..\.github\workflows\web_deploy.yml = ..\.github\workflows\web_deploy.yml
+		..\.github\workflows\websocket_deploy.yml = ..\.github\workflows\websocket_deploy.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{EEB68E3F-2651-410D-AC59-B2278B6C7189}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WebSocket", "WebSocket", "{684BDA23-92CC-48E9-A329-3E086EBBE493}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetHelp.DevTools.Websocket", "DotnetHelp.DevTools.Websocket\src\DotnetHelp.DevTools.Websocket\DotnetHelp.DevTools.Websocket.csproj", "{CBAF60A9-6870-4AFB-972B-8F84ABFED032}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dotnethelp.DevTools.Websocket.Tests", "Dotnethelp.DevTools.Websocket.Tests\Dotnethelp.DevTools.Websocket.Tests.csproj", "{E8B9822B-1E10-4729-AE4B-2A64F5660940}"
 EndProject
@@ -35,6 +34,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetHelp.DevTools.Web.Cdk", "DotnetHelp.DevTools.Web.Cdk\src\DotnetHelp.DevTools.Web.Cdk.csproj", "{5E1E1D3A-95B7-4E22-AD95-C35E23026C02}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetHelp.DevTools.Websocket.Cdk", "DotnetHelp.DevTools.Websocket.Cdk\src\DotnetHelp.DevTools.Websocket.Cdk.csproj", "{130C736C-0EF0-4936-9EED-16E26DFA85A3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetHelp.DevTools.Websocket", "DotnetHelp.DevTools.Websocket\DotnetHelp.DevTools.Websocket.csproj", "{85C45D7B-7AF3-43D5-84FC-15B8087AFADE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -62,10 +63,6 @@ Global
 		{3F54BA6B-C951-4851-81E4-5A60A058D0F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3F54BA6B-C951-4851-81E4-5A60A058D0F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3F54BA6B-C951-4851-81E4-5A60A058D0F1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CBAF60A9-6870-4AFB-972B-8F84ABFED032}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CBAF60A9-6870-4AFB-972B-8F84ABFED032}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CBAF60A9-6870-4AFB-972B-8F84ABFED032}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CBAF60A9-6870-4AFB-972B-8F84ABFED032}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E8B9822B-1E10-4729-AE4B-2A64F5660940}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E8B9822B-1E10-4729-AE4B-2A64F5660940}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E8B9822B-1E10-4729-AE4B-2A64F5660940}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -82,6 +79,10 @@ Global
 		{130C736C-0EF0-4936-9EED-16E26DFA85A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{130C736C-0EF0-4936-9EED-16E26DFA85A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{130C736C-0EF0-4936-9EED-16E26DFA85A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{85C45D7B-7AF3-43D5-84FC-15B8087AFADE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{85C45D7B-7AF3-43D5-84FC-15B8087AFADE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{85C45D7B-7AF3-43D5-84FC-15B8087AFADE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{85C45D7B-7AF3-43D5-84FC-15B8087AFADE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{3770DBFB-660F-4026-9292-CA21C17D64BA} = {53721097-B55D-428D-A69D-9994A96AEABE}
@@ -90,10 +91,10 @@ Global
 		{A8AFAD1D-9894-4F3B-A69F-84DD7F38AE22} = {9D212397-39F0-41D1-AD1C-DCA0F5B6067D}
 		{73E73EBE-C018-4F5C-B9F4-B00CF372D73F} = {5A6D73BC-BBF9-4203-835A-4C92CCFA95E4}
 		{45D33682-5C2A-4E74-8AC6-41A96E1031EE} = {EEB68E3F-2651-410D-AC59-B2278B6C7189}
-		{CBAF60A9-6870-4AFB-972B-8F84ABFED032} = {684BDA23-92CC-48E9-A329-3E086EBBE493}
 		{E8B9822B-1E10-4729-AE4B-2A64F5660940} = {684BDA23-92CC-48E9-A329-3E086EBBE493}
 		{01BB63CF-92EA-4EEB-8D26-7ECC36B58D98} = {9D212397-39F0-41D1-AD1C-DCA0F5B6067D}
 		{5E1E1D3A-95B7-4E22-AD95-C35E23026C02} = {9D212397-39F0-41D1-AD1C-DCA0F5B6067D}
 		{130C736C-0EF0-4936-9EED-16E26DFA85A3} = {9D212397-39F0-41D1-AD1C-DCA0F5B6067D}
+		{85C45D7B-7AF3-43D5-84FC-15B8087AFADE} = {684BDA23-92CC-48E9-A329-3E086EBBE493}
 	EndGlobalSection
 EndGlobal
