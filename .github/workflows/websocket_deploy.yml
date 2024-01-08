@@ -33,9 +33,6 @@ jobs:
 
       - uses: actions/checkout@v4
         name : Checkout
-        
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
 
       - working-directory: ./src
         name: Build Docker

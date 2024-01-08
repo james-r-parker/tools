@@ -40,7 +40,7 @@ public class DotnetHelpDevToolsApiStack : Stack
 
         var apiFunction = new Function(this, "API", new FunctionProps
         {
-            Architecture = Architecture.ARM_64,
+            Architecture = Architecture.X86_64,
             Runtime = Runtime.PROVIDED_AL2023,
             MemorySize = 256,
             Description = "DotnetHelp.DevTools.API",
@@ -71,7 +71,7 @@ public class DotnetHelpDevToolsApiStack : Stack
 
         var apiPreTrafficFunction = new Function(this, "API-PreTraffic", new FunctionProps
         {
-            Architecture = Architecture.ARM_64,
+            Architecture = Architecture.X86_64,
             Runtime = Runtime.PROVIDED_AL2023,
             MemorySize = 256,
             Description = "DotnetHelp.DevTools.API.PreTraffic",
