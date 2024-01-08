@@ -37,7 +37,7 @@ public class DotnetHelpDevToolsWebsocketStack : Stack
 
         var websocketFunction = new Function(this, "WebSocketFunction", new FunctionProps
         {
-            Architecture = Architecture.X86_64,
+            Architecture = Architecture.ARM_64,
             Runtime = Runtime.PROVIDED_AL2023,
             MemorySize = 256,
             Description = "DotnetHelp.DevTools.Websocket",
