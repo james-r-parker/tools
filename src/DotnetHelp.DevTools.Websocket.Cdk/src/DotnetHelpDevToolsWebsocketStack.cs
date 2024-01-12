@@ -100,7 +100,7 @@ public class DotnetHelpDevToolsWebsocketStack : Stack
             ApiId = api.ApiId,
         });
 
-        new CfnOutput(this, "WSS_DOMAIN", new CfnOutputProps
+        new CfnOutput(this, "WSS_DOMAIN_CNAME", new CfnOutputProps
         {
             Value = domain.RegionalDomainName,
         });

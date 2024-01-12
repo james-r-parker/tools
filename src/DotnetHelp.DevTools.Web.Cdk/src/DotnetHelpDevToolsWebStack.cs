@@ -32,12 +32,10 @@ public class DotnetHelpDevToolsWebStack : Stack
             Certificate = Certificate.FromCertificateArn(this, "Certificate", Fn.ImportValue(props.CertificateArn)),
             DomainNames = new string[] { props.CustomDomain }
         });
-
-        Uri apiUri = new Uri(Fn.ImportValue("DOTNETHELP:DEVTOOLS:API:URL"));
-
+        
         cloudfront.AddBehavior(
             "/api/*",
-            new HttpOrigin(apiUri.Host, new HttpOriginProps
+            new HttpOrigin(Fn.Select(2, Fn.Split("/", Fn.ImportValue("DOTNETHELP:DEVTOOLS:API:URL"))), new HttpOriginProps
             {
                 ProtocolPolicy = OriginProtocolPolicy.HTTPS_ONLY
             }),
