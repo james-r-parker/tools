@@ -29,7 +29,7 @@ public class DotnetHelpDevToolsWebStack : Stack
             EnableIpv6 = true,
             MinimumProtocolVersion = SecurityPolicyProtocol.TLS_V1_2_2021,
             PriceClass = PriceClass.PRICE_CLASS_100,
-            Certificate = Certificate.FromCertificateArn(this, "Certificate", Fn.ImportValue(props.CertificateArn)),
+            Certificate = Certificate.FromCertificateArn(this, "Certificate", props.CertificateArn),
             DomainNames = new string[] { props.CustomDomain }
         });
         
