@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Amazon.CDK;
-using Amazon.CDK.AWS.Apigatewayv2;
 using Amazon.CDK.AWS.CodeDeploy;
 using Amazon.CDK.AWS.DynamoDB;
 using Amazon.CDK.AWS.IAM;
@@ -11,7 +10,7 @@ namespace DotnetHelp.DevTools.Api.Cdk;
 
 public class DotnetHelpDevToolsApiStack : Stack
 {
-    internal DotnetHelpDevToolsApiStack(Construct scope, string id, IStackProps props = null) : base(scope, id, props)
+    internal DotnetHelpDevToolsApiStack(Construct scope, string id, Props props) : base(scope, id, props)
     {
         var httpRequestTable = new Table(this, "APIHttpRequestTable", new TableProps()
         {

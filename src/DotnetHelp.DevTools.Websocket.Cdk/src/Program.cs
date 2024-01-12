@@ -7,7 +7,11 @@ sealed class Program
     public static void Main(string[] args)
     {
         var app = new App();
-        new DotnetHelpDevToolsWebsocketStack(app, "DotnetHelpDevToolsWebsocketStack", new StackProps());
+        new DotnetHelpDevToolsWebsocketStack(app, "DotnetHelpDevToolsWebsocketStack", new Props
+        {
+            CustomDomain = "wss.dotnethelp.co.uk",
+            CertificateArn = System.Environment.GetEnvironmentVariable("CERTIFICATE_ARN"),
+        });
         app.Synth();
     }
 }

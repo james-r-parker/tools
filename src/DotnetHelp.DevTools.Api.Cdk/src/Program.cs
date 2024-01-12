@@ -7,7 +7,7 @@ sealed class Program
     public static void Main(string[] args)
     {
         var app = new App();
-        new DotnetHelpDevToolsApiStack(app, "DotnetHelpDevToolsApiStack", new StackProps());
+        new DotnetHelpDevToolsApiStack(app, "DotnetHelpDevToolsApiStack", new Props());
         app.Synth();
     }
 }

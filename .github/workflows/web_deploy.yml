@@ -37,9 +37,13 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: [build]
+    environment:
+      name: production
     permissions:
       contents: read
       id-token: write
+    env:
+      CERTIFICATE_ARN: ${{ vars.WEB_CERTIFICATE_ARN }}
     steps:
     
       - uses: actions/checkout@v4

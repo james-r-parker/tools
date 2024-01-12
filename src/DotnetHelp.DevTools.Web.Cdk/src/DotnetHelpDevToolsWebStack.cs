@@ -1,4 +1,6 @@
+using System;
 using Amazon.CDK;
+using Amazon.CDK.AWS.CertificateManager;
 using Amazon.CDK.AWS.CloudFront;
 using Amazon.CDK.AWS.CloudFront.Origins;
 using Amazon.CDK.AWS.S3;
@@ -9,7 +11,7 @@ namespace DotnetHelp.DevTools.Web.Cdk;
 
 public class DotnetHelpDevToolsWebStack : Stack
 {
-    internal DotnetHelpDevToolsWebStack(Construct scope, string id, IStackProps props = null) : base(scope, id, props)
+    internal DotnetHelpDevToolsWebStack(Construct scope, string id, Props props) : base(scope, id, props)
     {
         var s3Bucket = new Bucket(this, "WebBucket", new BucketProps());
 
@@ -27,11 +29,15 @@ public class DotnetHelpDevToolsWebStack : Stack
             EnableIpv6 = true,
             MinimumProtocolVersion = SecurityPolicyProtocol.TLS_V1_2_2021,
             PriceClass = PriceClass.PRICE_CLASS_100,
+            Certificate = Certificate.FromCertificateArn(this, "Certificate", Fn.ImportValue(props.CertificateArn)),
+            DomainNames = new string[] { props.CustomDomain }
         });
+
+        Uri apiUri = new Uri(Fn.ImportValue("DOTNETHELP:DEVTOOLS:API:URL"));
 
         cloudfront.AddBehavior(
             "/api/*",
-            new HttpOrigin("prm6cs2gduogih4yecimgqqeae0ilqkw.lambda-url.eu-west-2.on.aws", new HttpOriginProps
+            new HttpOrigin(apiUri.Host, new HttpOriginProps
             {
                 ProtocolPolicy = OriginProtocolPolicy.HTTPS_ONLY
             }),

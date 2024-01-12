@@ -47,6 +47,10 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: [build]
+    environment:
+      name: production
+    env:
+      CERTIFICATE_ARN: ${{ vars.WSS_CERTIFICATE_ARN }}
     permissions:
       contents: read
       id-token: write
