@@ -6,6 +6,7 @@ using Amazon.CDK.AWS.CloudFront.Origins;
 using Amazon.CDK.AWS.S3;
 using Amazon.CDK.AWS.S3.Deployment;
 using Constructs;
+using StorageClass = Amazon.CDK.AWS.S3.StorageClass;
 
 namespace DotnetHelp.DevTools.Web.Cdk;
 
@@ -14,7 +15,25 @@ public class DotnetHelpDevToolsWebStack : Stack
     internal DotnetHelpDevToolsWebStack(Construct scope, string id, Props props) : base(scope, id, props)
     {
         var s3Bucket = new Bucket(this, "WebBucket", new BucketProps());
-        var logBucket = new Bucket(this, "WebLogsBucket", new BucketProps());
+        
+        var logBucket = new Bucket(this, "WebLogsBucket", new BucketProps
+        {
+            RemovalPolicy = RemovalPolicy.DESTROY,
+            AutoDeleteObjects = true,
+            LifecycleRules = new[]
+            {
+                new LifecycleRule
+                {
+                    Enabled = true,
+                    NoncurrentVersionExpiration = Duration.Days(30),
+                    Expiration = Duration.Days(30),
+                    AbortIncompleteMultipartUploadAfter = Duration.Days(1),
+                }
+            },
+            Encryption = BucketEncryption.S3_MANAGED,
+            AccessControl = BucketAccessControl.LOG_DELIVERY_WRITE,
+            ObjectOwnership = ObjectOwnership.OBJECT_WRITER
+        });
 
         var cloudfront = new Distribution(this, "WebDistribution", new DistributionProps
         {
@@ -31,7 +50,7 @@ public class DotnetHelpDevToolsWebStack : Stack
             MinimumProtocolVersion = SecurityPolicyProtocol.TLS_V1_2_2021,
             PriceClass = PriceClass.PRICE_CLASS_100,
             Certificate = Certificate.FromCertificateArn(this, "Certificate", props.CertificateArn),
-            DomainNames = new [] { props.CustomDomain },
+            DomainNames = new[] { props.CustomDomain },
             EnableLogging = true,
             LogBucket = logBucket,
             LogFilePrefix = "web/",
