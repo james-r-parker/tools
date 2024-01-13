@@ -116,7 +116,6 @@ public class DotnetHelpDevToolsApiStack : Stack
             {
                 AllowedOrigins = new[] { "http://localhost:5250", "https://www.dothethelp.co.uk" },
                 AllowedMethods = new[] { HttpMethod.ALL },
-                AllowedHeaders = new[] { "*" },
                 AllowCredentials = true,
                 MaxAge = Duration.Seconds(60)
             }
