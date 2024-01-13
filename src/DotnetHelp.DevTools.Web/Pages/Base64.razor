@@ -1,0 +1,30 @@
+﻿@page "/base64"
+@using DotnetHelp.DevTools.Web.Application
+@using DotnetHelp.DevTools.Shared
+@inject ApiHttpClient Http
+
+<PageTitle>Base64</PageTitle>
+
+<h1>Weather</h1>
+
+<p>This component demonstrates fetching data from the server.</p>
+
+@if (response == null)
+{
+    <p>
+        <em>Loading...</em>
+    </p>
+}
+else
+{
+    <p>@response.Response</p>
+}
+
+@code {
+    private TextApiResponse? response;
+
+    protected override async Task OnInitializedAsync()
+    {
+        response = await Http.Base64Encode(new TextApiRequest("Hello world"));
+    }
+}
