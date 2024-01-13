@@ -1,6 +1,4 @@
 ﻿using System.Runtime.CompilerServices;
-using Amazon.DynamoDBv2.Model;
-using Microsoft.Extensions.Caching.Distributed;
 
 namespace DotnetHelp.DevTools.Api.Application;
 

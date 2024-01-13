@@ -1,8 +1,4 @@
-﻿using System.Text.Json;
-using Amazon.ApiGatewayManagementApi.Model;
-using Amazon.DynamoDBv2.Model;
-
-namespace DotnetHelp.DevTools.Api.Handlers.Http;
+﻿namespace DotnetHelp.DevTools.Api.Handlers.Http;
 
 internal static class HttpRequestHandler
 {

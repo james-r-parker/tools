@@ -52,7 +52,7 @@ public class Function
                     Http = new APIGatewayHttpApiV2ProxyRequest.HttpDescription()
                     {
                         Method = "GET",
-                        Path = "/health",
+                        Path = "/_health",
                         SourceIp = "127.0.0.1",
                         UserAgent = "DotnetHelp.DevTools.Api.PreTraffic",
                         Protocol = "HTTP/1.1"

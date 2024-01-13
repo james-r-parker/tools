@@ -14,4 +14,15 @@ public class Base64HandlerTests
         Assert.NotNull(response.Value);
         Assert.Equal("SGVsbG8gV29ybGQ=", response.Value.Response);
     }
+    
+    [Fact]
+    public void Base64Decode()
+    {
+        IResult result = Base64Handler.Decode(new TextApiRequest("SGVsbG8gV29ybGQ="));
+        Ok<TextApiResponse> response = Assert.IsType<Ok<TextApiResponse>>(result);
+        Assert.Equal(200, response.StatusCode);
+        Assert.NotNull(response);
+        Assert.NotNull(response.Value);
+        Assert.Equal("Hello World", response.Value.Response);
+    }
 }

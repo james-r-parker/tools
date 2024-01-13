@@ -1,3 +1,4 @@
+
 using DotnetHelp.DevTools.Api.Handlers.Base64;
 using DotnetHelp.DevTools.Api.Handlers.Hmac;
 using DotnetHelp.DevTools.Api.Handlers.Http;
@@ -19,8 +20,19 @@ builder.Services.AddAWSLambdaHosting(LambdaEventSource.HttpApi,
                 AppJsonSerializerContext>();
     });
 
+builder.Services.AddHealthChecks();
+
+builder.Services.AddHttpClient<JwtKeyHttpClient>()
+    .ConfigureHttpClient((sp, client) =>
+    {
+        client.DefaultRequestHeaders.Add("Accept", "application/json");
+        client.Timeout = TimeSpan.FromSeconds(10);
+        client.DefaultRequestVersion = HttpVersion.Version11;
+        client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrHigher;
+        client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("DotnetHelp.DevTools.Api", "1.0"));
+    });
+
 builder.Services
-    .AddHttpClient()
     .AddHttpContextAccessor()
     .AddSingleton<IDistributedCache, DynamoDbDistributedCache>()
     .AddSingleton<IAmazonDynamoDB, AmazonDynamoDBClient>()
@@ -31,6 +43,8 @@ builder.Services
         }));
 
 var app = builder.Build();
+
+app.UseHealthChecks("/_health");
 
 var api = app.MapGroup("/api");
 

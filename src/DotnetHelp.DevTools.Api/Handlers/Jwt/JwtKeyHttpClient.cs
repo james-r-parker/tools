@@ -1,6 +1,4 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
-using System.Text.Json;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.IdentityModel.Tokens;
 
 namespace DotnetHelp.DevTools.Api.Handlers.Jwt;
