@@ -1,3 +1,5 @@
+using DotnetHelp.DevTools.Api.Handlers.Base64;
+
 namespace DotnetHelp.DevTools.Api.Tests;
 
 public class Base64HandlerTests

@@ -2,7 +2,7 @@
 using Amazon.ApiGatewayManagementApi.Model;
 using Amazon.DynamoDBv2.Model;
 
-namespace DotnetHelp.DevTools.Api.Handlers;
+namespace DotnetHelp.DevTools.Api.Handlers.Http;
 
 internal static class HttpRequestHandler
 {

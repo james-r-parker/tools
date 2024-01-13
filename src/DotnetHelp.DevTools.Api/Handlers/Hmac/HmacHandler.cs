@@ -1,4 +1,4 @@
-﻿namespace DotnetHelp.DevTools.Api.Handlers;
+﻿namespace DotnetHelp.DevTools.Api.Handlers.Hmac;
 
 internal static class HmacHandler
 {

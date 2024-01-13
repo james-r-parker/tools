@@ -22,6 +22,16 @@ public class DotnetHelpDevToolsApiStack : Stack
             PointInTimeRecovery = false,
             TimeToLiveAttribute = "ttl",
         });
+        
+        var cacheTable = new Table(this, "APICacheTable", new TableProps()
+        {
+            PartitionKey = new Attribute() { Name = "id", Type = AttributeType.STRING },
+            BillingMode = BillingMode.PAY_PER_REQUEST,
+            RemovalPolicy = RemovalPolicy.DESTROY,
+            Encryption = TableEncryption.AWS_MANAGED,
+            PointInTimeRecovery = false,
+            TimeToLiveAttribute = "ttl",
+        });
 
         var connectionTable =
             Table.FromTableName(this, "WSS_CONNECTION_TABLE", Fn.ImportValue("DOTNETHELP:DEVTOOLS:WSS:TABLE"));
@@ -51,11 +61,13 @@ public class DotnetHelpDevToolsApiStack : Stack
             {
                 { "CONNECTION_TABLE_NAME", connectionTable.TableName },
                 { "HTTP_REQUEST_TABLE_NAME", httpRequestTable.TableName },
+                { "CACHE_TABLE_NAME", cacheTable.TableName },
                 { "WEBSOCKET_URL", Fn.ImportValue("DOTNETHELP:DEVTOOLS:WSS:URL") }
             }
         });
 
         httpRequestTable.GrantReadWriteData(apiRole);
+        cacheTable.GrantReadWriteData(apiRole);
 
         var preTrafficRole = new Role(this, "PreTrafficRole", new RoleProps
         {

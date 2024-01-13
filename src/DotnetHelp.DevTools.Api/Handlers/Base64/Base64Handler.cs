@@ -1,4 +1,4 @@
-﻿namespace DotnetHelp.DevTools.Api.Handlers;
+﻿namespace DotnetHelp.DevTools.Api.Handlers.Base64;
 
 public static class Base64Handler
 {

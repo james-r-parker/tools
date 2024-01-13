@@ -1,3 +1,9 @@
+using DotnetHelp.DevTools.Api.Handlers.Base64;
+using DotnetHelp.DevTools.Api.Handlers.Hmac;
+using DotnetHelp.DevTools.Api.Handlers.Http;
+using DotnetHelp.DevTools.Api.Handlers.Jwt;
+using Microsoft.Extensions.Caching.Distributed;
+
 var builder = WebApplication.CreateSlimBuilder(args);
 
 builder.Services.ConfigureHttpJsonOptions(options =>
@@ -13,16 +19,16 @@ builder.Services.AddAWSLambdaHosting(LambdaEventSource.HttpApi,
                 AppJsonSerializerContext>();
     });
 
-builder.Services.AddHttpClient();
-builder.Services.AddHttpContextAccessor();
-
-builder.Services.AddSingleton<IAmazonApiGatewayManagementApi>(new AmazonApiGatewayManagementApiClient(
-    new AmazonApiGatewayManagementApiConfig
-    {
-        ServiceURL = Constants.WebsocketUrl
-    }));
-
-builder.Services.AddSingleton<IAmazonDynamoDB>(new AmazonDynamoDBClient());
+builder.Services
+    .AddHttpClient()
+    .AddHttpContextAccessor()
+    .AddSingleton<IDistributedCache, DynamoDbDistributedCache>()
+    .AddSingleton<IAmazonDynamoDB, AmazonDynamoDBClient>()
+    .AddSingleton<IAmazonApiGatewayManagementApi>(new AmazonApiGatewayManagementApiClient(
+        new AmazonApiGatewayManagementApiConfig
+        {
+            ServiceURL = Constants.WebsocketUrl
+        }));
 
 var app = builder.Build();
 
