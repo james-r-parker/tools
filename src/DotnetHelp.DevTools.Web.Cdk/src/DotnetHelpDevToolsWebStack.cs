@@ -15,7 +15,7 @@ public class DotnetHelpDevToolsWebStack : Stack
     internal DotnetHelpDevToolsWebStack(Construct scope, string id, Props props) : base(scope, id, props)
     {
         var s3Bucket = new Bucket(this, "WebBucket", new BucketProps());
-        
+
         var logBucket = new Bucket(this, "WebLogsBucket", new BucketProps
         {
             RemovalPolicy = RemovalPolicy.DESTROY,
@@ -43,6 +43,30 @@ public class DotnetHelpDevToolsWebStack : Stack
                 ViewerProtocolPolicy = ViewerProtocolPolicy.HTTPS_ONLY,
                 Compress = true,
                 AllowedMethods = AllowedMethods.ALLOW_GET_HEAD,
+                FunctionAssociations = new IFunctionAssociation[]
+                {
+                    new FunctionAssociation()
+                    {
+                        EventType = FunctionEventType.VIEWER_REQUEST,
+                        Function = new Function(this, "RewriteFunction", new FunctionProps
+                        {
+                            Runtime =FunctionRuntime.JS_2_0,
+                            Comment = "DotnetHelp Rewrite Function",
+                            Code = FunctionCode.FromInline(@"
+                                function handler(event) {
+                                    var request = event.request;
+                                    var uri = request.uri;
+                                      
+                                    if (uri.endsWith('/') || !uri.includes('.')) {
+                                      request.uri = '/index.html';
+                                    }
+
+                                    return request;
+                                }
+                            "),
+                        })
+                    }
+                },
             },
             DefaultRootObject = "index.html",
             HttpVersion = HttpVersion.HTTP2_AND_3,
@@ -68,6 +92,23 @@ public class DotnetHelpDevToolsWebStack : Stack
                 ViewerProtocolPolicy = ViewerProtocolPolicy.HTTPS_ONLY,
                 Compress = true,
                 AllowedMethods = AllowedMethods.ALLOW_ALL,
+                OriginRequestPolicy = new OriginRequestPolicy(this, "ApiOriginRequestPolicy",
+                    new OriginRequestPolicyProps
+                    {
+                        CookieBehavior = OriginRequestCookieBehavior.None(),
+                        HeaderBehavior = OriginRequestHeaderBehavior.AllowList("Origin", "Accept"),
+                        QueryStringBehavior = OriginRequestQueryStringBehavior.All(),
+                        Comment = "DotnetHelp Api Origin Request Policy"
+                    }),
+                CachePolicy = new CachePolicy(this, "ApiCachePolicy", new CachePolicyProps
+                {
+                    Comment = "DotnetHelp Api Cache Policy",
+                    CookieBehavior = CacheCookieBehavior.None(),
+                    HeaderBehavior = CacheHeaderBehavior.AllowList("Origin", "Accept"),
+                    QueryStringBehavior = CacheQueryStringBehavior.All(),
+                    EnableAcceptEncodingGzip = true,
+                    EnableAcceptEncodingBrotli = true,
+                })
             });
 
         new BucketDeployment(this, "DeployWebsite", new BucketDeploymentProps
