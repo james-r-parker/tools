@@ -22,7 +22,7 @@ public class DotnetHelpDevToolsApiStack : Stack
             PointInTimeRecovery = false,
             TimeToLiveAttribute = "ttl",
         });
-        
+
         var cacheTable = new Table(this, "APICacheTable", new TableProps()
         {
             PartitionKey = new Attribute() { Name = "id", Type = AttributeType.STRING },
@@ -42,8 +42,10 @@ public class DotnetHelpDevToolsApiStack : Stack
             ManagedPolicies = new IManagedPolicy[]
             {
                 ManagedPolicy.FromAwsManagedPolicyName("service-role/AWSLambdaBasicExecutionRole"),
-                ManagedPolicy.FromManagedPolicyName(this, "WSS_DB_POLICY",Fn.ImportValue("DOTNETHELP:DEVTOOLS:WSS:DB:POLICY")),
-                ManagedPolicy.FromManagedPolicyName(this, "WSS_API_POLICY",Fn.ImportValue("DOTNETHELP:DEVTOOLS:WSS:API:POLICY"))
+                ManagedPolicy.FromManagedPolicyName(this, "WSS_DB_POLICY",
+                    Fn.ImportValue("DOTNETHELP:DEVTOOLS:WSS:DB:POLICY")),
+                ManagedPolicy.FromManagedPolicyName(this, "WSS_API_POLICY",
+                    Fn.ImportValue("DOTNETHELP:DEVTOOLS:WSS:API:POLICY"))
             },
         });
 
@@ -112,10 +114,11 @@ public class DotnetHelpDevToolsApiStack : Stack
             InvokeMode = InvokeMode.BUFFERED,
             Cors = new FunctionUrlCorsOptions()
             {
-               AllowedOrigins = new [] { "http://localhost:5250", "https://www.dothethelp.co.uk" },
-               AllowedMethods = new [] { HttpMethod.ALL },
-               AllowCredentials = true,
-               MaxAge = Duration.Seconds(60)
+                AllowedOrigins = new[] { "http://localhost:5250", "https://www.dothethelp.co.uk" },
+                AllowedMethods = new[] { HttpMethod.ALL },
+                AllowedHeaders = new[] { "*" },
+                AllowCredentials = true,
+                MaxAge = Duration.Seconds(60)
             }
         });
 
