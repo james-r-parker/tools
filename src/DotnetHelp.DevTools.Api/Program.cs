@@ -24,6 +24,10 @@ builder.Services.AddAWSLambdaHosting(LambdaEventSource.HttpApi,
 
 builder.Services.AddHealthChecks();
 
+builder.Services.AddCors(c => c.AddDefaultPolicy(p =>
+    p.AllowCredentials().AllowAnyHeader().AllowAnyMethod()
+        .WithOrigins("http://localhost:5250", "https://www.dothethelp.co.uk")));
+
 builder.Services.AddHttpClient<JwtKeyHttpClient>()
     .ConfigureHttpClient((sp, client) =>
     {
@@ -46,28 +50,18 @@ builder.Services
             ServiceURL = Constants.WebsocketUrl
         }));
 
-var app = builder.Build();
+WebApplication app = builder.Build();
 
-app.UseHealthChecks("/_health");
+app
+    .UseCors()
+    .UseHealthChecks("/_health");
 
-var api = app.MapGroup("/api");
+RouteGroupBuilder api = app.MapGroup("/api");
 
 api.MapPost("/hmac", HmacHandler.Hash);
 api.MapPost("/base64/encode", Base64Handler.Encode);
 api.MapPost("/jwt/decode", JwtHandler.Decode);
 api.MapPost("/http/{bucket}", HttpRequestHandler.New);
 api.MapGet("/http/{bucket}", HttpRequestHandler.List);
-
-api.MapFallback(ctx =>
-{
-    if (ctx.Request.Method == "OPTIONS")
-    {
-        ctx.Response.StatusCode = 200;
-        return Task.CompletedTask;
-    }
-
-    ctx.Response.StatusCode = 404;
-    return Task.CompletedTask;
-});
 
 app.Run();
