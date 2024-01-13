@@ -1,24 +1,35 @@
 ﻿@page "/requests"
+@inject ApiHttpClient ApiClient
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 @using System.Net.WebSockets
 @using System.Text
 @implements IDisposable
 
 <h3>Http Requests</h3>
 <h3>State: @_webSocket.State</h3>
+<h4>Bucket: @_bucket</h4>
 @foreach (var message in _messages)
 {
     <pre>@message</pre>
 }
 
 @code {
-    readonly CancellationTokenSource _disposalTokenSource = new CancellationTokenSource();
-    readonly ClientWebSocket _webSocket = new ClientWebSocket();
+    const string Key = "http_request_bucket";
+    string _bucket = string.Empty;
+    readonly CancellationTokenSource _disposalTokenSource = new();
+    readonly ClientWebSocket _webSocket = new();
     readonly ICollection<string> _messages = new List<string>();
 
-    //--- Methods ---
     protected override async Task OnInitializedAsync()
     {
-        await _webSocket.ConnectAsync(new Uri("wss://wss.dotnethelp.co.uk?bucket=123"), _disposalTokenSource.Token);
+        _bucket = await LocalStorage.GetItemAsync<string>(Key);
+        if (string.IsNullOrWhiteSpace(_bucket))
+        {
+            _bucket = Guid.NewGuid().ToString("N");
+            await LocalStorage.SetItemAsync(Key, _bucket);
+        }
+
+        await _webSocket.ConnectAsync(new Uri($"wss://wss.dotnethelp.co.uk?bucket={_bucket}"), _disposalTokenSource.Token);
         _ = ReceiveLoop();
     }
 

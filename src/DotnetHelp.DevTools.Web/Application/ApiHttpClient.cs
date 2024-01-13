@@ -1,7 +1,7 @@
 ﻿using System.Net.Http.Json;
 using DotnetHelp.DevTools.Shared;
 
-namespace DotnetHelp.DevTools.Web.Application;
+namespace DotnetHelp.DevTools.Web;
 
 public class ApiHttpClient(HttpClient httpClient)
 {
