@@ -22,10 +22,31 @@ jobs:
         name : Install dotnet
         with:
           dotnet-version: 8
+          
+      - name: Tools
+        run: |
+          dotnet tool install -g dotnet-reportgenerator-globaltool
+          dotnet tool install --global LiquidTestReports.Cli --version 1.4.3-beta
       
-      - working-directory: ./src
+      - working-directory: ./src/DotnetHelp.DevTools.Api.Tests
         name: Test API
-        run: dotnet test ./DotnetHelp.DevTools.Api.Tests/DotnetHelp.DevTools.Api.Tests.csproj --logger "trx;LogFileName=TestResults.trx" --collect:"XPlat Code Coverage"
+        run: dotnet test --nologo --consoleLoggerParameters:ErrorsOnly --logger "trx;LogFileName=TestResults.trx" --collect:"XPlat Code Coverage" /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:ExcludeByAttribute=CompilerGenerated /p:UseSourceLink=true /p:Configuration=Release /p:BuildServer=true
+
+      - name: Test Reports
+        working-directory: ./src/DotnetHelp.DevTools.Api.Tests
+        if: ${{ always() }}
+        run: |
+          liquid --inputs "File=TestResults/testResults.trx;Format=Trx" --output-file TestResults/tests.md
+          cat ./TestResults/tests.md >> $GITHUB_STEP_SUMMARY
+          cat ./TestResults/tests.md >> $GITHUB_WORKSPACE/PRSUMMARY.md
+
+      - name: Coverage Reports
+        id: coverage-reports
+        working-directory: ./src/DotnetHelp.DevTools.Api.Tests
+        run: |
+          reportgenerator "-reports:./TestResults/*/*.xml" "-targetdir:./reports/" "-reporttypes:MarkdownSummaryGithub"
+          cat ./reports/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
+          cat ./reports/SummaryGithub.md >> $GITHUB_WORKSPACE/PRSUMMARY.md
   
   build:
     runs-on: ubuntu-latest

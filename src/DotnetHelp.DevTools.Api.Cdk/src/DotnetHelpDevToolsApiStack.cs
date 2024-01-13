@@ -62,7 +62,8 @@ public class DotnetHelpDevToolsApiStack : Stack
                 { "CONNECTION_TABLE_NAME", connectionTable.TableName },
                 { "HTTP_REQUEST_TABLE_NAME", httpRequestTable.TableName },
                 { "CACHE_TABLE_NAME", cacheTable.TableName },
-                { "WEBSOCKET_URL", Fn.ImportValue("DOTNETHELP:DEVTOOLS:WSS:URL") }
+                { "WEBSOCKET_URL", Fn.ImportValue("DOTNETHELP:DEVTOOLS:WSS:URL") },
+                { "AWS_STS_REGIONAL_ENDPOINTS", "regional" }
             }
         });
 
@@ -92,7 +93,8 @@ public class DotnetHelpDevToolsApiStack : Stack
             Environment = new Dictionary<string, string>()
             {
                 { "API_FUNCTION_NAME", apiFunction.FunctionName },
-                { "API_FUNCTION_VERSION", apiFunction.CurrentVersion.Version }
+                { "API_FUNCTION_VERSION", apiFunction.CurrentVersion.Version },
+                { "AWS_STS_REGIONAL_ENDPOINTS", "regional" }
             },
             Role = preTrafficRole
         });

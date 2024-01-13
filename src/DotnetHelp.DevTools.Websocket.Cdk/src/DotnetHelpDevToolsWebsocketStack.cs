@@ -48,6 +48,7 @@ public class DotnetHelpDevToolsWebsocketStack : Stack
             Environment = new Dictionary<string, string>
             {
                 { "CONNECTION_TABLE_NAME", connectionTable.TableName },
+                { "AWS_STS_REGIONAL_ENDPOINTS", "regional" }
             }
         });
 
