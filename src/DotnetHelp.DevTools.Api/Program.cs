@@ -1,11 +1,13 @@
-
 using DotnetHelp.DevTools.Api.Handlers.Base64;
 using DotnetHelp.DevTools.Api.Handlers.Hmac;
 using DotnetHelp.DevTools.Api.Handlers.Http;
 using DotnetHelp.DevTools.Api.Handlers.Jwt;
-using Microsoft.Extensions.Caching.Distributed;
 
 var builder = WebApplication.CreateSlimBuilder(args);
+
+builder.Logging
+    .ClearProviders()
+    .AddJsonConsole();
 
 builder.Services.ConfigureHttpJsonOptions(options =>
 {
@@ -34,6 +36,8 @@ builder.Services.AddHttpClient<JwtKeyHttpClient>()
 
 builder.Services
     .AddHttpContextAccessor()
+    .AddSingleton<IHttpRequestRepository, HttpRequestRepository>()
+    .AddSingleton<IWebsocketClient, WebsocketClient>()
     .AddSingleton<IDistributedCache, DynamoDbDistributedCache>()
     .AddSingleton<IAmazonDynamoDB, AmazonDynamoDBClient>()
     .AddSingleton<IAmazonApiGatewayManagementApi>(new AmazonApiGatewayManagementApiClient(
@@ -52,5 +56,18 @@ api.MapPost("/hmac", HmacHandler.Hash);
 api.MapPost("/base64/encode", Base64Handler.Encode);
 api.MapPost("/jwt/decode", JwtHandler.Decode);
 api.MapPost("/http/{bucket}", HttpRequestHandler.New);
+api.MapGet("/http/{bucket}", HttpRequestHandler.List);
+
+api.MapFallback(ctx =>
+{
+    if (ctx.Request.Method == "OPTIONS")
+    {
+        ctx.Response.StatusCode = 200;
+        return Task.CompletedTask;
+    }
+
+    ctx.Response.StatusCode = 404;
+    return Task.CompletedTask;
+});
 
 app.Run();

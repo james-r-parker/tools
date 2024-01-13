@@ -1,11 +1,13 @@
-﻿namespace DotnetHelp.DevTools.Api.Handlers.Http;
+﻿using HttpRequest = DotnetHelp.DevTools.Api.Application.HttpRequest;
+
+namespace DotnetHelp.DevTools.Api.Handlers.Http;
 
 internal static class HttpRequestHandler
 {
     internal static async Task<IResult> New(
         [FromRoute] string bucket,
-        [FromServices] IAmazonDynamoDB db,
-        [FromServices] IAmazonApiGatewayManagementApi wss,
+        [FromServices] IHttpRequestRepository db,
+        [FromServices] IWebsocketClient wss,
         [FromServices] IHttpContextAccessor http)
     {
         if (string.IsNullOrWhiteSpace(bucket))
@@ -18,84 +20,59 @@ internal static class HttpRequestHandler
             return Results.BadRequest();
         }
 
-        var headers = new AttributeValue();
+        var headers = new Dictionary<string, string>();
         foreach (var header in http.HttpContext.Request.Headers)
         {
-            headers.M ??= new Dictionary<string, AttributeValue>();
-            headers.M.Add(header.Key, new AttributeValue(header.Value));
+            headers.TryAdd(header.Key, header.Value.ToString());
         }
 
-        var query = new AttributeValue();
+        var query = new Dictionary<string, string>();
         if (http.HttpContext.Request.Query.Any())
         {
             foreach (var q in http.HttpContext.Request.Query)
             {
-                query.M ??= new Dictionary<string, AttributeValue>();
-                query.M.Add(q.Key, new AttributeValue(q.Value));
+                query.TryAdd(q.Key, q.Value.ToString());
             }
         }
-        else
-        {
-            query.NULL = true;
-        }
 
-        var body = new AttributeValue();
+        string body;
 
         using (StreamReader reader
                = new StreamReader(http.HttpContext.Request.Body, Encoding.UTF8, true, 1024, true))
         {
-            body.S = await reader.ReadToEndAsync();
+            body = await reader.ReadToEndAsync();
         }
 
-        await db.PutItemAsync(new PutItemRequest
-        {
-            TableName = Constants.HttpRequestTableName,
-            Item = new Dictionary<string, AttributeValue>
-            {
-                { "bucket", new AttributeValue(bucket) },
-                { "created", new AttributeValue { N = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString() } },
-                { "ttl", new AttributeValue { N = DateTimeOffset.UtcNow.AddDays(1).ToUnixTimeSeconds().ToString() } },
-                { "headers", headers },
-                { "query", query },
-                { "body", body }
-            },
-        });
+        await db.Save(new HttpRequest(
+            bucket,
+            DateTimeOffset.UtcNow,
+            DateTimeOffset.UtcNow.AddDays(1),
+            headers,
+            query,
+            body));
 
-        QueryResponse? connections = await db.QueryAsync(new QueryRequest
-        {
-            TableName = Constants.ConnectionTableName,
-            IndexName = "ix_bucket_connection",
-            KeyConditionExpression = "#b = :b",
-            ExpressionAttributeValues = new Dictionary<string, AttributeValue>
-            {
-                { ":b", new AttributeValue(bucket) }
-            },
-            ExpressionAttributeNames = new Dictionary<string, string>
-            {
-                { "#b", "bucket" }
-            }
-        });
-
-        var payload =
-            JsonSerializer.Serialize(new NewHttpRequestWssMessage("NEW_HTTP_REQUEST", bucket),
-                HttpRequestJsonSerializerContext.Default.NewHttpRequestWssMessage);
-
-        foreach (var connection in connections.Items)
-        {
-            await wss.PostToConnectionAsync(new PostToConnectionRequest
-            {
-                ConnectionId = connection["connectionId"].S,
-                Data = new MemoryStream(Encoding.UTF8.GetBytes(payload)),
-            });
-        }
+        await wss.SendMessage(new NewHttpRequestWssMessage("HTTP_REQUEST", bucket));
 
         return Results.Ok();
     }
-}
 
-public record NewHttpRequestWssMessage(string Action, string Bucket);
+    internal static async Task<IResult> List(
+        [FromRoute] string bucket,
+        [FromQuery] int from,
+        [FromServices] IHttpRequestRepository db)
+    {
+        if (string.IsNullOrWhiteSpace(bucket))
+        {
+            return Results.BadRequest();
+        }
 
-[JsonSerializable(typeof(NewHttpRequestWssMessage))]
-internal partial class HttpRequestJsonSerializerContext : JsonSerializerContext
-{
+        if (from <= 0)
+        {
+            return Results.BadRequest();
+        }
+
+        IReadOnlyCollection<HttpRequest> requests = await db.List(bucket, from);
+
+        return Results.Ok(requests);
+    }
 }
