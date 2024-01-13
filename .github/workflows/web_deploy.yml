@@ -7,6 +7,11 @@ on:
       - 'src/DotnetHelp.DevTools.Web.Cdk/**'
       - '.github/workflows/web_deploy.yml'
 
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+  DOTNET_NOLOGO: 1
+
 jobs:
   
   build:

@@ -9,6 +9,11 @@ on:
       - 'src/DotnetHelp.DevTools.Api.Tests/**'
       - '.github/workflows/api_deploy.yml'
 
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+  DOTNET_NOLOGO: 1
+  
 jobs:
     
   test:
@@ -30,7 +35,7 @@ jobs:
       
       - working-directory: ./src/DotnetHelp.DevTools.Api.Tests
         name: Test API
-        run: dotnet test --nologo --consoleLoggerParameters:ErrorsOnly --logger "trx;LogFileName=TestResults.trx" --collect:"XPlat Code Coverage" /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:ExcludeByAttribute=CompilerGenerated /p:UseSourceLink=true /p:Configuration=Release /p:BuildServer=true
+        run: dotnet test --consoleLoggerParameters:ErrorsOnly --logger "trx;LogFileName=TestResults.trx" --collect:"XPlat Code Coverage" /p:Configuration=Release
 
       - name: Test Reports
         working-directory: ./src/DotnetHelp.DevTools.Api.Tests
@@ -44,9 +49,9 @@ jobs:
         id: coverage-reports
         working-directory: ./src/DotnetHelp.DevTools.Api.Tests
         run: |
-          reportgenerator "-reports:./TestResults/*/*.xml" "-targetdir:./reports/" "-reporttypes:MarkdownSummaryGithub"
-          cat ./reports/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
-          cat ./reports/SummaryGithub.md >> $GITHUB_WORKSPACE/PRSUMMARY.md
+          reportgenerator "-reports:./TestResults/*/*.xml" "-targetdir:./TestResults/" "-reporttypes:MarkdownSummaryGithub"
+          cat ./TestResults/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
+          cat ./TestResults/SummaryGithub.md >> $GITHUB_WORKSPACE/PRSUMMARY.md
   
   build:
     runs-on: ubuntu-latest

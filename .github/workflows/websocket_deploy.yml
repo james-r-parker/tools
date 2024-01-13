@@ -8,6 +8,11 @@ on:
       - 'src/Dotnethelp.DevTools.Websocket.Tests/**'
       - '.github/workflows/websocket_deploy.yml'
 
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+  DOTNET_NOLOGO: 1
+
 jobs:
   
   test:
@@ -29,10 +34,10 @@ jobs:
 
       - working-directory: ./src/Dotnethelp.DevTools.Websocket.Tests
         name: Test API
-        run: dotnet test --nologo --consoleLoggerParameters:ErrorsOnly --logger "trx;LogFileName=TestResults.trx" --collect:"XPlat Code Coverage" /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:ExcludeByAttribute=CompilerGenerated /p:UseSourceLink=true /p:Configuration=Release /p:BuildServer=true
+        run: dotnet test --consoleLoggerParameters:ErrorsOnly --logger "trx;LogFileName=TestResults.trx" --collect:"XPlat Code Coverage" /p:Configuration=Release
 
       - name: Test Reports
-        working-directory: ./src/DotnetHelp.DevTools.Api.Tests
+        working-directory: ./src/Dotnethelp.DevTools.Websocket.Tests
         if: ${{ always() }}
         run: |
           liquid --inputs "File=TestResults/testResults.trx;Format=Trx" --output-file TestResults/tests.md
@@ -41,11 +46,11 @@ jobs:
     
       - name: Coverage Reports
         id: coverage-reports
-        working-directory: ./src/DotnetHelp.DevTools.Api.Tests
+        working-directory: ./src/Dotnethelp.DevTools.Websocket.Tests
         run: |
-          reportgenerator "-reports:./TestResults/*/*.xml" "-targetdir:./reports/" "-reporttypes:MarkdownSummaryGithub"
-          cat ./reports/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
-          cat ./reports/SummaryGithub.md >> $GITHUB_WORKSPACE/PRSUMMARY.md
+          reportgenerator "-reports:./TestResults/*/*.xml" "-targetdir:./TestResults/" "-reporttypes:MarkdownSummaryGithub"
+          cat ./TestResults/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
+          cat ./TestResults/SummaryGithub.md >> $GITHUB_WORKSPACE/PRSUMMARY.md
   
   build:
     runs-on: ubuntu-latest
