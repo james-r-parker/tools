@@ -4,11 +4,9 @@
 
 <PageTitle>Base64</PageTitle>
 
-<h1>Weather</h1>
+<h1>Base64</h1>
 
-<p>This component demonstrates fetching data from the server.</p>
-
-@if (response == null)
+@if (_response is null)
 {
     <p>
         <em>Loading...</em>
@@ -16,14 +14,14 @@
 }
 else
 {
-    <p>@response.Response</p>
+    <p>@_response.Response</p>
 }
 
 @code {
-    private TextApiResponse? response;
+    private TextApiResponse? _response;
 
     protected override async Task OnInitializedAsync()
     {
-        response = await Http.Base64Encode(new TextApiRequest("Hello world"));
+        _response = await Http.Base64Encode(new TextApiRequest("Hello world"));
     }
 }

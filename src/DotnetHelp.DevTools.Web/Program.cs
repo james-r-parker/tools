@@ -5,11 +5,10 @@ using DotnetHelp.DevTools.Web;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
-builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services
-    .AddBlazoredLocalStorageAsSingleton();
+    .AddBlazoredLocalStorage();
 
 builder.Services
     .AddHttpClient<ApiHttpClient>(client => 
