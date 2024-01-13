@@ -20,6 +20,9 @@ builder.Services.AddAWSLambdaHosting(LambdaEventSource.HttpApi,
     });
 
 builder.Services
+    .AddCors(c => c.AddDefaultPolicy(p =>
+        p.AllowCredentials().AllowAnyHeader().AllowAnyMethod()
+            .WithOrigins("http://localhost:5250", "https://www.dotnethelp.co.uk")))
     .AddHttpClient()
     .AddHttpContextAccessor()
     .AddSingleton<IDistributedCache, DynamoDbDistributedCache>()
@@ -31,6 +34,8 @@ builder.Services
         }));
 
 var app = builder.Build();
+
+app.UseCors();
 
 app.MapGet("/health", () => "OK");
 
