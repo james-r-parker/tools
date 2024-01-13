@@ -51,7 +51,7 @@ public class DotnetHelpDevToolsApiStack : Stack
         {
             Architecture = Architecture.X86_64,
             Runtime = Runtime.PROVIDED_AL2023,
-            MemorySize = 256,
+            MemorySize = 512,
             Description = "DotnetHelp.DevTools.API",
             Handler = "bootstrap",
             Code = Code.FromAsset("../app/"),

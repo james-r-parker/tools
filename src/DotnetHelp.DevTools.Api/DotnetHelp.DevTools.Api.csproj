@@ -30,9 +30,9 @@
 
     <ItemGroup>
       <PackageReference Include="Amazon.Lambda.AspNetCoreServer.Hosting" Version="1.6.1" />
-      <PackageReference Include="AWSSDK.ApiGatewayManagementApi" Version="3.7.300.31" />
-      <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.300.31" />
-      <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.0.3" />
+      <PackageReference Include="AWSSDK.ApiGatewayManagementApi" Version="3.7.300.35" />
+      <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.300.35" />
+      <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.2.0" />
     </ItemGroup>
 
 	<ItemGroup>

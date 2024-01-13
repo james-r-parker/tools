@@ -25,9 +25,9 @@
     <ItemGroup>
         <RuntimeHostConfigurationOption Include="System.Globalization.AppLocalIcu" Value="68.2.0.9"/>
         <PackageReference Include="Amazon.Lambda.APIGatewayEvents" Version="2.7.0" />
-        <PackageReference Include="AWSSDK.CodeDeploy" Version="3.7.301.15" />
-        <PackageReference Include="AWSSDK.Lambda" Version="3.7.303.27" />
-        <PackageReference Include="Microsoft.ICU.ICU4C.Runtime" Version="68.2.0.9"/>
+        <PackageReference Include="AWSSDK.CodeDeploy" Version="3.7.301.19" />
+        <PackageReference Include="AWSSDK.Lambda" Version="3.7.303.31" />
+        <PackageReference Include="Microsoft.ICU.ICU4C.Runtime" Version="72.1.0.3" />
         <PackageReference Include="Amazon.Lambda.RuntimeSupport" Version="1.10.0"/>
         <PackageReference Include="Amazon.Lambda.Core" Version="2.2.0"/>
         <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.4.0"/>

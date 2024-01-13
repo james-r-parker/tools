@@ -14,6 +14,7 @@ public class DotnetHelpDevToolsWebStack : Stack
     internal DotnetHelpDevToolsWebStack(Construct scope, string id, Props props) : base(scope, id, props)
     {
         var s3Bucket = new Bucket(this, "WebBucket", new BucketProps());
+        var logBucket = new Bucket(this, "WebLogsBucket", new BucketProps());
 
         var cloudfront = new Distribution(this, "WebDistribution", new DistributionProps
         {
@@ -30,15 +31,19 @@ public class DotnetHelpDevToolsWebStack : Stack
             MinimumProtocolVersion = SecurityPolicyProtocol.TLS_V1_2_2021,
             PriceClass = PriceClass.PRICE_CLASS_100,
             Certificate = Certificate.FromCertificateArn(this, "Certificate", props.CertificateArn),
-            DomainNames = new string[] { props.CustomDomain }
+            DomainNames = new [] { props.CustomDomain },
+            EnableLogging = true,
+            LogBucket = logBucket,
+            LogFilePrefix = "web/",
         });
-        
+
         cloudfront.AddBehavior(
             "/api/*",
-            new HttpOrigin(Fn.Select(2, Fn.Split("/", Fn.ImportValue("DOTNETHELP:DEVTOOLS:API:URL"))), new HttpOriginProps
-            {
-                ProtocolPolicy = OriginProtocolPolicy.HTTPS_ONLY
-            }),
+            new HttpOrigin(Fn.Select(2, Fn.Split("/", Fn.ImportValue("DOTNETHELP:DEVTOOLS:API:URL"))),
+                new HttpOriginProps
+                {
+                    ProtocolPolicy = OriginProtocolPolicy.HTTPS_ONLY
+                }),
             new BehaviorOptions
             {
                 ViewerProtocolPolicy = ViewerProtocolPolicy.HTTPS_ONLY,
