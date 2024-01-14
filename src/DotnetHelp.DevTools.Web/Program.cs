@@ -15,6 +15,6 @@ builder.Services
     .AddHttpClient<ApiHttpClient>(client => 
         client.BaseAddress = new Uri("https://www.dotnethelp.co.uk"));
 
-builder.Services.AddScoped<Websocket>();
+builder.Services.AddTransient<Websocket>();
 
 await builder.Build().RunAsync();

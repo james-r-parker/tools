@@ -2,33 +2,24 @@
 
 public interface IWebsocket
 {
-    Uri Uri { get; }
     WebSocketState State { get; }
     event EventHandler<WebSocketMessage>? OnMessage;
     Task ConnectAsync(Uri url, CancellationToken cancellationToken);
     Task SendAsync(string message, CancellationToken cancellationToken);
 }
 
-public class Websocket(ILogger<Websocket> logger) : IDisposable, IWebsocket
+public class Websocket(ILogger<Websocket> logger) : IAsyncDisposable, IWebsocket
 {
     private readonly ClientWebSocket _wss = new();
     private CancellationTokenSource? _cancellationToken;
     private Task? _receiveLoopTask;
-    private Uri? _uri;
 
     public event EventHandler<WebSocketMessage>? OnMessage;
-
-    public Uri Uri => _uri ?? throw new InvalidOperationException("Websocket is not connected");
+    
     public WebSocketState State => _wss.State;
 
     public async Task ConnectAsync(Uri uri, CancellationToken cancellationToken)
     {
-        if (_wss.State == WebSocketState.Open || _wss.State == WebSocketState.Connecting)
-        {
-            return;
-        }
-
-        _uri = uri;
         _cancellationToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         await _wss.ConnectAsync(uri, cancellationToken);
         _receiveLoopTask = ReceiveLoop(_cancellationToken.Token);
@@ -98,11 +89,15 @@ public class Websocket(ILogger<Websocket> logger) : IDisposable, IWebsocket
         }
     }
 
-    public void Dispose()
+    public async ValueTask DisposeAsync()
     {
-        _cancellationToken?.Cancel();
-        _cancellationToken?.Dispose();
-        _receiveLoopTask?.Dispose();
+        if (_cancellationToken is not null)
+        {
+            await _cancellationToken.CancelAsync();
+            _cancellationToken.Dispose();
+        }
+
+        await _wss.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closing", CancellationToken.None);
         _wss.Dispose();
     }
 }
