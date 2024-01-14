@@ -1,6 +1,4 @@
-﻿using HttpRequest = DotnetHelp.DevTools.Api.Application.HttpRequest;
-
-namespace DotnetHelp.DevTools.Api.Handlers.Http;
+﻿namespace DotnetHelp.DevTools.Api.Handlers.Http;
 
 internal static class HttpRequestHandler
 {
@@ -43,10 +41,11 @@ internal static class HttpRequestHandler
             body = await reader.ReadToEndAsync();
         }
 
-        await db.Save(new HttpRequest(
+        await db.Save(new BucketHttpRequest(
             bucket,
             DateTimeOffset.UtcNow,
             DateTimeOffset.UtcNow.AddDays(1),
+            http.HttpContext.Connection.RemoteIpAddress?.ToString(),
             headers,
             query,
             body));
@@ -58,7 +57,7 @@ internal static class HttpRequestHandler
 
     internal static async Task<IResult> List(
         [FromRoute] string bucket,
-        [FromQuery] int from,
+        [FromQuery] long from,
         [FromServices] IHttpRequestRepository db)
     {
         if (string.IsNullOrWhiteSpace(bucket))
@@ -71,7 +70,7 @@ internal static class HttpRequestHandler
             return Results.BadRequest();
         }
 
-        IReadOnlyCollection<HttpRequest> requests = await db.List(bucket, from);
+        IReadOnlyCollection<BucketHttpRequest> requests = await db.List(bucket, from);
 
         return Results.Ok(requests);
     }

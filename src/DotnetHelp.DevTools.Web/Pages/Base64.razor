@@ -1,6 +1,7 @@
 ﻿@page "/base64"
 @using DotnetHelp.DevTools.Shared
 @inject ApiHttpClient Http
+@implements IDisposable
 
 <PageTitle>Base64</PageTitle>
 
@@ -19,9 +20,15 @@ else
 
 @code {
     private TextApiResponse? _response;
+    readonly CancellationTokenSource _disposalTokenSource = new();
 
     protected override async Task OnInitializedAsync()
     {
-        _response = await Http.Base64Encode(new TextApiRequest("Hello world"));
+        _response = await Http.Base64Encode(new TextApiRequest("Hello world"), _disposalTokenSource.Token);
+    }
+
+    public void Dispose()
+    {
+        _disposalTokenSource.Cancel();
     }
 }

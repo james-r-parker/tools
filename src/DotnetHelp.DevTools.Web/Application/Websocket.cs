@@ -54,7 +54,7 @@ public class Websocket(ILogger<Websocket> logger) : IDisposable, IWebsocket
     private async Task ReceiveLoop(CancellationToken cancellationToken)
     {
         var buffer = new ArraySegment<byte>(new byte[4096]);
-        while (!cancellationToken.IsCancellationRequested && 
+        while (!cancellationToken.IsCancellationRequested &&
                _wss.State == WebSocketState.Open)
         {
             try
@@ -69,31 +69,31 @@ public class Websocket(ILogger<Websocket> logger) : IDisposable, IWebsocket
                     endOfMessage = received.EndOfMessage;
                 } while (!endOfMessage);
 
-                if(bytes.Length == 0)
+                if (bytes.Length == 0)
                 {
                     continue;
                 }
-                
+
                 string receivedAsText = Encoding.UTF8.GetString(bytes.ToArray());
 
                 if (string.IsNullOrWhiteSpace(receivedAsText))
                 {
                     continue;
                 }
-                
-                logger.LogInformation("Received: {Message}", receivedAsText);
+
+                logger.ReceivedMessage(receivedAsText);
                 WebSocketMessage? message = JsonSerializer.Deserialize<WebSocketMessage>(receivedAsText);
 
                 if (message is null)
                 {
                     continue;
                 }
-                
+
                 OnMessage?.Invoke(this, message);
             }
             catch (Exception e)
             {
-                logger.LogError(e, "Error receiving message");
+                logger.ErrorReceivingMessage(e);
             }
         }
     }
@@ -105,4 +105,13 @@ public class Websocket(ILogger<Websocket> logger) : IDisposable, IWebsocket
         _receiveLoopTask?.Dispose();
         _wss.Dispose();
     }
+}
+
+internal static partial class WebsocketLogger
+{
+    [LoggerMessage(Level = LogLevel.Information, Message = "Received: {Message}")]
+    public static partial void ReceivedMessage(this ILogger logger, string message);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "Error receiving message")]
+    public static partial void ErrorReceivingMessage(this ILogger logger, Exception exception);
 }

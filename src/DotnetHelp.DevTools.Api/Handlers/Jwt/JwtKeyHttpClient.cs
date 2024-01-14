@@ -3,14 +3,14 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace DotnetHelp.DevTools.Api.Handlers.Jwt;
 
-internal abstract class JwtKeyHttpClient(HttpClient httpClient, IDistributedCache cache)
+internal class JwtKeyHttpClient(HttpClient httpClient, IDistributedCache cache)
 {
     public async Task<RsaSecurityKey?> GetRsaSecurityKey(
         JwtSecurityToken token,
         string jwksUrl,
         CancellationToken cancellationToken = default)
     {
-        var cacheKey = $"{jwksUrl}:{token.Header.Kid}";
+        var cacheKey = $"{jwksUrl}";
         byte[]? cached = await cache.GetAsync(cacheKey, cancellationToken);
         if (cached is not null)
         {

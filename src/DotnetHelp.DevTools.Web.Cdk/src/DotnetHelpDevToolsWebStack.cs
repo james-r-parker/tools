@@ -96,7 +96,12 @@ public class DotnetHelpDevToolsWebStack : Stack
                     new OriginRequestPolicyProps
                     {
                         CookieBehavior = OriginRequestCookieBehavior.None(),
-                        HeaderBehavior = OriginRequestHeaderBehavior.All(),
+                        HeaderBehavior = OriginRequestHeaderBehavior.AllowList(
+                            "Origin",
+                            "Access-Control-Request-Headers",
+                            "Access-Control-Request-Method",
+                            "Accept",
+                            "User-Agent"),
                         QueryStringBehavior = OriginRequestQueryStringBehavior.All(),
                         Comment = "DotnetHelp Api Origin Request Policy"
                     }),

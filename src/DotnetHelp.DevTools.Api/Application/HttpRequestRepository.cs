@@ -2,13 +2,13 @@
 
 public interface IHttpRequestRepository
 {
-    Task Save(HttpRequest request);
-    Task<IReadOnlyCollection<HttpRequest>> List(string bucket, int from);
+    Task Save(BucketHttpRequest request);
+    Task<IReadOnlyCollection<BucketHttpRequest>> List(string bucket, long from);
 }
 
 public class HttpRequestRepository(IAmazonDynamoDB db) : IHttpRequestRepository
 {
-    public Task Save(HttpRequest request)
+    public Task Save(BucketHttpRequest request)
     {
         var headers = new AttributeValue();
         foreach (var header in request.Headers)
@@ -31,6 +31,16 @@ public class HttpRequestRepository(IAmazonDynamoDB db) : IHttpRequestRepository
             query.NULL = true;
         }
 
+        var ip = new AttributeValue();
+        if (!string.IsNullOrWhiteSpace(request.IpAddress))
+        {
+            ip.S = request.IpAddress;
+        }
+        else
+        {
+            ip.NULL = true;
+        }
+
         return db.PutItemAsync(new PutItemRequest
         {
             TableName = Constants.HttpRequestTableName,
@@ -39,6 +49,7 @@ public class HttpRequestRepository(IAmazonDynamoDB db) : IHttpRequestRepository
                 { "bucket", new AttributeValue(request.Bucket) },
                 { "created", new AttributeValue { N = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString() } },
                 { "ttl", new AttributeValue { N = DateTimeOffset.UtcNow.AddDays(1).ToUnixTimeSeconds().ToString() } },
+                { "ip", ip },
                 { "headers", headers },
                 { "query", query },
                 { "body", new AttributeValue(request.Body) }
@@ -46,7 +57,7 @@ public class HttpRequestRepository(IAmazonDynamoDB db) : IHttpRequestRepository
         });
     }
 
-    public async Task<IReadOnlyCollection<HttpRequest>> List(string bucket, int from)
+    public async Task<IReadOnlyCollection<BucketHttpRequest>> List(string bucket, long from)
     {
         QueryResponse response = await db.QueryAsync(new QueryRequest
         {
@@ -64,21 +75,14 @@ public class HttpRequestRepository(IAmazonDynamoDB db) : IHttpRequestRepository
             },
         });
 
-        return response.Items.Select(x => new HttpRequest(
+        return response.Items.Select(x => new BucketHttpRequest(
                 x["bucket"].S,
                 DateTimeOffset.FromUnixTimeSeconds(long.Parse(x["created"].N)),
                 DateTimeOffset.FromUnixTimeSeconds(long.Parse(x["ttl"].N)),
+                x["ip"].NULL ? null : x["ip"].S,
                 x["headers"].M.ToDictionary(y => y.Key, y => y.Value.S),
                 x["query"].M.ToDictionary(y => y.Key, y => y.Value.S),
                 x["body"].S))
             .ToFrozenSet();
     }
 }
-
-public record HttpRequest(
-    string Bucket,
-    DateTimeOffset Created,
-    DateTimeOffset Ttl,
-    IReadOnlyDictionary<string, string> Headers,
-    IReadOnlyDictionary<string, string> Query,
-    string Body);

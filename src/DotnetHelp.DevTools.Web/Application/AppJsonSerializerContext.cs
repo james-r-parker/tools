@@ -1,9 +1,7 @@
-﻿using Amazon.Lambda.APIGatewayEvents;
+﻿using System.Text.Json.Serialization;
 
-namespace DotnetHelp.DevTools.Api.Application;
+namespace DotnetHelp.DevTools.Web.Application;
 
-[JsonSerializable(typeof(APIGatewayHttpApiV2ProxyResponse))]
-[JsonSerializable(typeof(APIGatewayHttpApiV2ProxyRequest))]
 [JsonSerializable(typeof(TextApiResponse))]
 [JsonSerializable(typeof(TextApiRequest))]
 [JsonSerializable(typeof(HmacApiRequest))]
