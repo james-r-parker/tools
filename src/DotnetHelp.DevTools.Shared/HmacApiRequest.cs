@@ -1,5 +1,3 @@
 ﻿namespace DotnetHelp.DevTools.Shared;
 
-public record HmacApiRequest(string Key, string Message)
-{
-}
+public record HmacApiRequest(string Key, string Message);

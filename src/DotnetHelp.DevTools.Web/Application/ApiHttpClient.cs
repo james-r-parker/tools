@@ -10,8 +10,7 @@ public class ApiHttpClient(HttpClient httpClient)
             await httpClient.PostAsJsonAsync("/api/base64/encode", request, cancellationToken);
         response.EnsureSuccessStatusCode();
 
-        return await response.Content.ReadFromJsonAsync(
-            AppJsonSerializerContext.Default.TextApiResponse, cancellationToken);
+        return await response.Content.ReadFromJsonAsync<TextApiResponse>(cancellationToken);
     }
 
     public async Task<IReadOnlyCollection<BucketHttpRequest>> GetHttpRequests(string bucket, long from,
@@ -21,7 +20,6 @@ public class ApiHttpClient(HttpClient httpClient)
             await httpClient.GetAsync($"/api/http/{bucket}?from={from}", cancellationToken);
         response.EnsureSuccessStatusCode();
 
-        return await response.Content.ReadFromJsonAsync(
-            AppJsonSerializerContext.Default.IReadOnlyCollectionBucketHttpRequest, cancellationToken);
+        return await response.Content.ReadFromJsonAsync<IReadOnlyCollection<BucketHttpRequest>>(cancellationToken);
     }
 }

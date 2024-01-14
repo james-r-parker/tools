@@ -1,8 +1,6 @@
 ﻿namespace DotnetHelp.DevTools.Shared;
 
-public record JwtApiRequest(string Token, string? Secret, string? JwksUrl)
-{
-}
+public record JwtApiRequest(string Token, string? Secret, string? JwksUrl);
 
 public record JwtApiResponse()
 {

@@ -1,0 +1,42 @@
+﻿<div class="box">
+	@if (Request is null)
+	{
+		<h3>Unknown</h3>
+	}
+	else
+	{
+		<span class="header">Timestamp : @Request.Created.ToString("yyyy-MM-dd HH:mm:ss")</span>
+
+		<span class="sub-header">IP : @Request.IpAddress</span>
+
+		<span class="sub-header">Headers</span>
+		@foreach (var header in Request.Headers)
+		{
+			<span class="detail">
+				<span class="key">@header.Key</span>:
+				<span class="value">@header.Value</span>
+			</span>
+		}
+
+		@if (Request.Query.Count > 0)
+		{
+			<span class="sub-header">Query String</span>
+			@foreach (var query in Request.Query)
+			{
+				<span class="detail">
+					<span class="key">@query.Key</span>:
+					<span class="value">@query.Value</span>
+				</span>
+			}
+		}
+
+		@if (Request.Body is not null)
+		{
+			<pre class="body">@Request.Body</pre>
+		}
+	}
+</div>
+@code {
+	[Parameter]
+	public BucketHttpRequest? Request { get; set; }
+}

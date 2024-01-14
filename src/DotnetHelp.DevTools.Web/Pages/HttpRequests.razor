@@ -3,63 +3,64 @@
 @inject Websocket Wss
 @inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 @inject NavigationManager NavManager
+@implements IDisposable
 
 <h3>Http Requests</h3>
 <h3>State: @Wss.State</h3>
 <h4>Bucket: @_bucket</h4>
 
-@foreach (BucketHttpRequest request in _requests)
+
+@foreach (BucketHttpRequest request in _requests.OrderByDescending(x => x.Created))
 {
-    <pre>@request</pre>
+	<HttpRequest Request="@request" />
 }
 
 @code {
-    const string Key = "http_request_bucket";
-    string _bucket = string.Empty;
-    readonly List<WebSocketMessage> _messages = new();
-    readonly CancellationTokenSource _disposalTokenSource = new();
-    readonly List<BucketHttpRequest> _requests = new();
+	const string Key = "http_request_bucket";
+	string _bucket = string.Empty;
+	readonly CancellationTokenSource _disposalTokenSource = new();
+	readonly List<BucketHttpRequest> _requests = new();
 
-    protected override async Task OnInitializedAsync()
-    {
-        var uri = NavManager.ToAbsoluteUri(NavManager.Uri);
-        var queryStrings = QueryHelpers.ParseQuery(uri.Query);
-        if (queryStrings.TryGetValue("bucket", out StringValues bucket))
-        {
-            _bucket = bucket.ToString();
-        }
-        else
-        {
-            _bucket = await LocalStorage.GetItemAsync<string>(Key);
-            if (string.IsNullOrWhiteSpace(_bucket))
-            {
-                _bucket = Guid.NewGuid().ToString("N");
-                await LocalStorage.SetItemAsync(Key, _bucket);
-            }
-        }
+	protected override async Task OnInitializedAsync()
+	{
+		var uri = NavManager.ToAbsoluteUri(NavManager.Uri);
+		var queryStrings = QueryHelpers.ParseQuery(uri.Query);
+		if (queryStrings.TryGetValue("bucket", out StringValues bucket))
+		{
+			_bucket = bucket.ToString();
+		}
+		else
+		{
+			_bucket = await LocalStorage.GetItemAsync<string>(Key);
+			if (string.IsNullOrWhiteSpace(_bucket))
+			{
+				_bucket = Guid.NewGuid().ToString("N");
+				await LocalStorage.SetItemAsync(Key, _bucket);
+			}
+		}
 
-        await Wss.ConnectAsync(new Uri($"wss://wss.dotnethelp.co.uk?bucket={_bucket}"), _disposalTokenSource.Token);
-        Wss.OnMessage += OnMessage;
-        _ = GetList();
-    }
+		await Wss.ConnectAsync(new Uri($"wss://wss.dotnethelp.co.uk?bucket={_bucket}"), _disposalTokenSource.Token);
+		Wss.OnMessage += OnMessage;
+		_ = GetList();
+	}
 
-    private void OnMessage(object? sender, WebSocketMessage? message)
-    {
-        if (message?.Action == "HTTP_REQUEST")
-        {
-            _ = GetList();
-        }
-    }
+	private void OnMessage(object? sender, WebSocketMessage? message)
+	{
+		if (message?.Action == "HTTP_REQUEST")
+		{
+			_ = GetList();
+		}
+	}
 
-    private async Task GetList()
-    {
-        var from = _requests.Count == 0 ? 0 : _requests.Max(x => x.Created.ToUnixTimeSeconds());
-        _requests.AddRange(await ApiClient.GetHttpRequests(_bucket, from, _disposalTokenSource.Token));
-        StateHasChanged();
-    }
+	private async Task GetList()
+	{
+		long from = _requests.Count == 0 ? 0 : _requests.Max(x => x.Created).ToUnixTimeSeconds();
+		_requests.AddRange(await ApiClient.GetHttpRequests(_bucket, from, _disposalTokenSource.Token));
+		StateHasChanged();
+	}
 
-    public void Dispose()
-    {
-        _disposalTokenSource.Cancel();
-    }
+	public void Dispose()
+	{
+		Wss.OnMessage -= OnMessage;
+	}
 }
