@@ -2,6 +2,7 @@ using DotnetHelp.DevTools.Api.Handlers.Base64;
 using DotnetHelp.DevTools.Api.Handlers.Hmac;
 using DotnetHelp.DevTools.Api.Handlers.Http;
 using DotnetHelp.DevTools.Api.Handlers.Jwt;
+using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateSlimBuilder(args);
 
@@ -12,6 +13,13 @@ builder.Logging
 builder.Services.ConfigureHttpJsonOptions(options =>
 {
     options.SerializerOptions.TypeInfoResolverChain.Insert(0, AppJsonSerializerContext.Default);
+});
+
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders =
+        ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.ForwardLimit = 3;
 });
 
 builder.Services.AddAWSLambdaHosting(LambdaEventSource.HttpApi,
@@ -53,6 +61,7 @@ builder.Services
 WebApplication app = builder.Build();
 
 app
+    .UseForwardedHeaders()    
     .UseCors()
     .UseHealthChecks("/_health");
 

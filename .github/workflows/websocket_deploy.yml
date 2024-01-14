@@ -34,7 +34,7 @@ jobs:
 
       - working-directory: ./src/Dotnethelp.DevTools.Websocket.Tests
         name: Test API
-        run: dotnet test --consoleLoggerParameters:ErrorsOnly --logger "trx;LogFileName=TestResults.trx" --collect:"XPlat Code Coverage"
+        run: dotnet test --consoleLoggerParameters:ErrorsOnly --logger "trx;LogFileName=TestResults.trx" --collect:"XPlat Code Coverage" /p:SkipAutoProps=true /p:ExcludeByAttribute=CompilerGenerated
 
       - name: Test Reports
         working-directory: ./src/Dotnethelp.DevTools.Websocket.Tests

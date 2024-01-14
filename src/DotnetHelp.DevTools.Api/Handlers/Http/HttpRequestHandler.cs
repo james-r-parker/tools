@@ -65,7 +65,7 @@ internal static class HttpRequestHandler
             return Results.BadRequest();
         }
 
-        if (from <= 0)
+        if (from < 0)
         {
             return Results.BadRequest();
         }
