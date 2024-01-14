@@ -1,79 +1,91 @@
-﻿using Microsoft.AspNetCore.OutputCaching;
-
-namespace DotnetHelp.DevTools.Api.Handlers.Http;
+﻿namespace DotnetHelp.DevTools.Api.Handlers.Http;
 
 internal static class HttpRequestHandler
 {
-	internal static async Task<IResult> New(
-		[FromRoute] string bucket,
-		[FromServices] IHttpRequestRepository db,
-		[FromServices] IWebsocketClient wss,
-		[FromServices] IHttpContextAccessor http)
-	{
-		if (string.IsNullOrWhiteSpace(bucket))
-		{
-			return Results.BadRequest();
-		}
+    static readonly string[] IgnoreHeaders =
+    [
+        "x-amzn-tls-version",
+        "x-forwarded-proto",
+        "x-forwarded-port",
+        "x-amzn-tls-cipher-suite",
+        "host"
+    ];
 
-		if (http?.HttpContext is null)
-		{
-			return Results.BadRequest();
-		}
+    internal static async Task<IResult> New(
+        [FromRoute] string bucket,
+        [FromServices] IHttpRequestRepository db,
+        [FromServices] IWebsocketClient wss,
+        [FromServices] IHttpContextAccessor http)
+    {
+        if (string.IsNullOrWhiteSpace(bucket))
+        {
+            return Results.BadRequest();
+        }
 
-		var headers = new Dictionary<string, string>();
-		foreach (var header in http.HttpContext.Request.Headers)
-		{
-			headers.TryAdd(header.Key, header.Value.ToString());
-		}
+        if (http?.HttpContext is null)
+        {
+            return Results.BadRequest();
+        }
 
-		var query = new Dictionary<string, string>();
-		if (http.HttpContext.Request.Query.Any())
-		{
-			foreach (var q in http.HttpContext.Request.Query)
-			{
-				query.TryAdd(q.Key, q.Value.ToString());
-			}
-		}
+        var headers = new Dictionary<string, string>();
+        foreach (var header in http.HttpContext.Request.Headers)
+        {
+            if(IgnoreHeaders.Contains(header.Key, StringComparer.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+            
+            headers.TryAdd(header.Key, header.Value.ToString());
+        }
 
-		string body;
+        var query = new Dictionary<string, string>();
+        if (http.HttpContext.Request.Query.Any())
+        {
+            foreach (var q in http.HttpContext.Request.Query)
+            {
+                query.TryAdd(q.Key, q.Value.ToString());
+            }
+        }
 
-		using (StreamReader reader
-			   = new StreamReader(http.HttpContext.Request.Body, Encoding.UTF8, true, 1024, true))
-		{
-			body = await reader.ReadToEndAsync();
-		}
+        string body;
 
-		await db.Save(new BucketHttpRequest(
-			bucket,
-			DateTimeOffset.UtcNow,
-			DateTimeOffset.UtcNow.AddDays(1),
-			http.HttpContext.Connection.RemoteIpAddress?.ToString(),
-			headers,
-			query,
-			body));
+        using (var reader
+               = new StreamReader(http.HttpContext.Request.Body, Encoding.UTF8, true, 1024, true))
+        {
+            body = await reader.ReadToEndAsync();
+        }
 
-		await wss.SendMessage(new WebSocketMessage("HTTP_REQUEST", bucket));
+        await db.Save(new BucketHttpRequest(
+            bucket,
+            DateTimeOffset.UtcNow,
+            DateTimeOffset.UtcNow.AddDays(1),
+            http.HttpContext.Connection.RemoteIpAddress?.ToString(),
+            headers,
+            query,
+            body));
 
-		return Results.Ok();
-	}
+        await wss.SendMessage(new WebSocketMessage("HTTP_REQUEST", bucket));
 
-	internal static async Task<IResult> List(
-		[FromRoute] string bucket,
-		[FromQuery] long from,
-		[FromServices] IHttpRequestRepository db)
-	{
-		if (string.IsNullOrWhiteSpace(bucket))
-		{
-			return Results.BadRequest();
-		}
+        return Results.Ok();
+    }
 
-		if (from < 0)
-		{
-			return Results.BadRequest();
-		}
+    internal static async Task<IResult> List(
+        [FromRoute] string bucket,
+        [FromQuery] long from,
+        [FromServices] IHttpRequestRepository db)
+    {
+        if (string.IsNullOrWhiteSpace(bucket))
+        {
+            return Results.BadRequest();
+        }
 
-		IReadOnlyCollection<BucketHttpRequest> requests = await db.List(bucket, from);
+        if (from < 0)
+        {
+            return Results.BadRequest();
+        }
 
-		return Results.Ok(requests);
-	}
+        IReadOnlyCollection<BucketHttpRequest> requests = await db.List(bucket, from);
+
+        return Results.Ok(requests);
+    }
 }
