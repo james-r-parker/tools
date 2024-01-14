@@ -18,7 +18,7 @@ public class HttpRequestRepository(IAmazonDynamoDB db) : IHttpRequestRepository
         }
 
         var query = new AttributeValue();
-        if (request.Query.Count == 0)
+        if (request.Query.Count > 0)
         {
             foreach (var q in request.Query)
             {

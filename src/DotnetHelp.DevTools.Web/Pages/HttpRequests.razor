@@ -1,13 +1,13 @@
 ﻿@page "/requests"
 @inject ApiHttpClient ApiClient
+@inject Websocket Wss
 @inject Blazored.LocalStorage.ILocalStorageService LocalStorage
-@using System.Net.WebSockets
-@using System.Text
-@implements IDisposable
+@inject NavigationManager NavManager
 
 <h3>Http Requests</h3>
-<h3>State: @_webSocket.State</h3>
+<h3>State: @Wss.State</h3>
 <h4>Bucket: @_bucket</h4>
+
 @foreach (var message in _messages)
 {
     <pre>@message</pre>
@@ -16,31 +16,36 @@
 @code {
     const string Key = "http_request_bucket";
     string _bucket = string.Empty;
+    readonly List<WebSocketMessage> _messages = new();
     readonly CancellationTokenSource _disposalTokenSource = new();
-    readonly ClientWebSocket _webSocket = new();
-    readonly ICollection<string> _messages = new List<string>();
 
     protected override async Task OnInitializedAsync()
     {
-        _bucket = await LocalStorage.GetItemAsync<string>(Key);
-        if (string.IsNullOrWhiteSpace(_bucket))
+        var uri = NavManager.ToAbsoluteUri(NavManager.Uri);
+        var queryStrings = QueryHelpers.ParseQuery(uri.Query);
+        if (queryStrings.TryGetValue("bucket", out StringValues bucket))
         {
-            _bucket = Guid.NewGuid().ToString("N");
-            await LocalStorage.SetItemAsync(Key, _bucket);
+            _bucket = bucket.ToString();
+        }
+        else
+        {
+            _bucket = await LocalStorage.GetItemAsync<string>(Key);
+            if (string.IsNullOrWhiteSpace(_bucket))
+            {
+                _bucket = Guid.NewGuid().ToString("N");
+                await LocalStorage.SetItemAsync(Key, _bucket);
+            }
         }
 
-        await _webSocket.ConnectAsync(new Uri($"wss://wss.dotnethelp.co.uk?bucket={_bucket}"), _disposalTokenSource.Token);
-        _ = ReceiveLoop();
+        await Wss.ConnectAsync(new Uri($"wss://wss.dotnethelp.co.uk?bucket={_bucket}"), _disposalTokenSource.Token);
+        Wss.OnMessage += OnMessage;
     }
 
-    private async Task ReceiveLoop()
+    private void OnMessage(object? sender, WebSocketMessage? message)
     {
-        var buffer = new ArraySegment<byte>(new byte[1024]);
-        while (!_disposalTokenSource.IsCancellationRequested)
+        if (message?.Action == "HTTP_REQUEST")
         {
-            var received = await _webSocket.ReceiveAsync(buffer, _disposalTokenSource.Token);
-            var receivedAsText = Encoding.UTF8.GetString(buffer.Array, 0, received.Count);
-            _messages.Add(receivedAsText);
+            _messages.Add(message);
             StateHasChanged();
         }
     }
@@ -48,7 +53,5 @@
     public void Dispose()
     {
         _disposalTokenSource.Cancel();
-        _ = _webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Bye", CancellationToken.None);
     }
-
 }

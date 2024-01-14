@@ -51,7 +51,7 @@ internal static class HttpRequestHandler
             query,
             body));
 
-        await wss.SendMessage(new NewHttpRequestWssMessage("HTTP_REQUEST", bucket));
+        await wss.SendMessage(new WebSocketMessage("HTTP_REQUEST", bucket));
 
         return Results.Ok();
     }

@@ -96,7 +96,7 @@ public class DotnetHelpDevToolsWebStack : Stack
                     new OriginRequestPolicyProps
                     {
                         CookieBehavior = OriginRequestCookieBehavior.None(),
-                        HeaderBehavior = OriginRequestHeaderBehavior.AllowList("Origin", "Accept"),
+                        HeaderBehavior = OriginRequestHeaderBehavior.All(),
                         QueryStringBehavior = OriginRequestQueryStringBehavior.All(),
                         Comment = "DotnetHelp Api Origin Request Policy"
                     }),
@@ -108,6 +108,9 @@ public class DotnetHelpDevToolsWebStack : Stack
                     QueryStringBehavior = CacheQueryStringBehavior.All(),
                     EnableAcceptEncodingGzip = true,
                     EnableAcceptEncodingBrotli = true,
+                    MinTtl = Duration.Seconds(0),
+                    MaxTtl = Duration.Seconds(30),
+                    DefaultTtl = Duration.Seconds(0),
                 })
             });
 

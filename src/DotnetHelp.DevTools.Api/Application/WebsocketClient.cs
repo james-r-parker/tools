@@ -2,13 +2,13 @@
 
 public interface IWebsocketClient
 {
-    Task SendMessage(NewHttpRequestWssMessage request);
+    Task SendMessage(WebSocketMessage request);
 }
 
 public class WebsocketClient(IAmazonApiGatewayManagementApi wss, IAmazonDynamoDB db, ILogger<WebsocketClient> logger)
     : IWebsocketClient
 {
-    public async Task SendMessage(NewHttpRequestWssMessage request)
+    public async Task SendMessage(WebSocketMessage request)
     {
         QueryResponse? connections = await db.QueryAsync(new QueryRequest
         {
@@ -26,7 +26,7 @@ public class WebsocketClient(IAmazonApiGatewayManagementApi wss, IAmazonDynamoDB
         });
 
         string payload =
-            JsonSerializer.Serialize(request, WebsocketJsonSerializerContext.Default.NewHttpRequestWssMessage);
+            JsonSerializer.Serialize(request, WebsocketJsonSerializerContext.Default.WebSocketMessage);
 
         foreach (var connection in connections.Items)
         {
@@ -52,9 +52,9 @@ internal static partial class WebsocketClientLogger
     public static partial void SendMessage(this ILogger<WebsocketClient> logger, Exception ex, string connectionId);
 }
 
-public record NewHttpRequestWssMessage(string Action, string Bucket, string? Payload = null);
 
-[JsonSerializable(typeof(NewHttpRequestWssMessage))]
+
+[JsonSerializable(typeof(WebSocketMessage))]
 internal partial class WebsocketJsonSerializerContext : JsonSerializerContext
 {
 }
