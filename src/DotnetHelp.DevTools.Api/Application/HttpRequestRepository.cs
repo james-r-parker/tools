@@ -73,6 +73,8 @@ public class HttpRequestRepository(IAmazonDynamoDB db) : IHttpRequestRepository
                 { "#b", "bucket" },
                 { "#c", "created" }
             },
+            ScanIndexForward = false,
+            Limit = 25,
         });
 
         return response.Items.Select(x => new BucketHttpRequest(
