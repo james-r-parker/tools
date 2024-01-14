@@ -1,34 +1,42 @@
 ﻿@page "/base64"
 @using DotnetHelp.DevTools.Shared
 @inject ApiHttpClient Http
-@implements IDisposable
+@implements IAsyncDisposable
 
 <PageTitle>Base64</PageTitle>
 
 <h1>Base64</h1>
 
-@if (_response is null)
-{
-    <p>
-        <em>Loading...</em>
-    </p>
-}
-else
-{
-    <p>@_response.Response</p>
-}
+<div class="mb-3">
+	<label for="txtInput">Input</label>
+	<InputTextArea id="txtInput" @bind-Value="_request" class="form-control" />
+</div>
+<div class="mb-3">
+	<button @onclick="OnClick" type="button" class="btn btn-primary">Encode</button>
+</div>
+<pre>@_response?.Response</pre>
 
 @code {
-    private TextApiResponse? _response;
-    readonly CancellationTokenSource _disposalTokenSource = new();
+	private string? _request;
+	private TextApiResponse? _response;
+	readonly CancellationTokenSource _disposalTokenSource = new();
 
-    protected override async Task OnInitializedAsync()
-    {
-        _response = await Http.Base64Encode(new TextApiRequest("Hello world"), _disposalTokenSource.Token);
-    }
+	protected override Task OnInitializedAsync()
+	{
+		return Task.CompletedTask;
+	}
 
-    public void Dispose()
-    {
-        _disposalTokenSource.Cancel();
-    }
+	public async ValueTask DisposeAsync()
+	{
+		await _disposalTokenSource.CancelAsync();
+	}
+
+	private async Task OnClick()
+	{
+		if (!string.IsNullOrWhiteSpace(_request))
+		{
+			_response = await Http.Base64Encode(new TextApiRequest(_request), _disposalTokenSource.Token);
+			StateHasChanged();
+		}
+	}
 }

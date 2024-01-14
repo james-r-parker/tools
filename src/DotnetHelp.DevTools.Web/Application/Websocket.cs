@@ -2,111 +2,115 @@
 
 public interface IWebsocket
 {
-    WebSocketState State { get; }
-    event EventHandler<WebSocketMessage>? OnMessage;
-    Task ConnectAsync(Uri url, CancellationToken cancellationToken);
-    Task SendAsync(string message, CancellationToken cancellationToken);
+	WebSocketState State { get; }
+	event EventHandler<WebSocketMessage>? OnMessage;
+	Task ConnectAsync(Uri url, CancellationToken cancellationToken);
+	Task SendAsync(string message, CancellationToken cancellationToken);
 }
 
 public class Websocket(ILogger<Websocket> logger) : IAsyncDisposable, IWebsocket
 {
-    private readonly ClientWebSocket _wss = new();
-    private CancellationTokenSource? _cancellationToken;
-    private Task? _receiveLoopTask;
+	private readonly ClientWebSocket _wss = new();
+	private CancellationTokenSource? _cancellationToken;
+	private Task? _receiveLoopTask;
 
-    public event EventHandler<WebSocketMessage>? OnMessage;
-    
-    public WebSocketState State => _wss.State;
+	public event EventHandler<WebSocketMessage>? OnMessage;
 
-    public async Task ConnectAsync(Uri uri, CancellationToken cancellationToken)
-    {
-        _cancellationToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-        await _wss.ConnectAsync(uri, cancellationToken);
-        _receiveLoopTask = ReceiveLoop(_cancellationToken.Token);
-    }
+	public WebSocketState State => _wss.State;
 
-    public async Task SendAsync(string message, CancellationToken cancellationToken)
-    {
-        if (_wss.State != WebSocketState.Open)
-        {
-            throw new InvalidOperationException("Websocket is not open");
-        }
+	public async Task ConnectAsync(Uri uri, CancellationToken cancellationToken)
+	{
+		_cancellationToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+		await _wss.ConnectAsync(uri, cancellationToken);
+		_receiveLoopTask = ReceiveLoop(_cancellationToken.Token);
+	}
 
-        byte[] bytes = Encoding.UTF8.GetBytes(message);
-        var buffer = new ArraySegment<byte>(new byte[4096]);
-        for (var i = 0; i < bytes.Length; i += buffer.Count)
-        {
-            int count = Math.Min(buffer.Count, bytes.Length - i);
-            Buffer.BlockCopy(bytes, i, buffer.Array!, 0, count);
-            await _wss.SendAsync(buffer, WebSocketMessageType.Text, i + count >= bytes.Length, cancellationToken);
-        }
-    }
+	public async Task SendAsync(string message, CancellationToken cancellationToken)
+	{
+		if (_wss.State != WebSocketState.Open)
+		{
+			throw new InvalidOperationException("Websocket is not open");
+		}
 
-    private async Task ReceiveLoop(CancellationToken cancellationToken)
-    {
-        var buffer = new ArraySegment<byte>(new byte[4096]);
-        while (!cancellationToken.IsCancellationRequested &&
-               _wss.State == WebSocketState.Open)
-        {
-            try
-            {
-                MemoryStream bytes = new();
-                bool endOfMessage;
+		byte[] bytes = Encoding.UTF8.GetBytes(message);
+		var buffer = new ArraySegment<byte>(new byte[4096]);
+		for (var i = 0; i < bytes.Length; i += buffer.Count)
+		{
+			int count = Math.Min(buffer.Count, bytes.Length - i);
+			Buffer.BlockCopy(bytes, i, buffer.Array!, 0, count);
+			await _wss.SendAsync(buffer, WebSocketMessageType.Text, i + count >= bytes.Length, cancellationToken);
+		}
+	}
 
-                do
-                {
-                    var received = await _wss.ReceiveAsync(buffer, cancellationToken);
-                    bytes.Write(buffer.Array!, 0, received.Count);
-                    endOfMessage = received.EndOfMessage;
-                } while (!endOfMessage);
+	private async Task ReceiveLoop(CancellationToken cancellationToken)
+	{
+		var buffer = new ArraySegment<byte>(new byte[4096]);
+		while (!cancellationToken.IsCancellationRequested &&
+			   _wss.State == WebSocketState.Open)
+		{
+			try
+			{
+				MemoryStream bytes = new();
+				bool endOfMessage;
 
-                if (bytes.Length == 0)
-                {
-                    continue;
-                }
+				do
+				{
+					var received = await _wss.ReceiveAsync(buffer, cancellationToken);
+					bytes.Write(buffer.Array!, 0, received.Count);
+					endOfMessage = received.EndOfMessage;
+				} while (!endOfMessage);
 
-                string receivedAsText = Encoding.UTF8.GetString(bytes.ToArray());
+				if (bytes.Length == 0)
+				{
+					continue;
+				}
 
-                if (string.IsNullOrWhiteSpace(receivedAsText))
-                {
-                    continue;
-                }
+				string receivedAsText = Encoding.UTF8.GetString(bytes.ToArray());
 
-                logger.ReceivedMessage(receivedAsText);
-                WebSocketMessage? message = JsonSerializer.Deserialize<WebSocketMessage>(receivedAsText);
+				if (string.IsNullOrWhiteSpace(receivedAsText))
+				{
+					continue;
+				}
 
-                if (message is null)
-                {
-                    continue;
-                }
+				logger.ReceivedMessage(receivedAsText);
+				WebSocketMessage? message = JsonSerializer.Deserialize<WebSocketMessage>(receivedAsText);
 
-                OnMessage?.Invoke(this, message);
-            }
-            catch (Exception e)
-            {
-                logger.ErrorReceivingMessage(e);
-            }
-        }
-    }
+				if (message is null)
+				{
+					continue;
+				}
 
-    public async ValueTask DisposeAsync()
-    {
-        if (_cancellationToken is not null)
-        {
-            await _cancellationToken.CancelAsync();
-            _cancellationToken.Dispose();
-        }
+				OnMessage?.Invoke(this, message);
+			}
+			catch (OperationCanceledException)
+			{
+				// Ignore
+			}
+			catch (Exception e)
+			{
+				logger.ErrorReceivingMessage(e);
+			}
+		}
+	}
 
-        await _wss.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closing", CancellationToken.None);
-        _wss.Dispose();
-    }
+	public async ValueTask DisposeAsync()
+	{
+		if (_cancellationToken is not null)
+		{
+			await _cancellationToken.CancelAsync();
+			_cancellationToken.Dispose();
+		}
+
+		await _wss.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closing", CancellationToken.None);
+		_wss.Dispose();
+	}
 }
 
 internal static partial class WebsocketLogger
 {
-    [LoggerMessage(Level = LogLevel.Information, Message = "Received: {Message}")]
-    public static partial void ReceivedMessage(this ILogger logger, string message);
+	[LoggerMessage(Level = LogLevel.Information, Message = "Received: {Message}")]
+	public static partial void ReceivedMessage(this ILogger logger, string message);
 
-    [LoggerMessage(Level = LogLevel.Error, Message = "Error receiving message")]
-    public static partial void ErrorReceivingMessage(this ILogger logger, Exception exception);
+	[LoggerMessage(Level = LogLevel.Error, Message = "Error receiving message")]
+	public static partial void ErrorReceivingMessage(this ILogger logger, Exception exception);
 }
