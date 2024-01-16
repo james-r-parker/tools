@@ -3,6 +3,8 @@ using DotnetHelp.DevTools.Api.Handlers.Hmac;
 using DotnetHelp.DevTools.Api.Handlers.Http;
 using DotnetHelp.DevTools.Api.Handlers.Jwt;
 using Microsoft.AspNetCore.HttpOverrides;
+using Polly;
+using Polly.Extensions.Http;
 
 var builder = WebApplication.CreateSlimBuilder(args);
 
@@ -43,8 +45,30 @@ builder.Services.AddHttpClient<JwtKeyHttpClient>()
         client.Timeout = TimeSpan.FromSeconds(10);
         client.DefaultRequestVersion = HttpVersion.Version11;
         client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrHigher;
-        client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("DotnetHelp.DevTools.Api", "1.0"));
+        client.DefaultRequestHeaders.UserAgent.Add(Constants.UserAgent);
     });
+
+builder.Services.AddHttpClient<OutgoingHttpClient>()
+    .ConfigureHttpClient((sp, client) =>
+    {
+        client.Timeout = TimeSpan.FromSeconds(10);
+        client.DefaultRequestVersion = HttpVersion.Version11;
+        client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrHigher;
+        client.DefaultRequestHeaders.UserAgent.Add(Constants.UserAgent);
+    })
+    .SetHandlerLifetime(TimeSpan.FromMinutes(20))
+    .AddPolicyHandler((sp, request) =>
+    {
+        return HttpPolicyExtensions
+            .HandleTransientHttpError()
+            .OrResult(msg => 
+                msg.StatusCode is 
+                    HttpStatusCode.ServiceUnavailable or 
+                    HttpStatusCode.BadGateway or 
+                    HttpStatusCode.GatewayTimeout)
+            .RetryAsync(1);
+    });
+
 
 builder.Services
     .AddHttpContextAccessor()
@@ -61,7 +85,7 @@ builder.Services
 WebApplication app = builder.Build();
 
 app
-    .UseForwardedHeaders()    
+    .UseForwardedHeaders()
     .UseCors()
     .UseHealthChecks("/_health");
 
@@ -72,5 +96,6 @@ api.MapPost("/base64/encode", Base64Handler.Encode);
 api.MapPost("/jwt/decode", JwtHandler.Decode);
 api.MapPost("/http/{bucket}", HttpRequestHandler.New);
 api.MapGet("/http/{bucket}", HttpRequestHandler.List);
+api.MapPost("/http", HttpRequestHandler.Send);
 
 app.Run();

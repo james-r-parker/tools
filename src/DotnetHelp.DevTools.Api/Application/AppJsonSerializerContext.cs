@@ -10,6 +10,8 @@ namespace DotnetHelp.DevTools.Api.Application;
 [JsonSerializable(typeof(JwtApiRequest))]
 [JsonSerializable(typeof(JwtApiResponse))]
 [JsonSerializable(typeof(IReadOnlyCollection<BucketHttpRequest>))]
+[JsonSerializable(typeof(OutgoingHttpRequest))]
+[JsonSerializable(typeof(OutgoingHttpResponse))]
 internal partial class AppJsonSerializerContext : JsonSerializerContext
 {
 }

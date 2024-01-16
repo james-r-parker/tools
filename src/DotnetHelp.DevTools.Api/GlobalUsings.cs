@@ -6,7 +6,6 @@ global using System.Net;
 global using System.Net.Http.Headers;
 global using System.Text.Json;
 global using Microsoft.Extensions.Caching.Distributed;
-global using System.Linq;
 global using System.Collections.Frozen;
 
 global using Amazon.ApiGatewayManagementApi;

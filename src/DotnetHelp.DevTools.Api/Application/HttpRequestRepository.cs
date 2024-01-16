@@ -2,13 +2,13 @@
 
 public interface IHttpRequestRepository
 {
-    Task Save(BucketHttpRequest request);
-    Task<IReadOnlyCollection<BucketHttpRequest>> List(string bucket, long from);
+    Task Save(BucketHttpRequest request, CancellationToken cancellationToken);
+    Task<IReadOnlyCollection<BucketHttpRequest>> List(string bucket, long from, CancellationToken cancellationToken);
 }
 
 public class HttpRequestRepository(IAmazonDynamoDB db) : IHttpRequestRepository
 {
-    public Task Save(BucketHttpRequest request)
+    public Task Save(BucketHttpRequest request, CancellationToken cancellationToken)
     {
         var headers = new AttributeValue();
         foreach (var header in request.Headers)
@@ -42,40 +42,46 @@ public class HttpRequestRepository(IAmazonDynamoDB db) : IHttpRequestRepository
         }
 
         return db.PutItemAsync(new PutItemRequest
-        {
-            TableName = Constants.HttpRequestTableName,
-            Item = new Dictionary<string, AttributeValue>
             {
-                { "bucket", new AttributeValue(request.Bucket) },
-                { "created", new AttributeValue { N = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString() } },
-                { "ttl", new AttributeValue { N = DateTimeOffset.UtcNow.AddDays(1).ToUnixTimeSeconds().ToString() } },
-                { "ip", ip },
-                { "headers", headers },
-                { "query", query },
-                { "body", new AttributeValue(request.Body) }
-            }
-        });
+                TableName = Constants.HttpRequestTableName,
+                Item = new Dictionary<string, AttributeValue>
+                {
+                    { "bucket", new AttributeValue(request.Bucket) },
+                    { "created", new AttributeValue { N = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString() } },
+                    {
+                        "ttl",
+                        new AttributeValue { N = DateTimeOffset.UtcNow.AddDays(1).ToUnixTimeSeconds().ToString() }
+                    },
+                    { "ip", ip },
+                    { "headers", headers },
+                    { "query", query },
+                    { "body", new AttributeValue(request.Body) }
+                }
+            },
+            cancellationToken);
     }
 
-    public async Task<IReadOnlyCollection<BucketHttpRequest>> List(string bucket, long from)
+    public async Task<IReadOnlyCollection<BucketHttpRequest>> List(string bucket, long from,
+        CancellationToken cancellationToken)
     {
         QueryResponse response = await db.QueryAsync(new QueryRequest
-        {
-            TableName = Constants.HttpRequestTableName,
-            KeyConditionExpression = "#b = :b AND #c > :c",
-            ExpressionAttributeValues = new Dictionary<string, AttributeValue>
             {
-                { ":b", new AttributeValue(bucket) },
-                { ":c", new AttributeValue { N = from.ToString() } }
+                TableName = Constants.HttpRequestTableName,
+                KeyConditionExpression = "#b = :b AND #c > :c",
+                ExpressionAttributeValues = new Dictionary<string, AttributeValue>
+                {
+                    { ":b", new AttributeValue(bucket) },
+                    { ":c", new AttributeValue { N = from.ToString() } }
+                },
+                ExpressionAttributeNames = new Dictionary<string, string>()
+                {
+                    { "#b", "bucket" },
+                    { "#c", "created" }
+                },
+                ScanIndexForward = false,
+                Limit = 25,
             },
-            ExpressionAttributeNames = new Dictionary<string, string>()
-            {
-                { "#b", "bucket" },
-                { "#c", "created" }
-            },
-            ScanIndexForward = false,
-            Limit = 25,
-        });
+            cancellationToken);
 
         return response.Items.Select(x => new BucketHttpRequest(
                 x["bucket"].S,

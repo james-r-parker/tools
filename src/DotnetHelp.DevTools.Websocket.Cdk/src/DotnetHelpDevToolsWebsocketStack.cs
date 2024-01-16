@@ -40,11 +40,12 @@ public class DotnetHelpDevToolsWebsocketStack : Stack
         {
             Architecture = Architecture.X86_64,
             Runtime = Runtime.PROVIDED_AL2023,
-            MemorySize = 256,
+            MemorySize = 512,
             Description = "DotnetHelp.DevTools.Websocket",
             Handler = "bootstrap",
             Code = Code.FromAsset("../web-socket/"),
             Timeout = Duration.Seconds(20),
+            ReservedConcurrentExecutions = 10,
             Environment = new Dictionary<string, string>
             {
                 { "CONNECTION_TABLE_NAME", connectionTable.TableName },

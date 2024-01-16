@@ -57,7 +57,8 @@ public class DotnetHelpDevToolsApiStack : Stack
             Description = "DotnetHelp.DevTools.API",
             Handler = "bootstrap",
             Code = Code.FromAsset("../app/"),
-            Timeout = Duration.Seconds(20),
+            Timeout = Duration.Seconds(30),
+            ReservedConcurrentExecutions = 10,
             Role = apiRole,
             Environment = new Dictionary<string, string>()
             {
