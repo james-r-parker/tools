@@ -37,7 +37,7 @@ jobs:
         run: dotnet test --consoleLoggerParameters:ErrorsOnly --logger "trx;LogFileName=TestResults.trx" --collect:"XPlat Code Coverage" /p:SkipAutoProps=true /p:ExcludeByAttribute=CompilerGenerated
 
       - name: Test Reports
-        working-directory: ./src/Dotnethelp.DevTools.Websocket.Tests
+        working-directory: ./src/Dotnethelp.DevTools.Email.Tests
         if: ${{ always() }}
         run: |
           liquid --inputs "File=TestResults/testResults.trx;Format=Trx" --output-file TestResults/tests.md
@@ -46,7 +46,7 @@ jobs:
     
       - name: Coverage Reports
         id: coverage-reports
-        working-directory: ./src/Dotnethelp.DevTools.Websocket.Tests
+        working-directory: ./src/Dotnethelp.DevTools.Email.Tests
         run: |
           reportgenerator "-reports:./TestResults/*/*.xml" "-targetdir:./TestResults/" "-reporttypes:MarkdownSummaryGithub"
           cat ./TestResults/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
@@ -75,8 +75,6 @@ jobs:
     needs: [build]
     environment:
       name: production
-    env:
-      CERTIFICATE_ARN: ${{ vars.WSS_CERTIFICATE_ARN }}
     permissions:
       contents: read
       id-token: write
