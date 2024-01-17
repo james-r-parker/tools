@@ -1,4 +1,6 @@
-﻿namespace DotnetHelp.DevTools.Api.Handlers.Http;
+﻿using DotnetHelp.DevTools.WebsocketClient;
+
+namespace DotnetHelp.DevTools.Api.Handlers.Http;
 
 internal static class HttpRequestHandler
 {

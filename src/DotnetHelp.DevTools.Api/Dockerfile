@@ -12,6 +12,8 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["DotnetHelp.DevTools.Api/DotnetHelp.DevTools.Api.csproj", "DotnetHelp.DevTools.Api/"]
 COPY ["DotnetHelp.DevTools.Shared/DotnetHelp.DevTools.Shared.csproj", "DotnetHelp.DevTools.Shared/"]
+COPY ["DotnetHelp.DevTools.Cache/DotnetHelp.DevTools.Cache.csproj", "DotnetHelp.DevTools.Cache/"]
+COPY ["DotnetHelp.DevTools.WebsocketClient/DotnetHelp.DevTools.WebsocketClient.csproj", "DotnetHelp.DevTools.WebsocketClient/"]
 RUN dotnet restore "DotnetHelp.DevTools.Api/DotnetHelp.DevTools.Api.csproj"
 COPY . .
 WORKDIR "/src/DotnetHelp.DevTools.Api"

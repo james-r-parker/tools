@@ -25,7 +25,9 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\DotnetHelp.DevTools.Cache\DotnetHelp.DevTools.Cache.csproj" />
         <ProjectReference Include="..\DotnetHelp.DevTools.Shared\DotnetHelp.DevTools.Shared.csproj" />
+        <ProjectReference Include="..\DotnetHelp.DevTools.WebsocketClient\DotnetHelp.DevTools.WebsocketClient.csproj" />
     </ItemGroup>
 
     <ItemGroup>

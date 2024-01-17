@@ -43,7 +43,7 @@ public class DotnetHelpDevToolsEmailStack : Stack
         });
 
         emailBucket.GrantWrite(new ServicePrincipal("ses.amazonaws.com"));
-        
+
         var functionRole = new Role(this, "EmailRole", new RoleProps
         {
             AssumedBy = new ServicePrincipal("lambda.amazonaws.com"),
@@ -84,9 +84,10 @@ public class DotnetHelpDevToolsEmailStack : Stack
         //Trigger the lambda function when a new object is created in the bucket
         emailBucket.AddEventNotification(EventType.OBJECT_CREATED, new LambdaDestination(emailFunction));
 
-        new ReceiptRuleSet(this, "EmailRuleSet", new ReceiptRuleSetProps
+        var emailRule = new ReceiptRuleSet(this, "EmailRuleSet", new ReceiptRuleSetProps
         {
             DropSpam = true,
+            ReceiptRuleSetName = "DotnetHelp.DevTools.Email",
             Rules = new IReceiptRuleOptions[]
             {
                 new ReceiptRuleOptions

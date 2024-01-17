@@ -1,8 +1,10 @@
+using DotnetHelp.DevTools;
 using DotnetHelp.DevTools.Api.Handlers.Base64;
 using DotnetHelp.DevTools.Api.Handlers.Hmac;
 using DotnetHelp.DevTools.Api.Handlers.Http;
 using DotnetHelp.DevTools.Api.Handlers.Jwt;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Polly;
 using Polly.Extensions.Http;
 
@@ -61,10 +63,10 @@ builder.Services.AddHttpClient<OutgoingHttpClient>()
     {
         return HttpPolicyExtensions
             .HandleTransientHttpError()
-            .OrResult(msg => 
-                msg.StatusCode is 
-                    HttpStatusCode.ServiceUnavailable or 
-                    HttpStatusCode.BadGateway or 
+            .OrResult(msg =>
+                msg.StatusCode is
+                    HttpStatusCode.ServiceUnavailable or
+                    HttpStatusCode.BadGateway or
                     HttpStatusCode.GatewayTimeout)
             .RetryAsync(1);
     });
@@ -73,14 +75,11 @@ builder.Services.AddHttpClient<OutgoingHttpClient>()
 builder.Services
     .AddHttpContextAccessor()
     .AddSingleton<IHttpRequestRepository, HttpRequestRepository>()
-    .AddSingleton<IWebsocketClient, WebsocketClient>()
-    .AddSingleton<IDistributedCache, DynamoDbDistributedCache>()
-    .AddSingleton<IAmazonDynamoDB, AmazonDynamoDBClient>()
-    .AddSingleton<IAmazonApiGatewayManagementApi>(new AmazonApiGatewayManagementApiClient(
-        new AmazonApiGatewayManagementApiConfig
-        {
-            ServiceURL = Constants.WebsocketUrl
-        }));
+    .TryAddSingleton<IAmazonDynamoDB, AmazonDynamoDBClient>();
+
+builder.Services
+    .AddDotnetHelpWebsocketClient()
+    .AddDotnetHelpCache();
 
 WebApplication app = builder.Build();
 

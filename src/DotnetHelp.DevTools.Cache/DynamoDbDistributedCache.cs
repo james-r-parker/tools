@@ -1,8 +1,11 @@
 ﻿using System.Runtime.CompilerServices;
+using Amazon.DynamoDBv2;
+using Amazon.DynamoDBv2.Model;
+using Microsoft.Extensions.Caching.Distributed;
 
-namespace DotnetHelp.DevTools.Api.Application;
+namespace DotnetHelp.DevTools.Cache;
 
-public class DynamoDbDistributedCache(IAmazonDynamoDB db) : IDistributedCache
+internal class DynamoDbDistributedCache(IAmazonDynamoDB db) : IDistributedCache
 {
     private const string PartitionKeyAttributeName = "id";
     private const string TTLAttributeName = "ttl";

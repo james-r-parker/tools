@@ -6,7 +6,7 @@ public class ApiHttpClient(HttpClient httpClient)
 {
     public async Task<TextApiResponse?> Base64Encode(TextApiRequest request, CancellationToken cancellationToken)
     {
-        HttpResponseMessage response = 
+        HttpResponseMessage response =
             await httpClient.PostAsJsonAsync("/api/base64/encode", request, cancellationToken);
         response.EnsureSuccessStatusCode();
 
@@ -16,10 +16,14 @@ public class ApiHttpClient(HttpClient httpClient)
     public async Task<IReadOnlyCollection<BucketHttpRequest>> GetHttpRequests(string bucket, long from,
         CancellationToken cancellationToken)
     {
-        HttpResponseMessage response = 
+        using HttpResponseMessage response =
             await httpClient.GetAsync($"/api/http/{bucket}?from={from}", cancellationToken);
+
         response.EnsureSuccessStatusCode();
 
-        return await response.Content.ReadFromJsonAsync<IReadOnlyCollection<BucketHttpRequest>>(cancellationToken);
+        IReadOnlyCollection<BucketHttpRequest>? result =
+            await response.Content.ReadFromJsonAsync<IReadOnlyCollection<BucketHttpRequest>>(cancellationToken);
+
+        return result ?? Array.Empty<BucketHttpRequest>();
     }
 }

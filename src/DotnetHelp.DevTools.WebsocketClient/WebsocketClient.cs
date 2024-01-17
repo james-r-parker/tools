@@ -1,11 +1,21 @@
-﻿namespace DotnetHelp.DevTools.Api.Application;
+﻿using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using Amazon.ApiGatewayManagementApi;
+using Amazon.ApiGatewayManagementApi.Model;
+using Amazon.DynamoDBv2;
+using Amazon.DynamoDBv2.Model;
+using DotnetHelp.DevTools.Shared;
+using Microsoft.Extensions.Logging;
+
+namespace DotnetHelp.DevTools.WebsocketClient;
 
 public interface IWebsocketClient
 {
     Task SendMessage(WebSocketMessage request, CancellationToken cancellationToken);
 }
 
-public class WebsocketClient(IAmazonApiGatewayManagementApi wss, IAmazonDynamoDB db, ILogger<WebsocketClient> logger)
+internal class ApiGatewayWebsocketClient(IAmazonApiGatewayManagementApi wss, IAmazonDynamoDB db, ILogger<ApiGatewayWebsocketClient> logger)
     : IWebsocketClient
 {
     public async Task SendMessage(WebSocketMessage request, CancellationToken cancellationToken)
@@ -51,7 +61,7 @@ public class WebsocketClient(IAmazonApiGatewayManagementApi wss, IAmazonDynamoDB
 internal static partial class WebsocketClientLogger
 {
     [LoggerMessage(LogLevel.Warning, "Failed to send websocket message to {connectionId}")]
-    public static partial void SendMessage(this ILogger<WebsocketClient> logger, Exception ex, string connectionId);
+    public static partial void SendMessage(this ILogger<ApiGatewayWebsocketClient> logger, Exception ex, string connectionId);
 }
 
 [JsonSerializable(typeof(WebSocketMessage))]
