@@ -11,9 +11,9 @@ using Constructs;
 
 namespace DotnetHelp.DevTools.Email.Cdk;
 
-public class DotnetHelpDevToolsWebsocketStack : Stack
+public class DotnetHelpDevToolsEmailStack : Stack
 {
-    internal DotnetHelpDevToolsWebsocketStack(Construct scope, string id, Props props) : base(scope, id,
+    internal DotnetHelpDevToolsEmailStack(Construct scope, string id, Props props) : base(scope, id,
         props)
     {
         var emailTable = new Table(this, "EmailTable", new TableProps()
