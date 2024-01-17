@@ -43,6 +43,17 @@ public class DotnetHelpDevToolsWebsocketStack : Stack
         });
 
         emailBucket.GrantWrite(new ServicePrincipal("ses.amazonaws.com"));
+        
+        var functionRole = new Role(this, "EmailRole", new RoleProps
+        {
+            AssumedBy = new ServicePrincipal("lambda.amazonaws.com"),
+            ManagedPolicies = new IManagedPolicy[]
+            {
+                ManagedPolicy.FromAwsManagedPolicyName("service-role/AWSLambdaBasicExecutionRole"),
+                ManagedPolicy.FromManagedPolicyName(this, "WSS_API_POLICY",
+                    Fn.ImportValue("DOTNETHELP:DEVTOOLS:WSS:API:POLICY"))
+            },
+        });
 
         var emailPolicy = new ManagedPolicy(this, "EmailPolicy", new ManagedPolicyProps());
         emailTable.GrantReadData(emailPolicy);
@@ -53,6 +64,7 @@ public class DotnetHelpDevToolsWebsocketStack : Stack
             Architecture = Architecture.X86_64,
             Runtime = Runtime.PROVIDED_AL2023,
             MemorySize = 256,
+            Role = functionRole,
             Description = "DotnetHelp.DevTools.Email",
             Handler = "bootstrap",
             Code = Code.FromAsset("../email/"),
@@ -66,8 +78,8 @@ public class DotnetHelpDevToolsWebsocketStack : Stack
             }
         });
 
-        emailTable.GrantReadWriteData(emailFunction);
-        emailBucket.GrantReadWrite(emailFunction);
+        emailTable.GrantReadWriteData(functionRole);
+        emailBucket.GrantReadWrite(functionRole);
 
         //Trigger the lambda function when a new object is created in the bucket
         emailBucket.AddEventNotification(EventType.OBJECT_CREATED, new LambdaDestination(emailFunction));

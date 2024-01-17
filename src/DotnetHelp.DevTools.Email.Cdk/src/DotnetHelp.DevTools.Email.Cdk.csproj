@@ -9,7 +9,6 @@
 
   <ItemGroup>
     <!-- CDK Construct Library dependencies -->
-    <PackageReference Include="AWSSDK.S3" Version="3.7.305.12" />
     <PackageReference Include="Constructs" Version="[10.0.0,11.0.0)" />
     <PackageReference Include="Amazon.CDK.Lib" Version="2.121.1" />
 
