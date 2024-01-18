@@ -97,7 +97,14 @@ internal static class HttpRequestHandler
         [FromBody] OutgoingHttpRequest request,
         [FromServices] OutgoingHttpClient client)
     {
-        var result = await client.Send(request, CancellationToken.None);
-        return Results.Ok(result);
+        try
+        {
+            var result = await client.Send(request, CancellationToken.None);
+            return Results.Ok(result);
+        }
+        catch
+        {
+            return Results.BadRequest();
+        }
     }
 }

@@ -23,6 +23,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="MimeKitLite" Version="4.3.0" />
         <RuntimeHostConfigurationOption Include="System.Globalization.AppLocalIcu" Value="68.2.0.9"/>
         <PackageReference Include="Amazon.Lambda.S3Events" Version="3.1.0" />
         <PackageReference Include="AWSSDK.ApiGatewayManagementApi" Version="3.7.300.35" />

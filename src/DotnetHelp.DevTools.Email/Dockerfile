@@ -11,6 +11,9 @@ ENV DOTNET_NOLOGO=1
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["DotnetHelp.DevTools.Email/DotnetHelp.DevTools.Email.csproj", "DotnetHelp.DevTools.Email/"]
+COPY ["DotnetHelp.DevTools.Shared/DotnetHelp.DevTools.Shared.csproj", "DotnetHelp.DevTools.Shared/"]
+COPY ["DotnetHelp.DevTools.Cache/DotnetHelp.DevTools.Cache.csproj", "DotnetHelp.DevTools.Cache/"]
+COPY ["DotnetHelp.DevTools.WebsocketClient/DotnetHelp.DevTools.WebsocketClient.csproj", "DotnetHelp.DevTools.WebsocketClient/"]
 RUN dotnet restore "DotnetHelp.DevTools.Email/DotnetHelp.DevTools.Email.csproj"
 COPY . .
 WORKDIR "/src/DotnetHelp.DevTools.Email"

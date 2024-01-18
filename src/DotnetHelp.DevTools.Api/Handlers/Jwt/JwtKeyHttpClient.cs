@@ -10,11 +10,11 @@ internal class JwtKeyHttpClient(HttpClient httpClient, IDistributedCache cache)
         string jwksUrl,
         CancellationToken cancellationToken = default)
     {
-        var cacheKey = $"{jwksUrl}";
-        byte[]? cached = await cache.GetAsync(cacheKey, cancellationToken);
+        string cacheKey = $"jwks:{jwksUrl}";
+        string? cached = await cache.GetStringAsync(cacheKey, cancellationToken);
         if (cached is not null)
         {
-            return ToRsaKey(Encoding.UTF8.GetString(cached), token.Header.Kid);
+            return ToRsaKey(cached, token.Header.Kid);
         }
 
         using var response = await httpClient.GetAsync(jwksUrl, cancellationToken);
@@ -26,7 +26,7 @@ internal class JwtKeyHttpClient(HttpClient httpClient, IDistributedCache cache)
 
         string json = await response.Content.ReadAsStringAsync(cancellationToken);
 
-        await cache.SetAsync(cacheKey, Encoding.UTF8.GetBytes(json), new DistributedCacheEntryOptions()
+        await cache.SetStringAsync(cacheKey, json, new DistributedCacheEntryOptions()
         {
             AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5),
         }, cancellationToken);

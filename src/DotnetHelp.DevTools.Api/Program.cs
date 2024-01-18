@@ -1,5 +1,6 @@
 using DotnetHelp.DevTools;
 using DotnetHelp.DevTools.Api.Handlers.Base64;
+using DotnetHelp.DevTools.Api.Handlers.Dns;
 using DotnetHelp.DevTools.Api.Handlers.Hmac;
 using DotnetHelp.DevTools.Api.Handlers.Http;
 using DotnetHelp.DevTools.Api.Handlers.Jwt;
@@ -16,7 +17,7 @@ builder.Logging
 
 builder.Services.ConfigureHttpJsonOptions(options =>
 {
-    options.SerializerOptions.TypeInfoResolverChain.Insert(0, AppJsonSerializerContext.Default);
+    options.SerializerOptions.TypeInfoResolverChain.Insert(0, ApiJsonContext.Default);
 });
 
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
@@ -31,7 +32,7 @@ builder.Services.AddAWSLambdaHosting(LambdaEventSource.HttpApi,
     {
         c.Serializer =
             new Amazon.Lambda.Serialization.SystemTextJson.SourceGeneratorLambdaJsonSerializer<
-                AppJsonSerializerContext>();
+                ApiJsonContext>();
     });
 
 builder.Services.AddHealthChecks();
@@ -96,5 +97,6 @@ api.MapPost("/jwt/decode", JwtHandler.Decode);
 api.MapPost("/http/{bucket}", HttpRequestHandler.New);
 api.MapGet("/http/{bucket}", HttpRequestHandler.List);
 api.MapPost("/http", HttpRequestHandler.Send);
+api.MapPost("/dns", DnsHandler.Lookup);
 
 app.Run();

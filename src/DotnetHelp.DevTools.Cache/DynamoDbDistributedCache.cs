@@ -2,10 +2,11 @@
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace DotnetHelp.DevTools.Cache;
 
-internal class DynamoDbDistributedCache(IAmazonDynamoDB db) : IDistributedCache
+internal class DynamoDbDistributedCache(IAmazonDynamoDB db, IMemoryCache cache) : IDistributedCache
 {
     private const string PartitionKeyAttributeName = "id";
     private const string TTLAttributeName = "ttl";
@@ -21,7 +22,23 @@ internal class DynamoDbDistributedCache(IAmazonDynamoDB db) : IDistributedCache
 
     public async Task<byte[]?> GetAsync(string key, CancellationToken cancellationToken = default)
     {
-        return await GetAndRefreshAsync(key, cancellationToken);
+        if (cache.TryGetValue(key, out byte[]? cached))
+        {
+            return cached;
+        }
+
+        var result = await GetAndRefreshAsync(key, cancellationToken);
+
+        if (result is not null)
+        {
+            cache.Set(key, result, new MemoryCacheEntryOptions
+            {
+                Size = result.Length,
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(1),
+            });
+        }
+
+        return result;
     }
 
     public void Refresh(string key)
@@ -29,9 +46,9 @@ internal class DynamoDbDistributedCache(IAmazonDynamoDB db) : IDistributedCache
         RefreshAsync(key).GetAwaiter().GetResult();
     }
 
-    public async Task RefreshAsync(string key, CancellationToken cancellationToken = default)
+    public Task RefreshAsync(string key, CancellationToken cancellationToken = default)
     {
-        await GetAndRefreshAsync(key, cancellationToken);
+        return GetAndRefreshAsync(key, cancellationToken);
     }
 
     public void Remove(string key)
@@ -160,7 +177,7 @@ internal class DynamoDbDistributedCache(IAmazonDynamoDB db) : IDistributedCache
         {
             return value.B.ToArray();
         }
-        
+
         var options = new DistributedCacheEntryOptions
         {
             SlidingExpiration = TimeSpan.Parse(ttlWindow.S),
@@ -197,10 +214,10 @@ internal class DynamoDbDistributedCache(IAmazonDynamoDB db) : IDistributedCache
                 $"Failed to update TTL for item with key {key}. Caused by {e.Message}",
                 e);
         }
-        
+
         return value.B.ToArray();
     }
-    
+
     private static AttributeValue CalculateTTLDeadline(DistributedCacheEntryOptions options)
     {
         if (options is { AbsoluteExpiration: not null, AbsoluteExpirationRelativeToNow: null })
@@ -243,7 +260,7 @@ internal class DynamoDbDistributedCache(IAmazonDynamoDB db) : IDistributedCache
             return CalculateTTLDeadline(options);
         }
     }
-    
+
     private static AttributeValue CalculateSlidingWindow(DistributedCacheEntryOptions options)
     {
         if (options.SlidingExpiration != null)
