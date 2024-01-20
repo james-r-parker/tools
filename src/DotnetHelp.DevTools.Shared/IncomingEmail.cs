@@ -1,8 +1,15 @@
 ﻿namespace DotnetHelp.DevTools.Shared;
 
 public record IncomingEmail(
-    string To,
-    string From,
+    IReadOnlyCollection<EmailAddress> To,
+    IReadOnlyCollection<EmailAddress> From,
+    IReadOnlyCollection<EmailHeader> Headers,
+    IReadOnlyCollection<EmailContent> Content,
     string Subject,
-    DateTimeOffset Created,
-    string Key);
+    DateTimeOffset Created);
+
+public record EmailAddress(string Name, string Address, string Domain);
+
+public record EmailHeader(string Name, string Value);
+
+public record EmailContent(string Id, string Type, string Content);

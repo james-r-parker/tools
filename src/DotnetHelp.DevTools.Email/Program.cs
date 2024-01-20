@@ -87,65 +87,94 @@ public class Function
                 var tos = new AttributeValue() { L = new List<AttributeValue>() };
                 foreach (var mailbox in email.To.Mailboxes)
                 {
-                    tos.L.Add(new AttributeValue()
+                    if (mailbox is not null)
                     {
-                        M = new Dictionary<string, AttributeValue>()
+                        tos.L.Add(new AttributeValue()
                         {
-                            { "name", new AttributeValue(mailbox.Name) },
-                            { "address", new AttributeValue(mailbox.Address) },
-                            { "domain", new AttributeValue(mailbox.Domain) }
-                        }
-                    });
+                            M = new Dictionary<string, AttributeValue>()
+                            {
+                                {
+                                    "name",
+                                    mailbox.Name is null
+                                        ? new AttributeValue() { NULL = true }
+                                        : new AttributeValue(mailbox.Name)
+                                },
+                                {
+                                    "address",
+                                    mailbox.Address is null
+                                        ? new AttributeValue() { NULL = true }
+                                        : new AttributeValue(mailbox.Address)
+                                },
+                                {
+                                    "domain",
+                                    mailbox.Domain is null
+                                        ? new AttributeValue() { NULL = true }
+                                        : new AttributeValue(mailbox.Domain)
+                                }
+                            }
+                        });
+                    }
                 }
 
                 var froms = new AttributeValue() { L = new List<AttributeValue>() };
                 foreach (var mailbox in email.From.Mailboxes)
                 {
-                    froms.L.Add(new AttributeValue()
+                    if (mailbox is not null)
                     {
-                        M = new Dictionary<string, AttributeValue>()
+                        froms.L.Add(new AttributeValue()
                         {
-                            { "name", new AttributeValue(mailbox.Name) },
-                            { "address", new AttributeValue(mailbox.Address) },
-                            { "domain", new AttributeValue(mailbox.Domain) }
-                        }
-                    });
+                            M = new Dictionary<string, AttributeValue>()
+                            {
+                                {
+                                    "name",
+                                    mailbox.Name is null
+                                        ? new AttributeValue() { NULL = true }
+                                        : new AttributeValue(mailbox.Name)
+                                },
+                                {
+                                    "address",
+                                    mailbox.Address is null
+                                        ? new AttributeValue() { NULL = true }
+                                        : new AttributeValue(mailbox.Address)
+                                },
+                                {
+                                    "domain",
+                                    mailbox.Domain is null
+                                        ? new AttributeValue() { NULL = true }
+                                        : new AttributeValue(mailbox.Domain)
+                                }
+                            }
+                        });
+                    }
                 }
 
                 var headers = new AttributeValue() { L = new List<AttributeValue>() };
                 foreach (var header in email.Headers)
                 {
-                    headers.L.Add(new AttributeValue()
+                    if (header.Field is not null && header.Value is not null)
                     {
-                        M = new Dictionary<string, AttributeValue>()
+                        headers.L.Add(new AttributeValue()
                         {
-                            { "name", new AttributeValue(header.Field) },
-                            { "value", new AttributeValue(header.Value) }
-                        }
-                    });
+                            M = new Dictionary<string, AttributeValue>()
+                            {
+                                { "name", new AttributeValue(header.Field) },
+                                { "value", new AttributeValue(header.Value) }
+                            }
+                        });
+                    }
                 }
 
                 var content = new AttributeValue() { L = new List<AttributeValue>() };
                 foreach (MimeEntity? part in email.BodyParts)
                 {
-                    if (part is null)
-                    {
-                        continue;
-                    }
-
-                    if (part.IsAttachment)
-                    {
-                        continue;
-                    }
-
-                    if (part is TextPart textPart)
+                    if (part is TextPart { Text: not null } textPart)
                     {
                         content.L.Add(new AttributeValue()
                         {
                             M = new Dictionary<string, AttributeValue>()
                             {
-                                { "contentType", new AttributeValue(part.ContentType.MimeType) },
-                                { "contentId", new AttributeValue(part.ContentId) },
+                                { "contentType", new AttributeValue(part.ContentType?.MimeType ?? "text/plain") },
+                                { "contentId", new AttributeValue(part.ContentId ?? Guid.NewGuid().ToString("N")) },
                                 { "content", new AttributeValue(textPart.Text) },
                             }
                         });

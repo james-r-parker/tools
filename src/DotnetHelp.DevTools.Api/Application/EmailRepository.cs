@@ -35,13 +35,39 @@ internal class EmailRepository(IAmazonDynamoDB db, IAmazonS3 s3) : IEmailReposit
             cancellationToken);
 
         return response.Items.Select(i =>
-                new IncomingEmail(
-                    i["to"].S,
-                    i["from"].S,
-                    i["subject"].S,
-                    DateTimeOffset.FromUnixTimeSeconds(long.Parse(i["created"].N)),
-                    i["s3Key"].S
-                ))
-            .ToImmutableList();
+        {
+            var tos = i["to"].L.Select(e => new EmailAddress(
+                e.M["name"].S,
+                e.M["address"].S,
+                e.M["domain"].S
+            )).ToImmutableList();
+
+            var froms = i["from"].L.Select(e => new EmailAddress(
+                e.M["name"].S,
+                e.M["address"].S,
+                e.M["domain"].S
+            )).ToImmutableList();
+
+            var headers = i["headers"].L.Select(e => new EmailHeader(
+                e.M["name"].S,
+                e.M["value"].S
+            )).ToImmutableList();
+
+            var contents = i["content"].L.Select(e => new EmailContent(
+                e.M["id"].S,
+                e.M["type"].S,
+                e.M["content"].S
+            )).ToImmutableList();
+            
+            return new IncomingEmail(
+                tos,
+                froms,
+                headers,
+                contents,
+                i["subject"].S,
+                DateTimeOffset.FromUnixTimeSeconds(long.Parse(i["created"].N))
+            );
+        })
+        .ToImmutableList();
     }
 }
