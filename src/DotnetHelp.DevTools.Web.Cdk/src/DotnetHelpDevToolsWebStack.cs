@@ -50,7 +50,7 @@ public class DotnetHelpDevToolsWebStack : Stack
                         EventType = FunctionEventType.VIEWER_REQUEST,
                         Function = new Function(this, "RewriteFunction", new FunctionProps
                         {
-                            Runtime =FunctionRuntime.JS_2_0,
+                            Runtime = FunctionRuntime.JS_2_0,
                             Comment = "DotnetHelp Rewrite Function",
                             Code = FunctionCode.FromInline(@"
                                 function handler(event) {
@@ -67,44 +67,55 @@ public class DotnetHelpDevToolsWebStack : Stack
                         })
                     }
                 },
-                ResponseHeadersPolicy = new ResponseHeadersPolicy(this, "ResponseHeaderPolicy", new ResponseHeadersPolicyProps()
-                {
-                    SecurityHeadersBehavior = new ResponseSecurityHeadersBehavior()
+                ResponseHeadersPolicy = new ResponseHeadersPolicy(this, "ResponseHeaderPolicy",
+                    new ResponseHeadersPolicyProps()
                     {
-                        FrameOptions = new ResponseHeadersFrameOptions()
+                        SecurityHeadersBehavior = new ResponseSecurityHeadersBehavior()
                         {
-                            FrameOption = HeadersFrameOption.DENY,
-                        },
-                        ReferrerPolicy = new ResponseHeadersReferrerPolicy()
-                        {
-                            ReferrerPolicy = HeadersReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN,
-                        },
-                        XssProtection = new ResponseHeadersXSSProtection()
-                        {
-                            Protection = true,
-                            ModeBlock = true,
-                        },
-                        ContentSecurityPolicy = new ResponseHeadersContentSecurityPolicy()
-                        {
-                            ContentSecurityPolicy = "base-uri 'self';default-src 'self';img-src data: https:;object-src 'none';script-src 'self' 'wasm-unsafe-eval';style-src 'self';upgrade-insecure-requests;",
-                        },
-                        StrictTransportSecurity = new ResponseHeadersStrictTransportSecurity()
-                        {
-                            AccessControlMaxAge = Duration.Days(7),
-                        },
-                    },
-                    CustomHeadersBehavior = new ResponseCustomHeadersBehavior()
-                    {
-                        CustomHeaders = new IResponseCustomHeader[]
-                        {
-                            new ResponseCustomHeader()
+                            FrameOptions = new ResponseHeadersFrameOptions()
                             {
-                                Header = "Permissions-Policy",
-                                Value = "accelerometer=(), ambient-light-sensor=(), autoplay=(self), battery=(), camera=(self), cross-origin-isolated=(), display-capture=(), document-domain=(), encrypted-media=(), execution-while-not-rendered=(), execution-while-out-of-viewport=(), fullscreen=(), geolocation=(self), gyroscope=(), keyboard-map=(), magnetometer=(), microphone=(), midi=(), navigation-override=(), payment=(self), picture-in-picture=(), publickey-credentials-get=(), screen-wake-lock=(), sync-xhr=(self), usb=(), web-share=(), xr-spatial-tracking=(), clipboard-read=(), clipboard-write=(self), gamepad=(), speaker-selection=()"
+                                FrameOption = HeadersFrameOption.DENY,
+                                Override = true
+                            },
+                            ReferrerPolicy = new ResponseHeadersReferrerPolicy()
+                            {
+                                ReferrerPolicy = HeadersReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN,
+                                Override = true
+                            },
+                            XssProtection = new ResponseHeadersXSSProtection()
+                            {
+                                Protection = true,
+                                ModeBlock = true,
+                                Override = true
+                            },
+                            ContentSecurityPolicy = new ResponseHeadersContentSecurityPolicy()
+                            {
+                                ContentSecurityPolicy =
+                                    "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; img-src data: https:; connect-src 'self' wss://wss.dotnethelp.co.uk; object-src 'none'; upgrade-insecure-requests; base-uri 'self'",
+                                Override = true
+                            },
+                            StrictTransportSecurity = new ResponseHeadersStrictTransportSecurity()
+                            {
+                                AccessControlMaxAge = Duration.Days(7),
+                            },
+                            ContentTypeOptions = new ResponseHeadersContentTypeOptions()
+                            {
+                                Override = true
+                            },
+                        },
+                        CustomHeadersBehavior = new ResponseCustomHeadersBehavior()
+                        {
+                            CustomHeaders = new IResponseCustomHeader[]
+                            {
+                                new ResponseCustomHeader()
+                                {
+                                    Header = "Permissions-Policy",
+                                    Value =
+                                        "accelerometer=(), ambient-light-sensor=(), autoplay=(self), battery=(), camera=(self), cross-origin-isolated=(), display-capture=(), document-domain=(), encrypted-media=(), execution-while-not-rendered=(), execution-while-out-of-viewport=(), fullscreen=(), geolocation=(self), gyroscope=(), keyboard-map=(), magnetometer=(), microphone=(), midi=(), navigation-override=(), payment=(self), picture-in-picture=(), publickey-credentials-get=(), screen-wake-lock=(), sync-xhr=(self), usb=(), web-share=(), xr-spatial-tracking=(), clipboard-read=(), clipboard-write=(self), gamepad=(), speaker-selection=()"
+                                }
                             }
                         }
-                    }
-                })
+                    })
             },
             DefaultRootObject = "index.html",
             HttpVersion = HttpVersion.HTTP2_AND_3,
