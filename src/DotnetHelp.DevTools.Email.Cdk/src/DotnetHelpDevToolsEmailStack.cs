@@ -57,6 +57,9 @@ public class DotnetHelpDevToolsEmailStack : Stack
                     Fn.ImportValue("DOTNETHELP:DEVTOOLS:WSS:API:POLICY"))
             },
         });
+        
+        var connectionTable =
+            Table.FromTableName(this, "WSS_CONNECTION_TABLE", Fn.ImportValue("DOTNETHELP:DEVTOOLS:WSS:TABLE"));
 
         var emailPolicy = new ManagedPolicy(this, "EmailPolicy", new ManagedPolicyProps());
         emailTable.GrantReadData(emailPolicy);
@@ -75,6 +78,7 @@ public class DotnetHelpDevToolsEmailStack : Stack
             ReservedConcurrentExecutions = 10,
             Environment = new Dictionary<string, string>
             {
+                { "CONNECTION_TABLE_NAME", connectionTable.TableName },
                 { "EMAIL_TABLE_NAME", emailTable.TableName },
                 { "EMAIL_BUCKET", emailBucket.BucketName },
                 { "AWS_STS_REGIONAL_ENDPOINTS", "regional" }
