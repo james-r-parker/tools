@@ -79,6 +79,7 @@ public class DotnetHelpDevToolsEmailStack : Stack
             Environment = new Dictionary<string, string>
             {
                 { "CONNECTION_TABLE_NAME", connectionTable.TableName },
+                { "WEBSOCKET_URL", Fn.ImportValue("DOTNETHELP:DEVTOOLS:WSS:URL") },
                 { "EMAIL_TABLE_NAME", emailTable.TableName },
                 { "EMAIL_BUCKET", emailBucket.BucketName },
                 { "AWS_STS_REGIONAL_ENDPOINTS", "regional" }
