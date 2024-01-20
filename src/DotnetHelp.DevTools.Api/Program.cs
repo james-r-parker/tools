@@ -1,4 +1,5 @@
 using Amazon.S3;
+using DnsClient;
 using DotnetHelp.DevTools;
 using DotnetHelp.DevTools.Api.Handlers.Base64;
 using DotnetHelp.DevTools.Api.Handlers.Dns;
@@ -74,6 +75,8 @@ builder.Services.AddHttpClient<OutgoingHttpClient>()
             .RetryAsync(1);
     });
 
+builder.Services.AddSingleton<ILookupClient, LookupClient>();
+
 builder.Services.TryAddSingleton<IAmazonDynamoDB, AmazonDynamoDBClient>();
 builder.Services.TryAddSingleton<IAmazonS3, AmazonS3Client>();
 
@@ -106,7 +109,7 @@ api.MapPost("/http/{bucket}", HttpRequestHandler.New);
 api.MapGet("/http/{bucket}", HttpRequestHandler.List);
 api.MapPost("/http", HttpRequestHandler.Send);
 
-api.MapPost("/dns", DnsHandler.Lookup);
+api.MapGet("/dns/{domain}/{type}", DnsHandler.Lookup);
 
 api.MapGet("/email/{bucket}", EmailRequestHandler.List);
 

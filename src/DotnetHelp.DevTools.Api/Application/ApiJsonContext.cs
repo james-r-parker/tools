@@ -15,6 +15,7 @@ namespace DotnetHelp.DevTools.Api.Application;
 [JsonSerializable(typeof(IReadOnlyCollection<IncomingEmail>))]
 [JsonSerializable(typeof(OutgoingHttpRequest))]
 [JsonSerializable(typeof(OutgoingHttpResponse))]
+[JsonSerializable(typeof(DnsLookupResponses))]
 internal partial class ApiJsonContext : JsonSerializerContext
 {
 }
