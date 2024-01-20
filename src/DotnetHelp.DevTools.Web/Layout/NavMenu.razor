@@ -1,28 +1,60 @@
-﻿<div class="">
-    <div class="">
-        <a class="" href="">DotNetHelp</a>
-    </div>
-</div>
+﻿<nav class="lg:text-sm lg:leading-6 relative">
 
-<div class="">
-    <nav class="flex-col">
-        <div class="">
-            <NavLink class="" href="">
-                <span class=""></span> Home
-            </NavLink>
-        </div>
-        <div class="">
-            <NavLink class="" href="requests">
-                <span class=""></span> Requests
-            </NavLink>
-        </div>
-        <div class="">
-            <NavLink class="" href="base64">
-                <span class=""></span> Base64
-            </NavLink>
-        </div>
-    </nav>
-</div>
+	<div class="sticky top-0 -ml-0.5 pointer-events-none">
+		<div class="h-10 bg-white dark:bg-slate-900"></div>
+		<div class="bg-white dark:bg-slate-900 relative pointer-events-auto">
+			<button class="hidden w-full lg:flex items-center text-sm leading-6 text-slate-400 rounded-md ring-1 ring-slate-900/10 shadow-sm py-1.5 pl-2 pr-3 hover:ring-slate-300 dark:bg-slate-800 dark:highlight-white/5 dark:hover:bg-slate-700">
+				Quick search...
+			</button>
+		</div>
+		<div class="h-8 bg-gradient-to-b from-white dark:from-slate-900"></div>
+	</div>
+
+	<ul>
+		<li>
+			<NavLink class="group flex items-center lg:text-sm lg:leading-6 mb-4 font-semibold text-sky-500 dark:text-sky-400" href="">
+				<div class="mr-4 rounded-md ring-1 ring-slate-900/5 shadow-sm group-hover:shadow group-hover:ring-slate-900/10 dark:ring-0 dark:shadow-none dark:group-hover:shadow-none dark:group-hover:highlight-white/10 group-hover:shadow-sky-200 dark:group-hover:bg-sky-500 dark:bg-sky-500 dark:highlight-white/10">
+					<svg class="h-6 w-6" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M8.5 7c1.093 0 2.117.27 3 .743V17a6.345 6.345 0 0 0-3-.743c-1.093 0-2.617.27-3.5.743V7.743C5.883 7.27 7.407 7 8.5 7Z" class="fill-sky-200 group-hover:fill-sky-500 dark:fill-sky-300 dark:group-hover:fill-sky-300"></path><path fill-rule="evenodd" clip-rule="evenodd" d="M15.5 7c1.093 0 2.617.27 3.5.743V17c-.883-.473-2.407-.743-3.5-.743s-2.117.27-3 .743V7.743a6.344 6.344 0 0 1 3-.743Z" class="fill-sky-400 group-hover:fill-sky-500 dark:fill-sky-200 dark:group-hover:fill-sky-200"></path></svg>
+				</div>
+				Home
+			</NavLink>
+		</li>
+		<li>
+			<NavLink class="group flex items-center lg:text-sm lg:leading-6 mb-4 font-medium text-slate-700 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-300" href="about">
+				<div class="mr-4 rounded-md ring-1 ring-slate-900/5 shadow-sm group-hover:shadow group-hover:ring-slate-900/10 dark:ring-0 dark:shadow-none dark:group-hover:shadow-none dark:group-hover:highlight-white/10 group-hover:shadow-indigo-200 dark:group-hover:bg-indigo-500 dark:bg-slate-800 dark:highlight-white/5">
+					<svg class="h-6 w-6" viewBox="0 0 24 24" fill="none"><path d="m6 9 6-3 6 3v6l-6 3-6-3V9Z" class="fill-indigo-100 group-hover:fill-indigo-200 dark:fill-slate-400"></path><path d="m6 9 6 3v7l-6-3V9Z" class="fill-indigo-300 group-hover:fill-indigo-400 dark:group-hover:fill-indigo-300 dark:fill-slate-500"></path><path d="m18 9-6 3v7l6-3V9Z" class="fill-indigo-400 group-hover:fill-indigo-500 dark:group-hover:fill-indigo-400 dark:fill-slate-600"></path></svg>
+				</div>
+				About
+			</NavLink>
+		</li>
+
+		<li class="mt-12 lg:mt-8">
+			<h5 class="mb-8 lg:mb-3 font-semibold text-slate-900 dark:text-slate-200">
+				Http
+			</h5>
+			<ul class="space-y-6 lg:space-y-2 border-l border-slate-100 dark:border-slate-800">
+				<li>
+					<NavLink class="block border-l pl-4 -ml-px border-transparent hover:border-slate-400 dark:hover:border-slate-500 text-slate-700 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-300" href="requests">
+						Request Bin
+					</NavLink>
+				</li>
+			</ul>
+		</li>
+
+		<li class="mt-12 lg:mt-8">
+			<h5 class="mb-8 lg:mb-3 font-semibold text-slate-900 dark:text-slate-200">
+				Encoding
+			</h5>
+			<ul class="space-y-6 lg:space-y-2 border-l border-slate-100 dark:border-slate-800">
+				<li>
+					<NavLink class="block border-l pl-4 -ml-px border-transparent hover:border-slate-400 dark:hover:border-slate-500 text-slate-700 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-300" href="base64">
+						Base64
+					</NavLink>
+				</li>
+			</ul>
+		</li>
+	</ul>
+</nav>
 
 @code {
 }
