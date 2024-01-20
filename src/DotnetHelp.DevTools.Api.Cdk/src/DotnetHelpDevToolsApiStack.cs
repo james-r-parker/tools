@@ -45,7 +45,9 @@ public class DotnetHelpDevToolsApiStack : Stack
                 ManagedPolicy.FromManagedPolicyName(this, "WSS_DB_POLICY",
                     Fn.ImportValue("DOTNETHELP:DEVTOOLS:WSS:DB:POLICY")),
                 ManagedPolicy.FromManagedPolicyName(this, "WSS_API_POLICY",
-                    Fn.ImportValue("DOTNETHELP:DEVTOOLS:WSS:API:POLICY"))
+                    Fn.ImportValue("DOTNETHELP:DEVTOOLS:WSS:API:POLICY")),
+                ManagedPolicy.FromManagedPolicyName(this, "EMAIL_DB_POLICY",
+                    Fn.ImportValue("DOTNETHELP:DEVTOOLS:EMAIL:DB:POLICY"))
             },
         });
 
@@ -66,7 +68,8 @@ public class DotnetHelpDevToolsApiStack : Stack
                 { "HTTP_REQUEST_TABLE_NAME", httpRequestTable.TableName },
                 { "CACHE_TABLE_NAME", cacheTable.TableName },
                 { "WEBSOCKET_URL", Fn.ImportValue("DOTNETHELP:DEVTOOLS:WSS:URL") },
-                { "AWS_STS_REGIONAL_ENDPOINTS", "regional" }
+                { "AWS_STS_REGIONAL_ENDPOINTS", "regional" },
+                { "EMAIL_TABLE_NAME", Fn.ImportValue("DOTNETHELP:DEVTOOLS:EMAIL:TABLE") }
             }
         });
 

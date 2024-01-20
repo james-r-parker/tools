@@ -1,12 +1,14 @@
-﻿namespace DotnetHelp.DevTools.Api.Application;
+﻿using System.Collections.Immutable;
 
-public interface IHttpRequestRepository
+namespace DotnetHelp.DevTools.Api.Application;
+
+internal interface IHttpRequestRepository
 {
     Task Save(BucketHttpRequest request, CancellationToken cancellationToken);
     Task<IReadOnlyCollection<BucketHttpRequest>> List(string bucket, long from, CancellationToken cancellationToken);
 }
 
-public class HttpRequestRepository(IAmazonDynamoDB db) : IHttpRequestRepository
+internal class HttpRequestRepository(IAmazonDynamoDB db) : IHttpRequestRepository
 {
     public Task Save(BucketHttpRequest request, CancellationToken cancellationToken)
     {
@@ -91,6 +93,6 @@ public class HttpRequestRepository(IAmazonDynamoDB db) : IHttpRequestRepository
                 x["headers"].M.ToDictionary(y => y.Key, y => y.Value.S),
                 x["query"].M.ToDictionary(y => y.Key, y => y.Value.S),
                 x["body"].S))
-            .ToFrozenSet();
+            .ToImmutableList();
     }
 }

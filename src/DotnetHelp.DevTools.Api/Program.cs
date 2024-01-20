@@ -1,6 +1,8 @@
+using Amazon.S3;
 using DotnetHelp.DevTools;
 using DotnetHelp.DevTools.Api.Handlers.Base64;
 using DotnetHelp.DevTools.Api.Handlers.Dns;
+using DotnetHelp.DevTools.Api.Handlers.Email;
 using DotnetHelp.DevTools.Api.Handlers.Hmac;
 using DotnetHelp.DevTools.Api.Handlers.Http;
 using DotnetHelp.DevTools.Api.Handlers.Jwt;
@@ -72,11 +74,13 @@ builder.Services.AddHttpClient<OutgoingHttpClient>()
             .RetryAsync(1);
     });
 
+builder.Services.TryAddSingleton<IAmazonDynamoDB, AmazonDynamoDBClient>();
+builder.Services.TryAddSingleton<IAmazonS3, AmazonS3Client>();
 
 builder.Services
     .AddHttpContextAccessor()
     .AddSingleton<IHttpRequestRepository, HttpRequestRepository>()
-    .TryAddSingleton<IAmazonDynamoDB, AmazonDynamoDBClient>();
+    .AddSingleton<IEmailRepository, EmailRepository>();
 
 builder.Services
     .AddDotnetHelpWebsocketClient()
@@ -92,12 +96,18 @@ app
 RouteGroupBuilder api = app.MapGroup("/api");
 
 api.MapPost("/hmac", HmacHandler.Hash);
+
 api.MapPost("/base64/encode", Base64Handler.Encode);
 api.MapPost("/base64/decode", Base64Handler.Decode);
+
 api.MapPost("/jwt/decode", JwtHandler.Decode);
+
 api.MapPost("/http/{bucket}", HttpRequestHandler.New);
 api.MapGet("/http/{bucket}", HttpRequestHandler.List);
 api.MapPost("/http", HttpRequestHandler.Send);
+
 api.MapPost("/dns", DnsHandler.Lookup);
+
+api.MapGet("/email/{bucket}", EmailRequestHandler.List);
 
 app.Run();

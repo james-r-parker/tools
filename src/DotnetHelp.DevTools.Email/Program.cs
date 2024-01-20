@@ -5,6 +5,7 @@ using DotnetHelp.DevTools.Shared;
 using DotnetHelp.DevTools.WebsocketClient;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using MimeKit;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace DotnetHelp.DevTools.Email;
@@ -60,7 +61,7 @@ public class Function
             try
             {
                 logger.ProcessingFile(record.S3.Object.Key);
-                
+
                 using var file =
                     await s3.GetObjectAsync(record.S3.Bucket.Name, record.S3.Object.Key, cts.Token);
                 using var email =
@@ -83,6 +84,74 @@ public class Function
 
                 string bucket = to.Split("@")[0];
 
+                var tos = new AttributeValue() { L = new List<AttributeValue>() };
+                foreach (var mailbox in email.To.Mailboxes)
+                {
+                    tos.L.Add(new AttributeValue()
+                    {
+                        M = new Dictionary<string, AttributeValue>()
+                        {
+                            { "name", new AttributeValue(mailbox.Name) },
+                            { "address", new AttributeValue(mailbox.Address) },
+                            { "domain", new AttributeValue(mailbox.Domain) }
+                        }
+                    });
+                }
+
+                var froms = new AttributeValue() { L = new List<AttributeValue>() };
+                foreach (var mailbox in email.From.Mailboxes)
+                {
+                    froms.L.Add(new AttributeValue()
+                    {
+                        M = new Dictionary<string, AttributeValue>()
+                        {
+                            { "name", new AttributeValue(mailbox.Name) },
+                            { "address", new AttributeValue(mailbox.Address) },
+                            { "domain", new AttributeValue(mailbox.Domain) }
+                        }
+                    });
+                }
+
+                var headers = new AttributeValue() { L = new List<AttributeValue>() };
+                foreach (var header in email.Headers)
+                {
+                    headers.L.Add(new AttributeValue()
+                    {
+                        M = new Dictionary<string, AttributeValue>()
+                        {
+                            { "name", new AttributeValue(header.Field) },
+                            { "value", new AttributeValue(header.Value) }
+                        }
+                    });
+                }
+
+                var content = new AttributeValue() { L = new List<AttributeValue>() };
+                foreach (MimeEntity? part in email.BodyParts)
+                {
+                    if (part is null)
+                    {
+                        continue;
+                    }
+
+                    if (part.IsAttachment)
+                    {
+                        continue;
+                    }
+
+                    if (part is TextPart textPart)
+                    {
+                        content.L.Add(new AttributeValue()
+                        {
+                            M = new Dictionary<string, AttributeValue>()
+                            {
+                                { "contentType", new AttributeValue(part.ContentType.MimeType) },
+                                { "contentId", new AttributeValue(part.ContentId) },
+                                { "content", new AttributeValue(textPart.Text) },
+                            }
+                        });
+                    }
+                }
+
                 await db.PutItemAsync(new PutItemRequest()
                 {
                     TableName = TableName,
@@ -93,8 +162,10 @@ public class Function
                         { "s3Bucket", new AttributeValue(record.S3.Bucket.Name) },
                         { "s3Key", new AttributeValue(record.S3.Object.Key) },
                         { "messageId", new AttributeValue(email.MessageId) },
-                        { "from", new AttributeValue(email.From.ToString()) },
-                        { "to", new AttributeValue(email.To.ToString()) },
+                        { "from", froms },
+                        { "to", tos },
+                        { "headers", headers },
+                        { "content", content },
                         { "subject", new AttributeValue(email.Subject) },
                         {
                             "ttl",

@@ -63,7 +63,6 @@ public class DotnetHelpDevToolsEmailStack : Stack
 
         var emailPolicy = new ManagedPolicy(this, "EmailPolicy", new ManagedPolicyProps());
         emailTable.GrantReadData(emailPolicy);
-        emailBucket.GrantRead(emailPolicy);
 
         var emailFunction = new Function(this, "EmailFunction", new FunctionProps
         {
@@ -87,12 +86,12 @@ public class DotnetHelpDevToolsEmailStack : Stack
         });
 
         emailTable.GrantReadWriteData(functionRole);
-        emailBucket.GrantReadWrite(functionRole);
+        emailBucket.GrantRead(functionRole);
 
         //Trigger the lambda function when a new object is created in the bucket
         emailBucket.AddEventNotification(EventType.OBJECT_CREATED, new LambdaDestination(emailFunction));
 
-        var emailRule = new ReceiptRuleSet(this, "EmailRuleSet", new ReceiptRuleSetProps
+        new ReceiptRuleSet(this, "EmailRuleSet", new ReceiptRuleSetProps
         {
             DropSpam = true,
             ReceiptRuleSetName = "DotnetHelp.DevTools.Email",
@@ -120,12 +119,6 @@ public class DotnetHelpDevToolsEmailStack : Stack
         {
             Value = emailTable.TableName,
             ExportName = "DOTNETHELP:DEVTOOLS:EMAIL:TABLE",
-        });
-
-        new CfnOutput(this, "EMAIL_BUCKET", new CfnOutputProps
-        {
-            Value = emailBucket.BucketName,
-            ExportName = "DOTNETHELP:DEVTOOLS:EMAIL:BUCKET",
         });
 
         new CfnOutput(this, "EMAIL_DB_POLICY", new CfnOutputProps

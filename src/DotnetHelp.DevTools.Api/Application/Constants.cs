@@ -4,6 +4,10 @@ namespace DotnetHelp.DevTools.Api.Application;
 
 public static class Constants
 {
+    public static string EmailTableName =>
+        Environment.GetEnvironmentVariable("EMAIL_TABLE_NAME")
+        ?? throw new Exception("CONNECTION_TABLE_NAME environment variable not set");
+    
     public static string HttpRequestTableName =>
         Environment.GetEnvironmentVariable("HTTP_REQUEST_TABLE_NAME")
         ?? throw new Exception("CONNECTION_TABLE_NAME environment variable not set");
