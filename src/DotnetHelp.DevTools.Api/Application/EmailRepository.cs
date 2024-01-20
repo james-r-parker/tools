@@ -54,8 +54,8 @@ internal class EmailRepository(IAmazonDynamoDB db, IAmazonS3 s3) : IEmailReposit
             )).ToImmutableList();
 
             var contents = i["content"].L.Select(e => new EmailContent(
-                e.M["id"].S,
-                e.M["type"].S,
+                e.M["contentId"].S,
+                e.M["contentType"].S,
                 e.M["content"].S
             )).ToImmutableList();
             
