@@ -1,8 +1,8 @@
-﻿@page "/requests"
+﻿@page "/http/bin"
 @inject ApiHttpClient ApiClient
-@inject Websocket Wss
-@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
-@inject NavigationManager NavManager
+@inject IWebSocket Wss
+@inject IStateManagement State
+@inject IOptions<ApplicationOptions> Settings
 @implements IAsyncDisposable
 
 <header id="header" class="mb-10 md:flex md:items-start">
@@ -14,7 +14,7 @@
 			Receive HTTP requests
 		</h1>
 		<p class="mt-4 text-lg text-slate-700 dark:text-slate-400">
-			EndPoint: https://www.dotnethelp.co.uk/api/http/@_bucket
+			EndPoint: @Settings.Value.BaseAddress/api/http/@_bucket
 		</p>
 		<p class="mt-4 text-lg text-slate-700 dark:text-slate-400">
 			State: @Wss.State
@@ -57,7 +57,6 @@ else
 }
 
 @code {
-	const string Key = "http_request_bucket";
 	string _bucket = string.Empty;
 	bool _loading = true;
 	readonly CancellationTokenSource _disposalTokenSource = new();
@@ -65,23 +64,9 @@ else
 
 	protected override async Task OnInitializedAsync()
 	{
-		var uri = NavManager.ToAbsoluteUri(NavManager.Uri);
-		var queryStrings = QueryHelpers.ParseQuery(uri.Query);
-		if (queryStrings.TryGetValue("bucket", out StringValues bucket))
-		{
-			_bucket = bucket.ToString();
-		}
-		else
-		{
-			_bucket = await LocalStorage.GetItemAsync<string>(Key);
-			if (string.IsNullOrWhiteSpace(_bucket))
-			{
-				_bucket = Guid.NewGuid().ToString("N");
-				await LocalStorage.SetItemAsync(Key, _bucket);
-			}
-		}
+		_bucket = await State.GetIdAsync();
 
-		_ = Wss.ConnectAsync(new Uri($"wss://wss.dotnethelp.co.uk?bucket={_bucket}"), _disposalTokenSource.Token)
+		_ = Wss.ConnectAsync(_disposalTokenSource.Token)
 		.ContinueWith((c) =>
 		{
 			Wss.OnMessage += OnMessage;

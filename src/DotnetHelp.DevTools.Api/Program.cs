@@ -93,6 +93,7 @@ RouteGroupBuilder api = app.MapGroup("/api");
 
 api.MapPost("/hmac", HmacHandler.Hash);
 api.MapPost("/base64/encode", Base64Handler.Encode);
+api.MapPost("/base64/decode", Base64Handler.Decode);
 api.MapPost("/jwt/decode", JwtHandler.Decode);
 api.MapPost("/http/{bucket}", HttpRequestHandler.New);
 api.MapGet("/http/{bucket}", HttpRequestHandler.List);

@@ -1,14 +1,21 @@
-﻿namespace DotnetHelp.DevTools.Web.Application;
+﻿using Microsoft.Extensions.Options;
 
-public interface IWebsocket
+namespace DotnetHelp.DevTools.Web.Application;
+
+internal class WebSocketOptions
+{
+	public string? BaseAddress { get; set; }
+}
+
+internal interface IWebSocket : IAsyncDisposable
 {
 	WebSocketState State { get; }
 	event EventHandler<WebSocketMessage>? OnMessage;
-	Task ConnectAsync(Uri url, CancellationToken cancellationToken);
+	Task ConnectAsync(CancellationToken cancellationToken);
 	Task SendAsync(string message, CancellationToken cancellationToken);
 }
 
-public class Websocket(ILogger<Websocket> logger) : IAsyncDisposable, IWebsocket
+internal class WebSocket(IStateManagement state, IOptions<WebSocketOptions> options, ILogger<WebSocket> logger) : IWebSocket
 {
 	private readonly ClientWebSocket _wss = new();
 	private CancellationTokenSource? _cancellationToken;
@@ -18,10 +25,11 @@ public class Websocket(ILogger<Websocket> logger) : IAsyncDisposable, IWebsocket
 
 	public WebSocketState State => _wss.State;
 
-	public async Task ConnectAsync(Uri uri, CancellationToken cancellationToken)
+	public async Task ConnectAsync(CancellationToken cancellationToken)
 	{
 		_cancellationToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-		await _wss.ConnectAsync(uri, cancellationToken);
+		var bucket = await state.GetIdAsync();
+		await _wss.ConnectAsync(new Uri($"{options.Value.BaseAddress}?bucket={bucket}"), cancellationToken);
 		_receiveLoopTask = ReceiveLoop(_cancellationToken.Token);
 	}
 
@@ -29,7 +37,7 @@ public class Websocket(ILogger<Websocket> logger) : IAsyncDisposable, IWebsocket
 	{
 		if (_wss.State != WebSocketState.Open)
 		{
-			throw new InvalidOperationException("Websocket is not open");
+			throw new InvalidOperationException("WebSocket is not open");
 		}
 
 		byte[] bytes = Encoding.UTF8.GetBytes(message);
@@ -101,12 +109,13 @@ public class Websocket(ILogger<Websocket> logger) : IAsyncDisposable, IWebsocket
 			_cancellationToken.Dispose();
 		}
 
+		_receiveLoopTask?.Dispose();
 		await _wss.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closing", CancellationToken.None);
 		_wss.Dispose();
 	}
 }
 
-internal static partial class WebsocketLogger
+internal static partial class WebSocketLogger
 {
 	[LoggerMessage(Level = LogLevel.Information, Message = "Received: {Message}")]
 	public static partial void ReceivedMessage(this ILogger logger, string message);

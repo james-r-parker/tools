@@ -1,9 +1,9 @@
-﻿@page "/base64"
+﻿@page "/base64/encode"
 @using DotnetHelp.DevTools.Shared
 @inject ApiHttpClient Http
 @implements IAsyncDisposable
 
-<PageTitle>Base64</PageTitle>
+<PageTitle>Base64 Encode</PageTitle>
 
 <header id="header" class="mb-10 md:flex md:items-start">
 	<div class="flex-auto max-w-4xl">
@@ -11,10 +11,10 @@
 			Base64
 		</p>
 		<h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight dark:text-slate-200">
-			Base64 Encoding and Decoding
+			Base64 Encode
 		</h1>
 		<p class="mt-4 text-lg text-slate-700 dark:text-slate-400">
-			Convert a string into a base64 encoded string and back again.
+			Convert a string into a base64 encoded string.
 		</p>
 	</div>
 </header>
@@ -28,7 +28,9 @@
 
 	<div class="flex justify-end">
 		<div>
-			<button @onclick="OnClick" type="button" class="bg-sky-500 hover:bg-sky-700 px-5 py-2 text-sm leading-5 rounded-full font-semibold text-white">Encode</button>
+			<button @onclick="OnClick" type="button" class="bg-sky-500 hover:bg-sky-700 px-5 py-2 text-sm leading-5 rounded-full font-semibold text-white">
+				Encode
+			</button>
 		</div>
 	</div>
 

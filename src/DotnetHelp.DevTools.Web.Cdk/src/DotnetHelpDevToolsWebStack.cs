@@ -96,7 +96,7 @@ public class DotnetHelpDevToolsWebStack : Stack
                             },
                             StrictTransportSecurity = new ResponseHeadersStrictTransportSecurity()
                             {
-                                AccessControlMaxAge = Duration.Days(7),
+                                AccessControlMaxAge = Duration.Days(31),
                             },
                             ContentTypeOptions = new ResponseHeadersContentTypeOptions()
                             {
@@ -111,10 +111,21 @@ public class DotnetHelpDevToolsWebStack : Stack
                                 {
                                     Header = "Permissions-Policy",
                                     Value =
-                                        "accelerometer=(), ambient-light-sensor=(), autoplay=(self), battery=(), camera=(self), cross-origin-isolated=(), display-capture=(), document-domain=(), encrypted-media=(), execution-while-not-rendered=(), execution-while-out-of-viewport=(), fullscreen=(), geolocation=(self), gyroscope=(), keyboard-map=(), magnetometer=(), microphone=(), midi=(), navigation-override=(), payment=(self), picture-in-picture=(), publickey-credentials-get=(), screen-wake-lock=(), sync-xhr=(self), usb=(), web-share=(), xr-spatial-tracking=(), clipboard-read=(), clipboard-write=(self), gamepad=(), speaker-selection=()"
+                                        "accelerometer=(), ambient-light-sensor=(), autoplay=(self), battery=(), camera=(), cross-origin-isolated=(), display-capture=(), document-domain=(), encrypted-media=(), execution-while-not-rendered=(), execution-while-out-of-viewport=(), fullscreen=(), geolocation=(self), gyroscope=(), keyboard-map=(), magnetometer=(), microphone=(), midi=(), navigation-override=(), payment=(), picture-in-picture=(), publickey-credentials-get=(), screen-wake-lock=(), sync-xhr=(self), usb=(), web-share=(), xr-spatial-tracking=(), clipboard-read=(), clipboard-write=(self), gamepad=(), speaker-selection=()"
+                                },
+                                new ResponseCustomHeader()
+                                {
+                                    Header = "Cross-Origin-Opener-Policy",
+                                    Value = "same-origin"
+                                },
+                                new ResponseCustomHeader()
+                                {
+                                    Header = "Cross-Origin-Resource-Policy",
+                                    Value = "same-origin"
                                 }
                             }
-                        }
+                        },
+                        RemoveHeaders = new[] { "Server" }
                     })
             },
             DefaultRootObject = "index.html",

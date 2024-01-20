@@ -23,6 +23,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.0.0" />
         <PackageReference Include="MimeKitLite" Version="4.3.0" />
         <RuntimeHostConfigurationOption Include="System.Globalization.AppLocalIcu" Value="68.2.0.9"/>
         <PackageReference Include="Amazon.Lambda.S3Events" Version="3.1.0" />
@@ -47,6 +49,10 @@
         <Content Include="..\..\..\.dockerignore">
             <Link>.dockerignore</Link>
         </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\DotnetHelp.DevTools.WebsocketClient\DotnetHelp.DevTools.WebsocketClient.csproj" />
     </ItemGroup>
 
 </Project>

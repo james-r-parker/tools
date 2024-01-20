@@ -60,4 +60,8 @@
         <InternalsVisibleTo Include="DotnetHelp.DevTools.Api.Tests" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Handlers\Email\" />
+    </ItemGroup>
+
 </Project>

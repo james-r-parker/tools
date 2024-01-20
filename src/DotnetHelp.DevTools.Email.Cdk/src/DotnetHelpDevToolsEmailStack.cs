@@ -18,7 +18,8 @@ public class DotnetHelpDevToolsEmailStack : Stack
     {
         var emailTable = new Table(this, "EmailTable", new TableProps()
         {
-            PartitionKey = new Attribute() { Name = "messageId", Type = AttributeType.STRING },
+            PartitionKey = new Attribute() { Name = "bucket", Type = AttributeType.STRING },
+            SortKey = new Attribute() { Name = "created", Type = AttributeType.NUMBER },
             BillingMode = BillingMode.PAY_PER_REQUEST,
             RemovalPolicy = RemovalPolicy.DESTROY,
             Encryption = TableEncryption.AWS_MANAGED,
@@ -50,6 +51,8 @@ public class DotnetHelpDevToolsEmailStack : Stack
             ManagedPolicies = new IManagedPolicy[]
             {
                 ManagedPolicy.FromAwsManagedPolicyName("service-role/AWSLambdaBasicExecutionRole"),
+                ManagedPolicy.FromManagedPolicyName(this, "WSS_DB_POLICY",
+                    Fn.ImportValue("DOTNETHELP:DEVTOOLS:WSS:DB:POLICY")),
                 ManagedPolicy.FromManagedPolicyName(this, "WSS_API_POLICY",
                     Fn.ImportValue("DOTNETHELP:DEVTOOLS:WSS:API:POLICY"))
             },

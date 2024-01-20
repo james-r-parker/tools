@@ -19,4 +19,10 @@
       <ProjectReference Include="..\DotnetHelp.DevTools.Shared\DotnetHelp.DevTools.Shared.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Pages\Hashing\" />
+      <Folder Include="Pages\Dns\" />
+      <Folder Include="Pages\Jwt\" />
+    </ItemGroup>
+
 </Project>
