@@ -15,6 +15,15 @@ builder.Services
 	.AddHttpClient<ApiHttpClient>(client =>
 		client.BaseAddress = new Uri("https://www.dotnethelp.co.uk"));
 
+builder.Services
+	.AddHttpClient<AlgoliaSearchClient>(client =>
+	{
+		client.BaseAddress = new Uri("https://0LIDZMWP6Y-dsn.algolia.net");
+		client.DefaultRequestHeaders.Add("X-Algolia-Application-Id", "0LIDZMWP6Y");
+		client.DefaultRequestHeaders.Add("X-Algolia-API-Key", "3146a10f247fb1b7669ffd154df4bce4");
+	});
+		
+
 builder.Services.Configure<WebSocketOptions>((o) =>
 {
 	o.BaseAddress = "wss://wss.dotnethelp.co.uk";
