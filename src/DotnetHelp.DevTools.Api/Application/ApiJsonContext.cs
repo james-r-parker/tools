@@ -8,7 +8,7 @@ namespace DotnetHelp.DevTools.Api.Application;
 [JsonSerializable(typeof(TextApiResponse))]
 [JsonSerializable(typeof(TextCollectionApiResponse))]
 [JsonSerializable(typeof(TextApiRequest))]
-[JsonSerializable(typeof(HmacApiRequest))]
+[JsonSerializable(typeof(HashApiRequest))]
 [JsonSerializable(typeof(JwtApiRequest))]
 [JsonSerializable(typeof(JwtApiResponse))]
 [JsonSerializable(typeof(IReadOnlyCollection<BucketHttpRequest>))]

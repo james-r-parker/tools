@@ -68,4 +68,26 @@ internal class ApiHttpClient(HttpClient httpClient)
 
 		return await response.Content.ReadFromJsonAsync<DnsLookupResponses>(cancellationToken);
 	}
+
+	public async Task<TextApiResponse?> Hash(HashApiRequest request, CancellationToken cancellationToken)
+	{
+		HttpResponseMessage response =
+			await httpClient.PostAsJsonAsync("/api/hash", request, cancellationToken);
+
+		response.EnsureSuccessStatusCode();
+
+
+		return await response.Content.ReadFromJsonAsync<TextApiResponse>(cancellationToken);
+	}
+
+	public async Task<JwtApiResponse?> JwtDecode(JwtApiRequest request, CancellationToken cancellationToken)
+	{
+		HttpResponseMessage response =
+			await httpClient.PostAsJsonAsync("/api/jwt/decode", request, cancellationToken);
+
+		response.EnsureSuccessStatusCode();
+
+
+		return await response.Content.ReadFromJsonAsync<JwtApiResponse>(cancellationToken);
+	}
 }

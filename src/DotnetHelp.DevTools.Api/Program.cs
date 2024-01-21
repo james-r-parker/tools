@@ -4,7 +4,7 @@ using DotnetHelp.DevTools;
 using DotnetHelp.DevTools.Api.Handlers.Base64;
 using DotnetHelp.DevTools.Api.Handlers.Dns;
 using DotnetHelp.DevTools.Api.Handlers.Email;
-using DotnetHelp.DevTools.Api.Handlers.Hmac;
+using DotnetHelp.DevTools.Api.Handlers.Hash;
 using DotnetHelp.DevTools.Api.Handlers.Http;
 using DotnetHelp.DevTools.Api.Handlers.Jwt;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -98,7 +98,7 @@ app
 
 RouteGroupBuilder api = app.MapGroup("/api");
 
-api.MapPost("/hmac", HmacHandler.Hash);
+api.MapPost("/hash", HashHandler.Hash);
 
 api.MapPost("/base64/encode", Base64Handler.Encode);
 api.MapPost("/base64/decode", Base64Handler.Decode);

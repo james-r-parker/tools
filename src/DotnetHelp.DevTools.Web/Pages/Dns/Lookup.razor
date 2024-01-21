@@ -39,11 +39,11 @@
 			<div style="background-position:10px 10px" class="absolute inset-0 bg-grid-slate-100 [mask-image:linear-gradient(0deg,#fff,rgba(255,255,255,0.6))] dark:bg-grid-slate-700/25 dark:[mask-image:linear-gradient(0deg,rgba(255,255,255,0.1),rgba(255,255,255,0.5))]"></div><div class="relative rounded-xl overflow-auto p-8">
 				<div class="space-y-8">
 					<div>
-						<div class="max-w-prose text-sm font-medium text-slate-900 dark:text-slate-200">
+						<div class="text-sm font-medium text-slate-900 dark:text-slate-200">
 							@foreach (var record in _response.Responses)
 							{
 								<ul>
-									<li>
+									<li class="mb-2">
 										<span>
 											<span class="text-sm text-sky-500 whitespace-nowrap dark:text-sky-400">@record.Type : </span>
 											<span class="text-wrap break-all text-sm">@record.Address</span>
