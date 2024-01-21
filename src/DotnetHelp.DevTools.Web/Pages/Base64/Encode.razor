@@ -5,19 +5,11 @@
 
 <PageTitle>Base64 Encode</PageTitle>
 
-<header id="header" class="mb-10 md:flex md:items-start">
-	<div class="flex-auto max-w-4xl">
-		<p class="mb-4 text-sm leading-6 font-semibold text-sky-500 dark:text-sky-400">
-			Base64
-		</p>
-		<h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight dark:text-slate-200">
-			Base64 Encode
-		</h1>
-		<p class="mt-4 text-lg text-slate-700 dark:text-slate-400">
-			Convert a string into a base64 encoded string.
-		</p>
-	</div>
-</header>
+<PageHeader Title="Base64"
+			SubTitle="Base64 Encode"
+			Details=@(new List<string> {
+			$"Convert a string into a base64 encoded string."
+			}) />
 
 <section class="mb-8 relative">
 

@@ -109,7 +109,12 @@ internal class WebSocket(IStateManagement state, IOptions<WebSocketOptions> opti
 			_cancellationToken.Dispose();
 		}
 
-		_receiveLoopTask?.Dispose();
+		if (_receiveLoopTask is not null)
+		{
+			await _receiveLoopTask;
+			_receiveLoopTask.Dispose();
+		}
+
 		await _wss.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closing", CancellationToken.None);
 		_wss.Dispose();
 	}

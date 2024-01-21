@@ -1,0 +1,76 @@
+﻿@page "/email/bin"
+@inject ApiHttpClient ApiClient
+@inject IWebSocket Wss
+@inject IStateManagement State
+@inject IOptions<ApplicationOptions> Settings
+@implements IAsyncDisposable
+
+<PageHeader Title="Email"
+	SubTitle="Receive Emails"
+	Details=@(new List<string> {
+	$"EndPoint: {_bucket}@{Settings.Value.EmailBaseAddress}",
+	$"State: {Wss.State}"
+	}) 
+/>
+
+@if (_loading)
+{
+	<Loading />
+}
+else if (_requests.Count == 0)
+{
+	<Empty />
+}
+else
+{
+	@foreach (IncomingEmail request in _requests.OrderByDescending(x => x.Created))
+	{
+		<section class="mb-2">
+			<Email Model="request" />
+		</section>
+	}
+}
+
+@code {
+	string _bucket = string.Empty;
+	bool _loading = true;
+	readonly CancellationTokenSource _disposalTokenSource = new();
+	readonly List<IncomingEmail> _requests = new();
+
+	protected override async Task OnInitializedAsync()
+	{
+		_bucket = await State.GetIdAsync();
+
+		_ = Wss.ConnectAsync(_disposalTokenSource.Token)
+		.ContinueWith((c) =>
+		{
+			Wss.OnMessage += OnMessage;
+			StateHasChanged();
+		});
+
+		_ = GetList();
+	}
+
+	private void OnMessage(object? sender, WebSocketMessage? message)
+	{
+		if (message?.Action == "INCOMING_EMAIL")
+		{
+			_ = GetList();
+		}
+	}
+
+	private async Task GetList()
+	{
+		long from = _requests.Count == 0 ? 0 : _requests.Max(x => x.Created).ToUnixTimeSeconds();
+		_requests.AddRange(await ApiClient.GetIncomingEmails(_bucket, from, _disposalTokenSource.Token));
+		_loading = false;
+		StateHasChanged();
+	}
+
+	public async ValueTask DisposeAsync()
+	{
+		Wss.OnMessage -= OnMessage;
+		await _disposalTokenSource.CancelAsync();
+		await Wss.DisposeAsync();
+	}
+}

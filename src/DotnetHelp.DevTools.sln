@@ -1,14 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetHelp.DevTools.Web", "DotnetHelp.DevTools.Web\DotnetHelp.DevTools.Web.csproj", "{73E73EBE-C018-4F5C-B9F4-B00CF372D73F}"
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34414.90
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotnetHelp.DevTools.Web", "DotnetHelp.DevTools.Web\DotnetHelp.DevTools.Web.csproj", "{73E73EBE-C018-4F5C-B9F4-B00CF372D73F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetHelp.DevTools.Api", "DotnetHelp.DevTools.Api\DotnetHelp.DevTools.Api.csproj", "{3770DBFB-660F-4026-9292-CA21C17D64BA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotnetHelp.DevTools.Api", "DotnetHelp.DevTools.Api\DotnetHelp.DevTools.Api.csproj", "{3770DBFB-660F-4026-9292-CA21C17D64BA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetHelp.DevTools.Shared", "DotnetHelp.DevTools.Shared\DotnetHelp.DevTools.Shared.csproj", "{45D33682-5C2A-4E74-8AC6-41A96E1031EE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotnetHelp.DevTools.Shared", "DotnetHelp.DevTools.Shared\DotnetHelp.DevTools.Shared.csproj", "{45D33682-5C2A-4E74-8AC6-41A96E1031EE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetHelp.DevTools.Api.Tests", "DotnetHelp.DevTools.Api.Tests\DotnetHelp.DevTools.Api.Tests.csproj", "{5CB37C1B-4C3C-474F-93EA-5CCD9BCDBFC0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotnetHelp.DevTools.Api.Tests", "DotnetHelp.DevTools.Api.Tests\DotnetHelp.DevTools.Api.Tests.csproj", "{5CB37C1B-4C3C-474F-93EA-5CCD9BCDBFC0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetHelp.DevTools.Api.PreTraffic", "DotnetHelp.DevTools.Api.PreTraffic\DotnetHelp.DevTools.Api.PreTraffic.csproj", "{3F54BA6B-C951-4851-81E4-5A60A058D0F1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotnetHelp.DevTools.Api.PreTraffic", "DotnetHelp.DevTools.Api.PreTraffic\DotnetHelp.DevTools.Api.PreTraffic.csproj", "{3F54BA6B-C951-4851-81E4-5A60A058D0F1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Api", "Api", "{53721097-B55D-428D-A69D-9994A96AEABE}"
 EndProject
@@ -19,36 +22,36 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Actions", "Actions", "{A8AFAD1D-9894-4F3B-A69F-84DD7F38AE22}"
 	ProjectSection(SolutionItems) = preProject
 		..\.github\workflows\api_deploy.yml = ..\.github\workflows\api_deploy.yml
-		..\.github\workflows\web_deploy.yml = ..\.github\workflows\web_deploy.yml
-		..\.github\workflows\websocket_deploy.yml = ..\.github\workflows\websocket_deploy.yml
 		..\.github\workflows\email_deploy.yml = ..\.github\workflows\email_deploy.yml
+		..\.github\workflows\websocket_deploy.yml = ..\.github\workflows\websocket_deploy.yml
+		..\.github\workflows\web_deploy.yml = ..\.github\workflows\web_deploy.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{EEB68E3F-2651-410D-AC59-B2278B6C7189}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WebSocket", "WebSocket", "{684BDA23-92CC-48E9-A329-3E086EBBE493}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dotnethelp.DevTools.Websocket.Tests", "Dotnethelp.DevTools.Websocket.Tests\Dotnethelp.DevTools.Websocket.Tests.csproj", "{E8B9822B-1E10-4729-AE4B-2A64F5660940}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dotnethelp.DevTools.Websocket.Tests", "Dotnethelp.DevTools.Websocket.Tests\Dotnethelp.DevTools.Websocket.Tests.csproj", "{E8B9822B-1E10-4729-AE4B-2A64F5660940}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetHelp.DevTools.Api.Cdk", "DotnetHelp.DevTools.Api.Cdk\src\DotnetHelp.DevTools.Api.Cdk.csproj", "{01BB63CF-92EA-4EEB-8D26-7ECC36B58D98}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotnetHelp.DevTools.Api.Cdk", "DotnetHelp.DevTools.Api.Cdk\src\DotnetHelp.DevTools.Api.Cdk.csproj", "{01BB63CF-92EA-4EEB-8D26-7ECC36B58D98}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetHelp.DevTools.Web.Cdk", "DotnetHelp.DevTools.Web.Cdk\src\DotnetHelp.DevTools.Web.Cdk.csproj", "{5E1E1D3A-95B7-4E22-AD95-C35E23026C02}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotnetHelp.DevTools.Web.Cdk", "DotnetHelp.DevTools.Web.Cdk\src\DotnetHelp.DevTools.Web.Cdk.csproj", "{5E1E1D3A-95B7-4E22-AD95-C35E23026C02}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetHelp.DevTools.Websocket.Cdk", "DotnetHelp.DevTools.Websocket.Cdk\src\DotnetHelp.DevTools.Websocket.Cdk.csproj", "{130C736C-0EF0-4936-9EED-16E26DFA85A3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotnetHelp.DevTools.Websocket.Cdk", "DotnetHelp.DevTools.Websocket.Cdk\src\DotnetHelp.DevTools.Websocket.Cdk.csproj", "{130C736C-0EF0-4936-9EED-16E26DFA85A3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetHelp.DevTools.Websocket", "DotnetHelp.DevTools.Websocket\DotnetHelp.DevTools.Websocket.csproj", "{85C45D7B-7AF3-43D5-84FC-15B8087AFADE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotnetHelp.DevTools.Websocket", "DotnetHelp.DevTools.Websocket\DotnetHelp.DevTools.Websocket.csproj", "{85C45D7B-7AF3-43D5-84FC-15B8087AFADE}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Emails", "Emails", "{C85A8C06-D4E5-475B-ACE0-8C9B9177FED0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetHelp.DevTools.Email", "DotnetHelp.DevTools.Email\DotnetHelp.DevTools.Email.csproj", "{3A65DCEB-F306-4C6D-865E-97738A86A24E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotnetHelp.DevTools.Email", "DotnetHelp.DevTools.Email\DotnetHelp.DevTools.Email.csproj", "{3A65DCEB-F306-4C6D-865E-97738A86A24E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetHelp.DevTools.Email.Tests", "DotnetHelp.DevTools.Email.Tests\DotnetHelp.DevTools.Email.Tests.csproj", "{EF9B3194-933C-4F6C-94BC-B0553E76CC90}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotnetHelp.DevTools.Email.Tests", "DotnetHelp.DevTools.Email.Tests\DotnetHelp.DevTools.Email.Tests.csproj", "{EF9B3194-933C-4F6C-94BC-B0553E76CC90}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetHelp.DevTools.Email.Cdk", "DotnetHelp.DevTools.Email.Cdk\src\DotnetHelp.DevTools.Email.Cdk.csproj", "{E5FCB6EF-4648-43BF-88FA-D0F1F9F514CC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotnetHelp.DevTools.Email.Cdk", "DotnetHelp.DevTools.Email.Cdk\src\DotnetHelp.DevTools.Email.Cdk.csproj", "{E5FCB6EF-4648-43BF-88FA-D0F1F9F514CC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetHelp.DevTools.WebsocketClient", "DotnetHelp.DevTools.WebsocketClient\DotnetHelp.DevTools.WebsocketClient.csproj", "{6737E65B-165E-43FA-97AB-A083FEF16046}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotnetHelp.DevTools.WebsocketClient", "DotnetHelp.DevTools.WebsocketClient\DotnetHelp.DevTools.WebsocketClient.csproj", "{6737E65B-165E-43FA-97AB-A083FEF16046}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetHelp.DevTools.Cache", "DotnetHelp.DevTools.Cache\DotnetHelp.DevTools.Cache.csproj", "{2A307B50-7942-4571-A997-A6DCD6559746}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotnetHelp.DevTools.Cache", "DotnetHelp.DevTools.Cache\DotnetHelp.DevTools.Cache.csproj", "{2A307B50-7942-4571-A997-A6DCD6559746}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -117,13 +120,16 @@ Global
 		{2A307B50-7942-4571-A997-A6DCD6559746}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2A307B50-7942-4571-A997-A6DCD6559746}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{3770DBFB-660F-4026-9292-CA21C17D64BA} = {53721097-B55D-428D-A69D-9994A96AEABE}
-		{3F54BA6B-C951-4851-81E4-5A60A058D0F1} = {53721097-B55D-428D-A69D-9994A96AEABE}
-		{5CB37C1B-4C3C-474F-93EA-5CCD9BCDBFC0} = {53721097-B55D-428D-A69D-9994A96AEABE}
-		{A8AFAD1D-9894-4F3B-A69F-84DD7F38AE22} = {9D212397-39F0-41D1-AD1C-DCA0F5B6067D}
 		{73E73EBE-C018-4F5C-B9F4-B00CF372D73F} = {5A6D73BC-BBF9-4203-835A-4C92CCFA95E4}
+		{3770DBFB-660F-4026-9292-CA21C17D64BA} = {53721097-B55D-428D-A69D-9994A96AEABE}
 		{45D33682-5C2A-4E74-8AC6-41A96E1031EE} = {EEB68E3F-2651-410D-AC59-B2278B6C7189}
+		{5CB37C1B-4C3C-474F-93EA-5CCD9BCDBFC0} = {53721097-B55D-428D-A69D-9994A96AEABE}
+		{3F54BA6B-C951-4851-81E4-5A60A058D0F1} = {53721097-B55D-428D-A69D-9994A96AEABE}
+		{A8AFAD1D-9894-4F3B-A69F-84DD7F38AE22} = {9D212397-39F0-41D1-AD1C-DCA0F5B6067D}
 		{E8B9822B-1E10-4729-AE4B-2A64F5660940} = {684BDA23-92CC-48E9-A329-3E086EBBE493}
 		{01BB63CF-92EA-4EEB-8D26-7ECC36B58D98} = {9D212397-39F0-41D1-AD1C-DCA0F5B6067D}
 		{5E1E1D3A-95B7-4E22-AD95-C35E23026C02} = {9D212397-39F0-41D1-AD1C-DCA0F5B6067D}

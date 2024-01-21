@@ -109,7 +109,7 @@ api.MapPost("/http/{bucket}", HttpRequestHandler.New);
 api.MapGet("/http/{bucket}", HttpRequestHandler.List);
 api.MapPost("/http", HttpRequestHandler.Send);
 
-api.MapGet("/dns/{domain}/{type}", DnsHandler.Lookup);
+api.MapGet("/dns/{domain}", DnsHandler.Lookup);
 
 api.MapGet("/email/{bucket}", EmailRequestHandler.List);
 

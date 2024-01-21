@@ -1,27 +1,27 @@
-﻿@page "/base64/decode"
+﻿@page "/dns/lookup"
 @using DotnetHelp.DevTools.Shared
 @inject ApiHttpClient Http
 @implements IAsyncDisposable
 
-<PageTitle>Base64 Decode</PageTitle>
+<PageTitle>Dns Lookup</PageTitle>
 
-<PageHeader Title="Base64"
-			SubTitle="Base64 Decode"
+<PageHeader Title="Dns"
+			SubTitle="Dns Lookup"
 			Details=@(new List<string> {
-			$"Convert a base64 encoded string into a readable string."
+			$"Lookup Dns records for a given domain"
 			}) />
 
 <section class="mb-8 relative">
 
 	<label class="block mb-4">
-		<span class="block text-gray-700 dark:text-gray-400 mb-2">Input</span>
-		<InputTextArea @bind-Value="_request" class="w-full text-sm leading-6 text-slate-400 rounded-md ring-1 ring-slate-900/10 shadow-sm py-1.5 pl-2 pr-3 hover:ring-slate-300 dark:bg-slate-800 dark:highlight-white/5 dark:hover:bg-slate-700" rows="3" placeholder="Enter some text."></InputTextArea>
+		<span class="block text-gray-700 dark:text-gray-400 mb-2">Domain</span>
+		<InputText @bind-Value="_request" class="w-full text-sm leading-6 text-slate-400 rounded-md ring-1 ring-slate-900/10 shadow-sm py-1.5 pl-2 pr-3 hover:ring-slate-300 dark:bg-slate-800 dark:highlight-white/5 dark:hover:bg-slate-700" rows="3" placeholder="Enter some text."></InputText>
 	</label>
 
 	<div class="flex justify-end">
 		<div>
 			<button @onclick="OnClick" type="button" class="bg-sky-500 hover:bg-sky-700 px-5 py-2 text-sm leading-5 rounded-full font-semibold text-white">
-				Decode
+				Lookup
 			</button>
 		</div>
 	</div>
@@ -40,7 +40,17 @@
 				<div class="space-y-8">
 					<div>
 						<div class="max-w-prose text-sm font-medium text-slate-900 dark:text-slate-200">
-							<p>@_response?.Response</p>
+							@foreach (var record in _response.Responses)
+							{
+								<ul>
+									<li>
+										<span>
+											<span class="text-sm text-sky-500 whitespace-nowrap dark:text-sky-400">@record.Type : </span>
+											<span class="text-wrap break-all text-sm">@record.Address</span>
+										</span>
+									</li>
+								</ul>
+							}
 						</div>
 					</div>
 				</div>
@@ -53,7 +63,7 @@
 
 @code {
 	private string? _request;
-	private TextApiResponse? _response;
+	private DnsLookupResponses? _response;
 	readonly CancellationTokenSource _disposalTokenSource = new();
 
 	protected override Task OnInitializedAsync()
@@ -70,7 +80,7 @@
 	{
 		if (!string.IsNullOrWhiteSpace(_request))
 		{
-			_response = await Http.Base64Decode(new TextApiRequest(_request), _disposalTokenSource.Token);
+			_response = await Http.DnsLookup(_request, _disposalTokenSource.Token);
 			StateHasChanged();
 		}
 	}

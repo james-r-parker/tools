@@ -11,99 +11,99 @@
 	</div>
 
 	<ul>
-		<li>
-			<NavLink class="group flex items-center lg:text-sm lg:leading-6 mb-4 font-semibold text-sky-500 dark:text-sky-400" href="">
-				<div class="mr-4 rounded-md ring-1 ring-slate-900/5 shadow-sm group-hover:shadow group-hover:ring-slate-900/10 dark:ring-0 dark:shadow-none dark:group-hover:shadow-none dark:group-hover:highlight-white/10 group-hover:shadow-sky-200 dark:group-hover:bg-sky-500 dark:bg-sky-500 dark:highlight-white/10">
-					<svg class="h-6 w-6" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M8.5 7c1.093 0 2.117.27 3 .743V17a6.345 6.345 0 0 0-3-.743c-1.093 0-2.617.27-3.5.743V7.743C5.883 7.27 7.407 7 8.5 7Z" class="fill-sky-200 group-hover:fill-sky-500 dark:fill-sky-300 dark:group-hover:fill-sky-300"></path><path fill-rule="evenodd" clip-rule="evenodd" d="M15.5 7c1.093 0 2.617.27 3.5.743V17c-.883-.473-2.407-.743-3.5-.743s-2.117.27-3 .743V7.743a6.344 6.344 0 0 1 3-.743Z" class="fill-sky-400 group-hover:fill-sky-500 dark:fill-sky-200 dark:group-hover:fill-sky-200"></path></svg>
-				</div>
-				Home
-			</NavLink>
-		</li>
-		<li>
-			<NavLink class="group flex items-center lg:text-sm lg:leading-6 mb-4 font-medium text-slate-700 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-300" href="about">
-				<div class="mr-4 rounded-md ring-1 ring-slate-900/5 shadow-sm group-hover:shadow group-hover:ring-slate-900/10 dark:ring-0 dark:shadow-none dark:group-hover:shadow-none dark:group-hover:highlight-white/10 group-hover:shadow-indigo-200 dark:group-hover:bg-indigo-500 dark:bg-slate-800 dark:highlight-white/5">
-					<svg class="h-6 w-6" viewBox="0 0 24 24" fill="none"><path d="m6 9 6-3 6 3v6l-6 3-6-3V9Z" class="fill-indigo-100 group-hover:fill-indigo-200 dark:fill-slate-400"></path><path d="m6 9 6 3v7l-6-3V9Z" class="fill-indigo-300 group-hover:fill-indigo-400 dark:group-hover:fill-indigo-300 dark:fill-slate-500"></path><path d="m18 9-6 3v7l6-3V9Z" class="fill-indigo-400 group-hover:fill-indigo-500 dark:group-hover:fill-indigo-400 dark:fill-slate-600"></path></svg>
-				</div>
-				About
-			</NavLink>
-		</li>
+		@foreach (var menuItem in MenuItems)
+		{
+			<li>
+				@if(menuItem.Selected)
+				{
+					<NavLink class="group flex items-center lg:text-sm lg:leading-6 mb-4 font-semibold text-sky-500 dark:text-sky-400" href="@menuItem.Link">
+						<div class="mr-4 rounded-md ring-1 ring-slate-900/5 shadow-sm group-hover:shadow group-hover:ring-slate-900/10 dark:ring-0 dark:shadow-none dark:group-hover:shadow-none dark:group-hover:highlight-white/10 group-hover:shadow-sky-200 dark:group-hover:bg-sky-500 dark:bg-sky-500 dark:highlight-white/10">
+							@menuItem.Icon
+						</div>
+						@menuItem.Text
+					</NavLink>
+				}
+				else
+				{
+					<NavLink class="group flex items-center lg:text-sm lg:leading-6 mb-4 font-medium text-slate-700 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-300" href="@menuItem.Link">
+						<div class="mr-4 rounded-md ring-1 ring-slate-900/5 shadow-sm group-hover:shadow group-hover:ring-slate-900/10 dark:ring-0 dark:shadow-none dark:group-hover:shadow-none dark:group-hover:highlight-white/10 group-hover:shadow-indigo-200 dark:group-hover:bg-indigo-500 dark:bg-slate-800 dark:highlight-white/5">
+							@menuItem.Icon
+						</div>
+						@menuItem.Text
+					</NavLink>
+				}
+			</li>
+		}
 
-		<li class="mt-12 lg:mt-8">
-			<h5 class="mb-8 lg:mb-3 font-semibold text-slate-900 dark:text-slate-200">
-				Http
-			</h5>
-			<ul class="space-y-6 lg:space-y-2 border-l border-slate-100 dark:border-slate-800">
-				<li>
-					<NavLink class="block border-l pl-4 -ml-px border-transparent hover:border-slate-400 dark:hover:border-slate-500 text-slate-700 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-300" href="http/bin">
-						Request Bin
-					</NavLink>
-				</li>
-			</ul>
-		</li>
-
-		<li class="mt-12 lg:mt-8">
-			<h5 class="mb-8 lg:mb-3 font-semibold text-slate-900 dark:text-slate-200">
-				Email
-			</h5>
-			<ul class="space-y-6 lg:space-y-2 border-l border-slate-100 dark:border-slate-800">
-				<li>
-					<NavLink class="block border-l pl-4 -ml-px border-transparent hover:border-slate-400 dark:hover:border-slate-500 text-slate-700 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-300" href="email/bin">
-						Email Bin
-					</NavLink>
-				</li>
-			</ul>
-		</li>
-
-		<li class="mt-12 lg:mt-8">
-			<h5 class="mb-8 lg:mb-3 font-semibold text-slate-900 dark:text-slate-200">
-				Encoding
-			</h5>
-			<ul class="space-y-6 lg:space-y-2 border-l border-slate-100 dark:border-slate-800">
-				<li>
-					<NavLink class="block border-l pl-4 -ml-px border-transparent hover:border-slate-400 dark:hover:border-slate-500 text-slate-700 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-300" href="base64/encode">
-						Base64 Encode
-					</NavLink>
-				</li>
-				<li>
-					<NavLink class="block border-l pl-4 -ml-px border-transparent hover:border-slate-400 dark:hover:border-slate-500 text-slate-700 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-300" href="base64/decode">
-						Base64 Decode
-					</NavLink>
-				</li>
-			</ul>
-		</li>
-
-		<li class="mt-12 lg:mt-8">
-			<h5 class="mb-8 lg:mb-3 font-semibold text-slate-900 dark:text-slate-200">
-				Hashing
-			</h5>
-			<ul class="space-y-6 lg:space-y-2 border-l border-slate-100 dark:border-slate-800">
-				<li>
-					<NavLink class="block border-l pl-4 -ml-px border-transparent hover:border-slate-400 dark:hover:border-slate-500 text-slate-700 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-300" href="hashing/hmac">
-						Hmac
-					</NavLink>
-				</li>
-				<li>
-					<NavLink class="block border-l pl-4 -ml-px border-transparent hover:border-slate-400 dark:hover:border-slate-500 text-slate-700 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-300" href="hashing/sha">
-						Sha
-					</NavLink>
-				</li>
-			</ul>
-		</li>
-
-		<li class="mt-12 lg:mt-8">
-			<h5 class="mb-8 lg:mb-3 font-semibold text-slate-900 dark:text-slate-200">
-				Jwt
-			</h5>
-			<ul class="space-y-6 lg:space-y-2 border-l border-slate-100 dark:border-slate-800">
-				<li>
-					<NavLink class="block border-l pl-4 -ml-px border-transparent hover:border-slate-400 dark:hover:border-slate-500 text-slate-700 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-300" href="jwt/decode">
-						Decode
-					</NavLink>
-				</li>
-			</ul>
-		</li>
+		@foreach (var subMenuGroup in SubMenuGroups)
+		{
+			<li class="mt-12 lg:mt-8">
+				<h5 class="mb-8 lg:mb-3 font-semibold text-slate-900 dark:text-slate-200">
+					@subMenuGroup.Text
+				</h5>
+				<ul class="space-y-6 lg:space-y-2 border-l border-slate-100 dark:border-slate-800">
+					@foreach (var subMenuItem in subMenuGroup.Items)
+					{
+						<li>
+							<NavLink class="block border-l pl-4 -ml-px border-transparent hover:border-slate-400 dark:hover:border-slate-500 text-slate-700 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-300" href="@subMenuItem.Link">
+								@subMenuItem.Text
+							</NavLink>
+						</li>
+					}
+				</ul>
+			</li>
+		}
 	</ul>
 </nav>
 
 @code {
+
+	private static readonly IReadOnlyCollection<MainMenuItem> MenuItems = new List<MainMenuItem>
+	{
+		new MainMenuItem(
+			"Home",
+			"/",
+			new MarkupString("<svg class=\"h-6 w-6\" viewBox=\"0 0 24 24\" fill=\"none\"><path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M8.5 7c1.093 0 2.117.27 3 .743V17a6.345 6.345 0 0 0-3-.743c-1.093 0-2.617.27-3.5.743V7.743C5.883 7.27 7.407 7 8.5 7Z\" class=\"fill-sky-200 group-hover:fill-sky-500 dark:fill-sky-300 dark:group-hover:fill-sky-300\"></path><path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M15.5 7c1.093 0 2.617.27 3.5.743V17c-.883-.473-2.407-.743-3.5-.743s-2.117.27-3 .743V7.743a6.344 6.344 0 0 1 3-.743Z\" class=\"fill-sky-400 group-hover:fill-sky-500 dark:fill-sky-200 dark:group-hover:fill-sky-200\"></path></svg>"),
+			true),
+		new MainMenuItem(
+			"About",
+			"/about",
+			new MarkupString("<svg class=\"h-6 w-6\" viewBox=\"0 0 24 24\" fill=\"none\"><path d=\"m6 9 6-3 6 3v6l-6 3-6-3V9Z\" class=\"fill-indigo-100 group-hover:fill-indigo-200 dark:fill-slate-400\"></path><path d=\"m6 9 6 3v7l-6-3V9Z\" class=\"fill-indigo-300 group-hover:fill-indigo-400 dark:group-hover:fill-indigo-300 dark:fill-slate-500\"></path><path d=\"m18 9-6 3v7l6-3V9Z\" class=\"fill-indigo-400 group-hover:fill-indigo-500 dark:group-hover:fill-indigo-400 dark:fill-slate-600\"></path></svg>"),
+			false),
+	};
+
+	private static readonly IReadOnlyCollection<SubMenuGroup> SubMenuGroups = new List<SubMenuGroup>
+	{
+		new SubMenuGroup("Http", false, new List<SubMenuItem>
+		{
+			new SubMenuItem("Request Bin", "/http/bin", false),
+			new SubMenuItem("Send Request", "/http/send", false),
+		}),
+		new SubMenuGroup("Email", false, new List<SubMenuItem>
+		{
+			new SubMenuItem("Email Bin", "/email/bin", false),
+		}),
+		new SubMenuGroup("Dns", false, new List<SubMenuItem>
+		{
+			new SubMenuItem("Lookup", "/dns/lookup", false),
+		}),
+		new SubMenuGroup("Encoding", false, new List<SubMenuItem>
+		{
+			new SubMenuItem("Base64 Encode", "/base64/encode", false),
+			new SubMenuItem("Base64 Decode", "/base64/decode", false),
+		}),
+		new SubMenuGroup("Hashing", false, new List<SubMenuItem>
+		{
+			new SubMenuItem("Hmac", "/hashing/hmac", false),
+			new SubMenuItem("Sha", "/hashing/sha", false),
+		}),
+		new SubMenuGroup("Jwt", false, new List<SubMenuItem>
+		{
+			new SubMenuItem("Decode", "/jwt/decode", false),
+		}),
+	};
+
+	private record SubMenuGroup(string Text, bool Selected, IReadOnlyCollection<SubMenuItem> Items);
+	private record SubMenuItem(string Text, string Link, bool Selected);
+	private record MainMenuItem(string Text, string Link, MarkupString Icon, bool Selected);
 }

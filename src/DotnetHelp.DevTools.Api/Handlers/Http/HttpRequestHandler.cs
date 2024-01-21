@@ -99,7 +99,7 @@ internal static class HttpRequestHandler
     {
         try
         {
-            var result = await client.Send(request, CancellationToken.None);
+			var result = await client.Send(request, CancellationToken.None);
             return Results.Ok(result);
         }
         catch

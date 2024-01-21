@@ -23,6 +23,7 @@ builder.Services.Configure<WebSocketOptions>((o) =>
 builder.Services.Configure<ApplicationOptions>((o) =>
 {
 	o.BaseAddress = "https://www.dotnethelp.co.uk";
+	o.EmailBaseAddress = "tools.dotnethelp.co.uk";
 });
 
 builder.Services
