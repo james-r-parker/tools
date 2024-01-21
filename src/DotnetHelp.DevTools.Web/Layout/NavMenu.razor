@@ -89,14 +89,22 @@
 		}),
 		new SubMenuGroup("Encoding", false, new List<SubMenuItem>
 		{
-			new SubMenuItem("Base64 Encode", "/base64/encode", false),
-			new SubMenuItem("Base64 Decode", "/base64/decode", false),
+			new SubMenuItem("Url Encode", "/encoding/url/encode", false),
+			new SubMenuItem("Url Decode", "/encoding/url/decode", false),
+			new SubMenuItem("Html Encode", "/encoding/html/encode", false),
+			new SubMenuItem("Html Decode", "/encoding/html/decode", false),
+			new SubMenuItem("Base64 Encode", "/encoding/base64/encode", false),
+			new SubMenuItem("Base64 Decode", "/encoding/base64/decode", false),
 		}),
 		new SubMenuGroup("Hashing", false, new List<SubMenuItem>
 		{
 			new SubMenuItem("Hmac", "/hashing", false),
 			new SubMenuItem("Sha", "/hashing", false),
 			new SubMenuItem("Md5", "/hashing", false),
+		}),
+		new SubMenuGroup("Json", false, new List<SubMenuItem>
+		{
+			new SubMenuItem("Format", "/json/format", false),
 		}),
 		new SubMenuGroup("Jwt", false, new List<SubMenuItem>
 		{
