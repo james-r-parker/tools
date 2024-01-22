@@ -3,63 +3,84 @@
     "objectID" : "/http/bin",
     "group" : "http",
     "name": "HTTP requests",
-    "description": "Receive HTTP requests",
+    "description": "Receive HTTP requests and displays the results in realtime.",
     "tags" : ["http","request","bin"]
   },
   {
-    "objectID" : "/encoding/url/decode",
+    "objectID" : "/http/send",
+    "group" : "http",
+    "name": "Send a HTTP request",
+    "description": "Send a HTTP request",
+    "tags" : ["http","send", "GET", "POST", "PUT"]
+  },
+  {
+    "objectID" : "/email/bin",
+    "group" : "email",
+    "name": "Receive Emails",
+    "description": "Recieve an email and displays the results in realtime",
+    "tags" : ["email","recieve", "bin", "mime"]
+  },
+  {
+    "objectID" : "/encoding/url/encode",
     "group" : "encoding",
-    "name": "Url Decode",
-    "description": "Decode a URL encoded string",
-    "tags" : ["decode","url"]
+    "name": "Url Encode",
+    "description": "Encode a string into a URL encoded string",
+    "tags" : ["encode","url", "urlencode"]
   },
   {
     "objectID" : "/encoding/url/decode",
     "group" : "encoding",
     "name": "Url Decode",
     "description": "Decode a URL encoded string",
-    "tags" : ["decode","url"]
+    "tags" : ["decode","url", "urldecode"]
   },
   {
-    "objectID" : "/encoding/url/decode",
+    "objectID" : "/encoding/html/encode",
     "group" : "encoding",
-    "name": "Url Decode",
-    "description": "Decode a URL encoded string",
-    "tags" : ["decode","url"]
+    "name": "Html Encode",
+    "description": "Encode a string into a Html encoded string",
+    "tags" : ["encode","html", "htmlencode"]
   },
   {
-    "objectID" : "/encoding/url/decode",
+    "objectID" : "/encoding/html/decode",
     "group" : "encoding",
-    "name": "Url Decode",
-    "description": "Decode a URL encoded string",
-    "tags" : ["decode","url"]
+    "name": "Html Decode",
+    "description": "Decode a Html encoded string",
+    "tags" : ["decode","html", "htmldecode"]
   },
   {
-    "objectID" : "/encoding/url/decode",
+    "objectID" : "/encoding/base64/encode",
     "group" : "encoding",
-    "name": "Url Decode",
-    "description": "Decode a URL encoded string",
-    "tags" : ["decode","url"]
+    "name": "Base64 Encode",
+    "description": "Convert a string into a base64 encoded string",
+    "tags" : ["encode","base64"]
   },
   {
-    "objectID" : "/encoding/url/decode",
+    "objectID" : "/encoding/base64/decode",
     "group" : "encoding",
-    "name": "Url Decode",
-    "description": "Decode a URL encoded string",
-    "tags" : ["decode","url"]
+    "name": "Base64 Decode",
+    "description": "Convert a base64 encoded string into a readable string",
+    "tags" : ["decode","base64"]
   },
   {
-    "objectID" : "/encoding/url/decode",
-    "group" : "encoding",
-    "name": "Url Decode",
-    "description": "Decode a URL encoded string",
-    "tags" : ["decode","url"]
+    "objectID" : "/hashing",
+    "group" : "hashing",
+    "name": "Collection of hashing algorithms",
+    "description": "Convert a string to a hashed version of the string",
+    "tags" : ["MD5","SHA1","SHA256","SHA384","SHA512","HMACSHA256","HMACSHA512"]
   },
   {
-    "objectID" : "/encoding/url/decode",
-    "group" : "encoding",
-    "name": "Url Decode",
-    "description": "Decode a URL encoded string",
-    "tags" : ["decode","url"]
+    "objectID" : "/json/format",
+    "group" : "json",
+    "name": "Json Format",
+    "description": "Try and format a json string into something more readable",
+    "tags" : ["json","lint", "format"]
+  },
+  {
+    "objectID" : "/jwt/decode",
+    "group" : "jwt",
+    "name": "JWT Decoding",
+    "description": "Decode a JWT into collection of claims and try and validate the JWT signature",
+    "tags" : ["jwt","decode", "verify", "signature"]
   }
 ]

@@ -91,7 +91,7 @@ public class DotnetHelpDevToolsWebStack : Stack
                             ContentSecurityPolicy = new ResponseHeadersContentSecurityPolicy()
                             {
                                 ContentSecurityPolicy =
-                                    "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; img-src data: https:; connect-src 'self' wss://wss.dotnethelp.co.uk; object-src 'none'; upgrade-insecure-requests; base-uri 'self'",
+                                    "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src data: https:; connect-src 'self' wss://wss.dotnethelp.co.uk https://0lidzmwp6y-dsn.algolia.net; object-src 'none'; upgrade-insecure-requests; base-uri 'self'",
                                 Override = true
                             },
                             StrictTransportSecurity = new ResponseHeadersStrictTransportSecurity()
