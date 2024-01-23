@@ -1,0 +1,44 @@
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/DotnetHelp.DevTools.Infrastructure.Cdk/**'
+      - '.github/workflows/infrastructure_deploy.yml'
+
+jobs:
+     
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+    
+      - uses: actions/checkout@v4
+        name : Checkout
+
+      - uses: actions/setup-dotnet@v4
+        name: Install dotnet
+        with:
+          dotnet-version: 8
+        
+      - uses: actions/setup-node@v4
+        name : Install node
+        with:
+          node-version: 20
+
+      - run: npm install -g aws-cdk
+        name : Install CDK
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+            role-to-assume: ${{ secrets.AWS_ROLE }}
+            aws-region: eu-west-2
+            
+      - name : Deploy API
+        working-directory: ./src/DotnetHelp.DevTools.Infrastructure.Cdk
+        run: cdk deploy --require-approval never
