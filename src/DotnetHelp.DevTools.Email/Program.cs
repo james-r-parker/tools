@@ -31,7 +31,7 @@ public class Function
 
     private static readonly IServiceProvider Services;
 
-    private static readonly string TableName = Environment.GetEnvironmentVariable("EMAIL_TABLE_NAME") ??
+    private static readonly string TableName = Environment.GetEnvironmentVariable("BIN_TABLE_NAME") ??
                                                throw new ApplicationException(
                                                    "TABLE_NAME environment variable not set");
 
@@ -180,13 +180,13 @@ public class Function
                         });
                     }
                 }
-
+                
                 await db.PutItemAsync(new PutItemRequest()
                 {
                     TableName = TableName,
                     Item = new Dictionary<string, AttributeValue>()
                     {
-                        { "bucket", new AttributeValue(bucket) },
+                        { "bucket", new AttributeValue($"incoming_email-{bucket}") },
                         { "created", new AttributeValue() { N = email.Date.ToUnixTimeSeconds().ToString() } },
                         { "s3Bucket", new AttributeValue(record.S3.Bucket.Name) },
                         { "s3Key", new AttributeValue(record.S3.Object.Key) },
