@@ -21,11 +21,24 @@ public static class DnsHandler
     internal static async Task<IResult> Lookup(
         [FromRoute] string domain,
         [FromServices] ILookupClient dnsClient,
+        [FromServices] IDistributedCache cache,
         CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(domain))
         {
             return Results.BadRequest();
+        }
+
+        var cacheKey = $"dns:{domain}";
+
+        DnsLookupResponses? cached = await cache.GetAsync(
+            cacheKey,
+            ApiJsonContext.Default.DnsLookupResponses,
+            cancellationToken);
+
+        if (cached is not null)
+        {
+            return Results.Ok(cached);
         }
 
         var responses = new System.Collections.Concurrent.ConcurrentBag<DnsLookupResponse>();
@@ -88,8 +101,16 @@ public static class DnsHandler
                     }
                 }, cancellationToken);
         }
-        
+
         var model = new DnsLookupResponses(domain, responses);
+        
+        await cache.SetAsync(
+            cacheKey, 
+            model,
+            ApiJsonContext.Default.DnsLookupResponses, 
+            TimeSpan.FromMinutes(1),
+            cancellationToken);
+        
         return Results.Ok(model);
     }
 }
