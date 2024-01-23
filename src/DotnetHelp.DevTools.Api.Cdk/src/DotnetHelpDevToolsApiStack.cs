@@ -18,7 +18,9 @@ public class DotnetHelpDevToolsApiStack : Stack
             {
                 ManagedPolicy.FromAwsManagedPolicyName("service-role/AWSLambdaBasicExecutionRole"),
                 ManagedPolicy.FromManagedPolicyName(this, "DB_POLICY",
-                    Fn.ImportValue("DOTNETHELP:DEVTOOLS:INFRASTRUCTURE:DB:POLICY"))
+                    Fn.ImportValue("DOTNETHELP:DEVTOOLS:INFRASTRUCTURE:DB:POLICY")),
+                ManagedPolicy.FromManagedPolicyName(this, "DB_POLICY",
+                    Fn.ImportValue("DOTNETHELP:DEVTOOLS:WSS:POLICY"))
             },
         });
 
