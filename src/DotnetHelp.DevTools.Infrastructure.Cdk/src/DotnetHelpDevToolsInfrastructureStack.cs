@@ -40,19 +40,19 @@ public class DotnetHelpDevToolsInfrastructureStack : Stack
         new CfnOutput(this, "BIN_TABLE", new CfnOutputProps
         {
             Value = binTable.TableName,
-            ExportName = "DOTNETHELP:DEVTOOLS:BIN:TABLE",
+            ExportName = "DOTNETHELP:DEVTOOLS:INFRASTRUCTURE:BIN:TABLE",
         });
         
         new CfnOutput(this, "CACHE_TABLE", new CfnOutputProps
         {
             Value = binTable.TableName,
-            ExportName = "DOTNETHELP:DEVTOOLS:BIN:TABLE",
+            ExportName = "DOTNETHELP:DEVTOOLS:INFRASTRUCTURE:CACHE:TABLE",
         });
 
         new CfnOutput(this, "BIN_DB_POLICY", new CfnOutputProps
         {
             Value = dataPolicy.ManagedPolicyName,
-            ExportName = "DOTNETHELP:DEVTOOLS:BIN:POLICY",
+            ExportName = "DOTNETHELP:DEVTOOLS:INFRASTRUCTURE:DB:POLICY",
         });
     }
 }
