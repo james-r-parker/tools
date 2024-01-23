@@ -23,10 +23,27 @@ public class DotnetHelpDevToolsInfrastructureStack : Stack
             TimeToLiveAttribute = "ttl",
         });
         
+        var cacheTable = new Table(this, "APICacheTable", new TableProps()
+        {
+            PartitionKey = new Attribute() { Name = "id", Type = AttributeType.STRING },
+            BillingMode = BillingMode.PAY_PER_REQUEST,
+            RemovalPolicy = RemovalPolicy.DESTROY,
+            Encryption = TableEncryption.AWS_MANAGED,
+            PointInTimeRecovery = false,
+            TimeToLiveAttribute = "ttl",
+        });
+        
         var dataPolicy = new ManagedPolicy(this, "DatabasePolicy", new ManagedPolicyProps());
         binTable.GrantReadWriteData(dataPolicy);
+        cacheTable.GrantReadWriteData(dataPolicy);
         
         new CfnOutput(this, "BIN_TABLE", new CfnOutputProps
+        {
+            Value = binTable.TableName,
+            ExportName = "DOTNETHELP:DEVTOOLS:BIN:TABLE",
+        });
+        
+        new CfnOutput(this, "CACHE_TABLE", new CfnOutputProps
         {
             Value = binTable.TableName,
             ExportName = "DOTNETHELP:DEVTOOLS:BIN:TABLE",
