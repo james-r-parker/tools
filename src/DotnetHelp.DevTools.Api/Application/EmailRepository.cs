@@ -1,6 +1,5 @@
 ﻿using System.Collections.Immutable;
 using Amazon.S3;
-using Amazon.S3.Model;
 
 namespace DotnetHelp.DevTools.Api.Application;
 

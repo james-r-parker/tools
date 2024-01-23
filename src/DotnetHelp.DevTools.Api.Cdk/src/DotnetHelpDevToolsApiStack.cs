@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using Amazon.CDK;
 using Amazon.CDK.AWS.CodeDeploy;
-using Amazon.CDK.AWS.DynamoDB;
 using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.Lambda;
 using Constructs;
@@ -12,42 +11,14 @@ public class DotnetHelpDevToolsApiStack : Stack
 {
     internal DotnetHelpDevToolsApiStack(Construct scope, string id, Props props) : base(scope, id, props)
     {
-        var httpRequestTable = new Table(this, "APIHttpRequestTable", new TableProps()
-        {
-            PartitionKey = new Attribute() { Name = "bucket", Type = AttributeType.STRING },
-            SortKey = new Attribute() { Name = "created", Type = AttributeType.NUMBER },
-            BillingMode = BillingMode.PAY_PER_REQUEST,
-            RemovalPolicy = RemovalPolicy.DESTROY,
-            Encryption = TableEncryption.AWS_MANAGED,
-            PointInTimeRecovery = false,
-            TimeToLiveAttribute = "ttl",
-        });
-
-        var cacheTable = new Table(this, "APICacheTable", new TableProps()
-        {
-            PartitionKey = new Attribute() { Name = "id", Type = AttributeType.STRING },
-            BillingMode = BillingMode.PAY_PER_REQUEST,
-            RemovalPolicy = RemovalPolicy.DESTROY,
-            Encryption = TableEncryption.AWS_MANAGED,
-            PointInTimeRecovery = false,
-            TimeToLiveAttribute = "ttl",
-        });
-
-        var connectionTable =
-            Table.FromTableName(this, "WSS_CONNECTION_TABLE", Fn.ImportValue("DOTNETHELP:DEVTOOLS:WSS:TABLE"));
-
         var apiRole = new Role(this, "ApiRole", new RoleProps
         {
             AssumedBy = new ServicePrincipal("lambda.amazonaws.com"),
             ManagedPolicies = new IManagedPolicy[]
             {
                 ManagedPolicy.FromAwsManagedPolicyName("service-role/AWSLambdaBasicExecutionRole"),
-                ManagedPolicy.FromManagedPolicyName(this, "WSS_DB_POLICY",
-                    Fn.ImportValue("DOTNETHELP:DEVTOOLS:WSS:DB:POLICY")),
-                ManagedPolicy.FromManagedPolicyName(this, "WSS_API_POLICY",
-                    Fn.ImportValue("DOTNETHELP:DEVTOOLS:WSS:API:POLICY")),
-                ManagedPolicy.FromManagedPolicyName(this, "EMAIL_DB_POLICY",
-                    Fn.ImportValue("DOTNETHELP:DEVTOOLS:EMAIL:DB:POLICY"))
+                ManagedPolicy.FromManagedPolicyName(this, "DB_POLICY",
+                    Fn.ImportValue("DOTNETHELP:DEVTOOLS:INFRASTRUCTURE:DB:POLICY"))
             },
         });
 
@@ -64,17 +35,11 @@ public class DotnetHelpDevToolsApiStack : Stack
             Role = apiRole,
             Environment = new Dictionary<string, string>()
             {
-                { "CONNECTION_TABLE_NAME", connectionTable.TableName },
-                { "HTTP_REQUEST_TABLE_NAME", httpRequestTable.TableName },
-                { "CACHE_TABLE_NAME", cacheTable.TableName },
-                { "WEBSOCKET_URL", Fn.ImportValue("DOTNETHELP:DEVTOOLS:WSS:URL") },
+                { "CACHE_TABLE_NAME", Fn.ImportValue("DOTNETHELP:DEVTOOLS:INFRASTRUCTURE:CACHE:TABLE") },
                 { "AWS_STS_REGIONAL_ENDPOINTS", "regional" },
-                { "EMAIL_TABLE_NAME", Fn.ImportValue("DOTNETHELP:DEVTOOLS:EMAIL:TABLE") }
+                { "BIN_TABLE_NAME", Fn.ImportValue("DOTNETHELP:DEVTOOLS:INFRASTRUCTURE:BIN:TABLE") }
             }
         });
-
-        httpRequestTable.GrantReadWriteData(apiRole);
-        cacheTable.GrantReadWriteData(apiRole);
 
         var preTrafficRole = new Role(this, "PreTrafficRole", new RoleProps
         {

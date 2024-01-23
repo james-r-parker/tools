@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Amazon.CDK;
-using Amazon.CDK.AWS.DynamoDB;
 using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.Lambda;
 using Amazon.CDK.AWS.S3;
@@ -16,17 +15,6 @@ public class DotnetHelpDevToolsEmailStack : Stack
     internal DotnetHelpDevToolsEmailStack(Construct scope, string id, Props props) : base(scope, id,
         props)
     {
-        var emailTable = new Table(this, "EmailTable", new TableProps()
-        {
-            PartitionKey = new Attribute() { Name = "bucket", Type = AttributeType.STRING },
-            SortKey = new Attribute() { Name = "created", Type = AttributeType.NUMBER },
-            BillingMode = BillingMode.PAY_PER_REQUEST,
-            RemovalPolicy = RemovalPolicy.DESTROY,
-            Encryption = TableEncryption.AWS_MANAGED,
-            PointInTimeRecovery = false,
-            TimeToLiveAttribute = "ttl",
-        });
-
         var emailBucket = new Bucket(this, "EmailBucket", new BucketProps
         {
             RemovalPolicy = RemovalPolicy.DESTROY,
@@ -51,18 +39,12 @@ public class DotnetHelpDevToolsEmailStack : Stack
             ManagedPolicies = new IManagedPolicy[]
             {
                 ManagedPolicy.FromAwsManagedPolicyName("service-role/AWSLambdaBasicExecutionRole"),
-                ManagedPolicy.FromManagedPolicyName(this, "WSS_DB_POLICY",
-                    Fn.ImportValue("DOTNETHELP:DEVTOOLS:WSS:DB:POLICY")),
-                ManagedPolicy.FromManagedPolicyName(this, "WSS_API_POLICY",
-                    Fn.ImportValue("DOTNETHELP:DEVTOOLS:WSS:API:POLICY"))
+                ManagedPolicy.FromManagedPolicyName(this, "DB_POLICY",
+                    Fn.ImportValue("DOTNETHELP:DEVTOOLS:INFRASTRUCTURE:DB:POLICY")),
             },
         });
         
-        var connectionTable =
-            Table.FromTableName(this, "WSS_CONNECTION_TABLE", Fn.ImportValue("DOTNETHELP:DEVTOOLS:WSS:TABLE"));
-
-        var emailPolicy = new ManagedPolicy(this, "EmailPolicy", new ManagedPolicyProps());
-        emailTable.GrantReadData(emailPolicy);
+        emailBucket.GrantRead(functionRole);
 
         var emailFunction = new Function(this, "EmailFunction", new FunctionProps
         {
@@ -77,17 +59,13 @@ public class DotnetHelpDevToolsEmailStack : Stack
             ReservedConcurrentExecutions = 10,
             Environment = new Dictionary<string, string>
             {
-                { "CONNECTION_TABLE_NAME", connectionTable.TableName },
-                { "WEBSOCKET_URL", Fn.ImportValue("DOTNETHELP:DEVTOOLS:WSS:URL") },
-                { "EMAIL_TABLE_NAME", emailTable.TableName },
+                { "BIN_TABLE_NAME", Fn.ImportValue("DOTNETHELP:DEVTOOLS:INFRASTRUCTURE:BIN:TABLE") },
                 { "EMAIL_BUCKET", emailBucket.BucketName },
                 { "AWS_STS_REGIONAL_ENDPOINTS", "regional" }
             }
         });
-
-        emailTable.GrantReadWriteData(functionRole);
-        emailBucket.GrantRead(functionRole);
-
+        
+        
         //Trigger the lambda function when a new object is created in the bucket
         emailBucket.AddEventNotification(EventType.OBJECT_CREATED, new LambdaDestination(emailFunction));
 
@@ -113,18 +91,6 @@ public class DotnetHelpDevToolsEmailStack : Stack
                     TlsPolicy = TlsPolicy.REQUIRE,
                 },
             },
-        });
-
-        new CfnOutput(this, "EMAIL_TABLE", new CfnOutputProps
-        {
-            Value = emailTable.TableName,
-            ExportName = "DOTNETHELP:DEVTOOLS:EMAIL:TABLE",
-        });
-
-        new CfnOutput(this, "EMAIL_DB_POLICY", new CfnOutputProps
-        {
-            Value = emailPolicy.ManagedPolicyName,
-            ExportName = "DOTNETHELP:DEVTOOLS:EMAIL:DB:POLICY",
         });
     }
 }
