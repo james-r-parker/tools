@@ -51,8 +51,8 @@
 	</label>
 
 	<label class="block mb-4">
-		<span class="block text-gray-700 dark:text-gray-400 mb-2">Salt</span>
-		<InputText @bind-Value="_salt" class="w-full text-sm leading-6 text-slate-400 rounded-md ring-1 ring-slate-900/10 shadow-sm py-1.5 pl-2 pr-3 hover:ring-slate-300 dark:bg-slate-800 dark:highlight-white/5 dark:hover:bg-slate-700" rows="3" placeholder="Enter some text."></InputText>
+		<span class="block text-gray-700 dark:text-gray-400 mb-2">Secret</span>
+		<InputText @bind-Value="_secret" class="w-full text-sm leading-6 text-slate-400 rounded-md ring-1 ring-slate-900/10 shadow-sm py-1.5 pl-2 pr-3 hover:ring-slate-300 dark:bg-slate-800 dark:highlight-white/5 dark:hover:bg-slate-700" rows="3" placeholder="Enter some text."></InputText>
 	</label>
 
 	<div class="flex justify-end">
@@ -93,7 +93,7 @@
 	private string _algorithm = "SHA256";
 	private string _format = "HEX";
 	private string _message = "";
-	private string _salt = "";
+	private string _secret = "";
 	private TextApiResponse? _response;
 	readonly CancellationTokenSource _disposalTokenSource = new();
 
@@ -111,7 +111,7 @@
 	{
 		if (!string.IsNullOrWhiteSpace(_message))
 		{
-			var request = new HashApiRequest(_encoding, _algorithm, _format, _message, _salt);
+			var request = new HashApiRequest(_algorithm, _message, _encoding, _format, _secret);
 			_response = await Http.Hash(request, _disposalTokenSource.Token);
 			StateHasChanged();
 		}

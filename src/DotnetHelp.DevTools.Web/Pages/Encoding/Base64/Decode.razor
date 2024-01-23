@@ -1,7 +1,5 @@
 ﻿@page "/encoding/base64/decode"
-@using DotnetHelp.DevTools.Shared
-@inject ApiHttpClient Http
-@implements IAsyncDisposable
+@using Encoding = System.Text.Encoding
 
 <PageTitle>Base64 Decode</PageTitle>
 
@@ -40,7 +38,7 @@
 				<div class="space-y-8">
 					<div>
 						<div class="max-w-prose text-sm font-medium text-slate-900 dark:text-slate-200">
-							<p>@_response?.Response</p>
+							<p>@_response</p>
 						</div>
 					</div>
 				</div>
@@ -53,24 +51,13 @@
 
 @code {
 	private string? _request;
-	private TextApiResponse? _response;
-	readonly CancellationTokenSource _disposalTokenSource = new();
+	private string? _response;
 
-	protected override Task OnInitializedAsync()
-	{
-		return Task.CompletedTask;
-	}
-
-	public async ValueTask DisposeAsync()
-	{
-		await _disposalTokenSource.CancelAsync();
-	}
-
-	private async Task OnClick()
+	private void OnClick()
 	{
 		if (!string.IsNullOrWhiteSpace(_request))
 		{
-			_response = await Http.Base64Decode(new TextApiRequest(_request), _disposalTokenSource.Token);
+			_response = Convert.ToBase64String(Encoding.UTF8.GetBytes(_request));
 			StateHasChanged();
 		}
 	}

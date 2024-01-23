@@ -35,11 +35,11 @@ internal static class HashHandler
             "SHA256" => SHA256.Create(),
             "SHA384" => SHA384.Create(),
             "SHA512" => SHA512.Create(),
-            "HMACSHA256" => request.Salt is not null
-                ? new HMACSHA256(encoding.GetBytes(request.Salt))
+            "HMACSHA256" => request.Secret is not null
+                ? new HMACSHA256(encoding.GetBytes(request.Secret))
                 : new HMACSHA256(),
-            "HMACSHA512" => request.Salt is not null
-                ? new HMACSHA512(encoding.GetBytes(request.Salt))
+            "HMACSHA512" => request.Secret is not null
+                ? new HMACSHA512(encoding.GetBytes(request.Secret))
                 : new HMACSHA512(),
             _ => SHA256.Create()
         };

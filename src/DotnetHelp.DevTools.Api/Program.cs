@@ -1,7 +1,6 @@
 using Amazon.S3;
 using DnsClient;
 using DotnetHelp.DevTools;
-using DotnetHelp.DevTools.Api.Handlers.Base64;
 using DotnetHelp.DevTools.Api.Handlers.Dns;
 using DotnetHelp.DevTools.Api.Handlers.Email;
 using DotnetHelp.DevTools.Api.Handlers.Hash;
@@ -99,9 +98,6 @@ app
 RouteGroupBuilder api = app.MapGroup("/api");
 
 api.MapPost("/hash", HashHandler.Hash);
-
-api.MapPost("/base64/encode", Base64Handler.Encode);
-api.MapPost("/base64/decode", Base64Handler.Decode);
 
 api.MapPost("/jwt/decode", JwtHandler.Decode);
 
