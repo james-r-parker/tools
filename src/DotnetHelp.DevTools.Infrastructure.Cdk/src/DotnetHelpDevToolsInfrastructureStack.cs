@@ -45,7 +45,7 @@ public class DotnetHelpDevToolsInfrastructureStack : Stack
         
         new CfnOutput(this, "CACHE_TABLE", new CfnOutputProps
         {
-            Value = binTable.TableName,
+            Value = cacheTable.TableName,
             ExportName = "DOTNETHELP:DEVTOOLS:INFRASTRUCTURE:CACHE:TABLE",
         });
 

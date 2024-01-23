@@ -1,4 +1,8 @@
 ﻿@inherits LayoutComponentBase
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+
+@inject NavigationManager Navigation
 
 <div class="absolute z-20 top-0 inset-x-0 flex justify-center overflow-hidden pointer-events-none">
 	<div class="w-[108rem] flex-none flex justify-end">
@@ -17,7 +21,8 @@
 	<div class="max-w-8xl mx-auto">
 		<div class="py-4 border-b border-slate-900/10 lg:px-8 lg:border-0 dark:border-slate-300/10 mx-4 lg:mx-0">
 			<div class="relative flex items-center">
-				DotNetHelp
+				<div class="flex-grow">DotNetHelp</div>
+				<div><AccessControl /></div>
 			</div>
 		</div>
 	</div>
