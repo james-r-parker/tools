@@ -1,4 +1,3 @@
-using Amazon.S3;
 using DnsClient;
 using DotnetHelp.DevTools;
 using DotnetHelp.DevTools.Api.Handlers.Dns;
@@ -77,7 +76,6 @@ builder.Services.AddHttpClient<OutgoingHttpClient>()
 builder.Services.AddSingleton<ILookupClient, LookupClient>();
 
 builder.Services.TryAddSingleton<IAmazonDynamoDB, AmazonDynamoDBClient>();
-builder.Services.TryAddSingleton<IAmazonS3, AmazonS3Client>();
 
 builder.Services
     .AddHttpContextAccessor()

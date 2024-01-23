@@ -33,9 +33,6 @@ public class DotnetHelpDevToolsWebsocketStack : Stack
             ProjectionType = ProjectionType.KEYS_ONLY,
         });
 
-        var dbPolicy = new ManagedPolicy(this, "DBPolicy", new ManagedPolicyProps());
-        connectionTable.GrantReadData(dbPolicy);
-
         var websocketFunction = new Function(this, "WebSocketFunction", new FunctionProps
         {
             Architecture = Architecture.X86_64,
@@ -84,9 +81,8 @@ public class DotnetHelpDevToolsWebsocketStack : Stack
         websocketFunction.AddEnvironment("WEBSOCKET_URL", stage.Url);
 
         api.GrantManageConnections(websocketFunction);
+        
 
-        var apiPolicy = new ManagedPolicy(this, "APIPolicy", new ManagedPolicyProps());
-        api.GrantManageConnections(apiPolicy);
 
         var domain = new DomainName(this, "WSS_DOMAIN", new DomainNameProps()
         {
@@ -94,6 +90,10 @@ public class DotnetHelpDevToolsWebsocketStack : Stack
             Certificate = Certificate.FromCertificateArn(this, "WSS_CERTIFICATE", props.CertificateArn),
             SecurityPolicy = SecurityPolicy.TLS_1_2,
         });
+        
+        var wssPolicy = new ManagedPolicy(this, "WSSPolicy", new ManagedPolicyProps());
+        connectionTable.GrantReadData(wssPolicy);
+        api.GrantManageConnections(wssPolicy);
 
         new CfnApiMapping(this, "WSS_DOMAIN_MAPPING", new CfnApiMappingProps()
         {
@@ -127,14 +127,8 @@ public class DotnetHelpDevToolsWebsocketStack : Stack
 
         new CfnOutput(this, "WSS_DB_POLICY", new CfnOutputProps
         {
-            Value = dbPolicy.ManagedPolicyName,
-            ExportName = "DOTNETHELP:DEVTOOLS:WSS:DB:POLICY",
-        });
-
-        var cfnOutput = new CfnOutput(this, "WSS_API_POLICY", new CfnOutputProps
-        {
-            Value = apiPolicy.ManagedPolicyName,
-            ExportName = "DOTNETHELP:DEVTOOLS:WSS:API:POLICY",
+            Value = wssPolicy.ManagedPolicyName,
+            ExportName = "DOTNETHELP:DEVTOOLS:WSS:POLICY",
         });
     }
 }

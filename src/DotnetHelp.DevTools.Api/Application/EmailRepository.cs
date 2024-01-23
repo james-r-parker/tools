@@ -1,5 +1,4 @@
 ﻿using System.Collections.Immutable;
-using Amazon.S3;
 
 namespace DotnetHelp.DevTools.Api.Application;
 
@@ -9,18 +8,20 @@ internal interface IEmailRepository
         string bucket, long from, CancellationToken cancellationToken);
 }
 
-internal class EmailRepository(IAmazonDynamoDB db, IAmazonS3 s3) : IEmailRepository
+internal class EmailRepository(IAmazonDynamoDB db) : IEmailRepository
 {
+    private const string Prefix = "incoming_email-";
+    
     public async Task<IReadOnlyCollection<IncomingEmail>> List(
         string bucket, long from, CancellationToken cancellationToken)
     {
         QueryResponse response = await db.QueryAsync(new QueryRequest
             {
-                TableName = Constants.EmailTableName,
+                TableName = Constants.BinTableName,
                 KeyConditionExpression = "#b = :b AND #c > :c",
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue>
                 {
-                    { ":b", new AttributeValue(bucket) },
+                    { ":b", new AttributeValue($"{Prefix}{bucket}") },
                     { ":c", new AttributeValue { N = from.ToString() } }
                 },
                 ExpressionAttributeNames = new Dictionary<string, string>()

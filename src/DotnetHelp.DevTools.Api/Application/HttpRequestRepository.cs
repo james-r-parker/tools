@@ -10,6 +10,8 @@ internal interface IHttpRequestRepository
 
 internal class HttpRequestRepository(IAmazonDynamoDB db) : IHttpRequestRepository
 {
+    private const string Prefix = "http_request-";
+    
     public Task Save(BucketHttpRequest request, CancellationToken cancellationToken)
     {
         var headers = new AttributeValue();
@@ -45,10 +47,10 @@ internal class HttpRequestRepository(IAmazonDynamoDB db) : IHttpRequestRepositor
 
         return db.PutItemAsync(new PutItemRequest
             {
-                TableName = Constants.HttpRequestTableName,
+                TableName = Constants.BinTableName,
                 Item = new Dictionary<string, AttributeValue>
                 {
-                    { "bucket", new AttributeValue(request.Bucket) },
+                    { "bucket", new AttributeValue($"{Prefix}{request.Bucket}") },
                     { "created", new AttributeValue { N = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString() } },
                     {
                         "ttl",
@@ -68,11 +70,11 @@ internal class HttpRequestRepository(IAmazonDynamoDB db) : IHttpRequestRepositor
     {
         QueryResponse response = await db.QueryAsync(new QueryRequest
             {
-                TableName = Constants.HttpRequestTableName,
+                TableName = Constants.BinTableName,
                 KeyConditionExpression = "#b = :b AND #c > :c",
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue>
                 {
-                    { ":b", new AttributeValue(bucket) },
+                    { ":b", new AttributeValue($"{Prefix}{bucket}") },
                     { ":c", new AttributeValue { N = from.ToString() } }
                 },
                 ExpressionAttributeNames = new Dictionary<string, string>()

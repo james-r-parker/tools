@@ -59,6 +59,8 @@ public class DotnetHelpDevToolsEmailStack : Stack
             ReservedConcurrentExecutions = 10,
             Environment = new Dictionary<string, string>
             {
+                { "WEBSOCKET_URL", Fn.ImportValue("DOTNETHELP:DEVTOOLS:WSS:URL") },
+                { "CONNECTION_TABLE_NAME", Fn.ImportValue("DOTNETHELP:DEVTOOLS:WSS:TABLE") },
                 { "BIN_TABLE_NAME", Fn.ImportValue("DOTNETHELP:DEVTOOLS:INFRASTRUCTURE:BIN:TABLE") },
                 { "EMAIL_BUCKET", emailBucket.BucketName },
                 { "AWS_STS_REGIONAL_ENDPOINTS", "regional" }
