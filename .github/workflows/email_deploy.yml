@@ -4,6 +4,8 @@ on:
       - main
     paths:
       - 'src/DotnetHelp.DevTools.Email/**'
+      - 'src/DotnetHelp.DevTools.Shared/**'
+      - 'src/DotnetHelp.DevTools.WebsocketClient/**'
       - 'src/DotnetHelp.DevTools.Email.Cdk/**'
       - 'src/DotnetHelp.DevTools.Email.Tests/**'
       - '.github/workflows/email_deploy.yml'

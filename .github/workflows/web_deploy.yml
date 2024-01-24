@@ -4,6 +4,7 @@ on:
       - main
     paths:
       - 'src/DotnetHelp.DevTools.Web/**'
+      - 'src/DotnetHelp.DevTools.Shared/**'
       - 'src/DotnetHelp.DevTools.Web.Cdk/**'
       - '.github/workflows/web_deploy.yml'
 

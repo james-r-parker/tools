@@ -4,6 +4,9 @@ on:
       - main
     paths:
       - 'src/DotnetHelp.DevTools.Api/**'
+      - 'src/DotnetHelp.DevTools.Shared/**'
+      - 'src/DotnetHelp.DevTools.WebsocketClient/**'
+      - 'src/DotnetHelp.DevTools.Cache/**'
       - 'src/DotnetHelp.DevTools.Api.Cdk/**'
       - 'src/DotnetHelp.DevTools.Api.PreTraffic/**'
       - 'src/DotnetHelp.DevTools.Api.Tests/**'
