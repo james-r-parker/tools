@@ -8,7 +8,11 @@
       "launchUrl": "todos",
       "applicationUrl": "http://localhost:5035",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "CONNECTION_TABLE_NAME" : "DotnetHelpDevToolsWebsocketStack-WebsocketConnectionsTableF4429B25-MN5IYPL919O",
+        "BIN_TABLE_NAME": "DotnetHelpDevToolsInfrastructureStack-BinTable2B5E8456-HSJQZPLQ4PF1",
+        "WEBSOCKET_URL": "wss://c4qrksmig8.execute-api.eu-west-2.amazonaws.com/wss",
+        "CACHE_TABLE_NAME" : "DotnetHelpDevToolsInfrastructureStack-BinTable2B5E8456-HSJQZPLQ4PF1"
       }
     }
   }
