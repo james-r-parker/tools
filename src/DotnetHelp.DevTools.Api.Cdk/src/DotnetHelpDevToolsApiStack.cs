@@ -39,7 +39,7 @@ public class DotnetHelpDevToolsApiStack : Stack
             {
                 { "WEBSOCKET_URL", Fn.ImportValue("DOTNETHELP:DEVTOOLS:WSS:URL") },
                 { "CONNECTION_TABLE_NAME", Fn.ImportValue("DOTNETHELP:DEVTOOLS:WSS:TABLE") },
-                { "CACHE_TABLE_NAME", Fn.ImportValue("DOTNETHELP:DEVTOOLS:INFRASTRUCTURE:CACHE:TABLE") },
+                { "CACHE_TABLE_NAME", Fn.ImportValue("DOTNETHELP:DEVTOOLS:INFRASTRUCTURE:DISTRIBUTEDCACHE:TABLE") },
                 { "AWS_STS_REGIONAL_ENDPOINTS", "regional" },
                 { "BIN_TABLE_NAME", Fn.ImportValue("DOTNETHELP:DEVTOOLS:INFRASTRUCTURE:BIN:TABLE") }
             }
