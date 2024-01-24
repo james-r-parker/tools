@@ -57,7 +57,7 @@
 	{
 		if (!string.IsNullOrWhiteSpace(_request))
 		{
-			_response = Convert.ToBase64String(Encoding.UTF8.GetBytes(_request));
+			_response = Encoding.UTF8.GetString(Convert.FromBase64String(_request));
 			StateHasChanged();
 		}
 	}
