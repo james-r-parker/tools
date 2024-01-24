@@ -20,4 +20,9 @@
 @code {
     [Parameter] 
     public required string Action { get; set; }
+
+    protected override void OnInitialized()
+	{
+        if (this.Action == "logout-callback") Task.Delay(1_000).ContinueWith((a) => Navigation.NavigateTo("/"));
+	}
 }

@@ -48,12 +48,6 @@ public class DotnetHelpDevToolsInfrastructureStack : Stack
             Value = cacheTable.TableName,
             ExportName = "DOTNETHELP:DEVTOOLS:INFRASTRUCTURE:CACHE:TABLE",
         });
-        
-        new CfnOutput(this, "DISTRIBUTED_CACHE_TABLE", new CfnOutputProps
-        {
-            Value = binTable.TableName,
-            ExportName = "DOTNETHELP:DEVTOOLS:INFRASTRUCTURE:DISTRIBUTEDCACHE:TABLE",
-        });
 
         new CfnOutput(this, "BIN_DB_POLICY", new CfnOutputProps
         {

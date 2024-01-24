@@ -22,12 +22,16 @@ builder.Services
 		client.DefaultRequestHeaders.Add("X-Algolia-Application-Id", "0LIDZMWP6Y");
 		client.DefaultRequestHeaders.Add("X-Algolia-API-Key", "3146a10f247fb1b7669ffd154df4bce4");
 	});
-		
-builder.Services.AddOidcAuthentication(options =>
-{
-	builder.Configuration.Bind("Auth0", options.ProviderOptions);
-	options.ProviderOptions.ResponseType = "code";
-});
+
+builder.Services
+	.AddOptions()
+	.AddAuthorizationCore()
+	.AddCascadingAuthenticationState()
+	.AddOidcAuthentication(options =>
+	{
+		builder.Configuration.Bind("Auth0", options.ProviderOptions);
+		options.ProviderOptions.ResponseType = "code";
+	});
 
 builder.Services.Configure<WebSocketOptions>((o) =>
 {
