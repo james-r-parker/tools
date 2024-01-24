@@ -74,7 +74,7 @@ public class DotnetHelpDevToolsWebStack : Stack
                         {
                             FrameOptions = new ResponseHeadersFrameOptions()
                             {
-                                FrameOption = HeadersFrameOption.DENY,
+                                FrameOption = HeadersFrameOption.SAMEORIGIN,
                                 Override = true
                             },
                             ReferrerPolicy = new ResponseHeadersReferrerPolicy()
