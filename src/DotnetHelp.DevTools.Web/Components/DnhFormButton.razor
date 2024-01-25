@@ -1,0 +1,15 @@
+﻿<div class="flex justify-end">
+	<div>
+		<button 
+			type="submit" 
+			class="bg-sky-500 hover:bg-sky-700 px-5 py-2 text-sm leading-5 rounded-full font-semibold text-white"
+		>
+			@ChildContent
+		</button>
+	</div>
+</div>
+
+@code {
+	[Parameter]
+	public RenderFragment? ChildContent { get; set; }
+}

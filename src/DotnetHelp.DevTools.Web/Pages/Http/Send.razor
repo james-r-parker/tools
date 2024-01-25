@@ -2,7 +2,7 @@
 @inject ApiHttpClient ApiClient
 @implements IAsyncDisposable
 
-<PageHeader Title="Http"
+<DnhHeader Title="Http"
 			SubTitle="Send a HTTP request"
 			Details=@(new List<string> {
 			$"Send a HTTP request and receive the headers and body of the response."
@@ -78,7 +78,7 @@
 @if (_loading)
 {
 	<section class="mb-2">
-		<Loading />
+		<DnhLoading />
 	</section>
 }
 else if (_response is not null)

@@ -5,7 +5,7 @@
 @inject IOptions<ApplicationOptions> Settings
 @implements IAsyncDisposable
 
-<PageHeader Title="Email"
+<DnhHeader Title="Email"
 	SubTitle="Receive Emails"
 	Details=@(new List<string> {
 	$"EndPoint: {_bucket}@{Settings.Value.EmailBaseAddress}",
@@ -15,27 +15,27 @@
 
 @if (_loading)
 {
-	<Loading />
+	<DnhLoading />
 }
 else if (_requests.Count == 0)
 {
-	<Empty />
+	<DnhEmpty />
 }
 else
 {
 	@foreach (IncomingEmail request in _requests.OrderByDescending(x => x.Created))
 	{
-		<section class="mb-2">
-			<Email Model="request" />
-		</section>
+		<DnhSection>
+			<EmailItem Model="request" />
+		</DnhSection>
 	}
 }
 
 @code {
-	string _bucket = string.Empty;
-	bool _loading = true;
-	readonly CancellationTokenSource _disposalTokenSource = new();
-	readonly List<IncomingEmail> _requests = new();
+	private string _bucket = string.Empty;
+	private bool _loading = true;
+	private readonly CancellationTokenSource _disposalTokenSource = new ();
+	private readonly List<IncomingEmail> _requests = new();
 
 	protected override async Task OnInitializedAsync()
 	{
