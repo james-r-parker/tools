@@ -19,52 +19,25 @@
 
 			@if (_view == View.Overview)
 			{
-				<p>
-					<span class="text-sky-500 whitespace-nowrap dark:text-sky-400">
-						From :
-					</span>
-					<span>@string.Join(",", Model.From.Select(x => $"<{x.Name}> {x.Address}"))</span>
-				</p>
+				<DnhKvp Name="From" Value="@string.Join(",", Model.From.Select(x => $"<{x.Name}> {x.Address}"))" />
+				<DnhKvp Name="Subject" Value="@Model.Subject" />
+				<DnhKvp Name="Timestamp" Value="@Model.Created.ToString("yyyy-MM-dd HH:mm:ss")" />
 
-				<p>
-					<span class="text-sky-500 whitespace-nowrap dark:text-sky-400">
-						Subject :
-					</span>
-					<span>@Model.Subject</span>
-				</p>
-
-				<p>
-					<span class="text-sky-500 whitespace-nowrap dark:text-sky-400">
-						Timestamp :
-					</span>
-					<span>@Model.Created.ToString("yyyy-MM-dd HH:mm:ss")</span>
-				</p>
-
-				<p class="text-xl mt-3">Content</p>
-				<pre class="body">@Model.Content.FirstOrDefault(x => x.Type == "text/plain")?.Content</pre>
+				<DnhTitle>Content</DnhTitle>
+				<pre class="text-wrap break-all">@Model.Content.FirstOrDefault(x => x.Type == "text/plain")?.Content</pre>
 			}
 
 			@if (_view == View.Headers)
 			{
-				@foreach (var header in Model.Headers)
-				{
-					<ul>
-						<li>
-							<span>
-								<span class="text-sm text-sky-500 whitespace-nowrap dark:text-sky-400">@header.Name : </span>
-								<span class="text-wrap break-all text-sm">@header.Value</span>
-							</span>
-						</li>
-					</ul>
-				}
+				<DnhKvpCollection Items="Model.Headers.Select(x => new KeyValuePair<string, string>(x.Name, x.Value)).ToList()" />
 			}
 
 			@if (_view == View.Content)
 			{
 				@foreach (var content in Model.Content)
 				{
-					<p class="text-xl text-sky-500 mb-2">@content.Type</p>
-					<pre class="text-wrap mb-4">@content.Content</pre>
+					<DnhTitle>@content.Type</DnhTitle>
+					<pre class="text-wrap break-all mb-4">@content.Content</pre>
 				}
 			}
 

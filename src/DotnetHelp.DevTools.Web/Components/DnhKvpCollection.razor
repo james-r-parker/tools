@@ -1,16 +1,13 @@
 ﻿@foreach (var item in Items)
 {
 	<ul>
-		<li class="mb-2">
-			<span class="text-sm">
-				<span class="text-sky-500 whitespace-nowrap dark:text-sky-400">@item.Key : </span>
-				<span class="text-wrap break-all">@item.Value</span>
-			</span>
+		<li class="mb-1">
+			<DnhKvp Name="@item.Key" Value="@item.Value" />
 		</li>
 	</ul>
 }
 
 @code {
-	[Parameter]
+	[Parameter, EditorRequired]
 	public required IReadOnlyCollection<KeyValuePair<string, string>> Items { get; set; }
 }

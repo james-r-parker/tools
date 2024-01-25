@@ -12,7 +12,7 @@
         "CONNECTION_TABLE_NAME" : "DotnetHelpDevToolsWebsocketStack-WebsocketConnectionsTableF4429B25-MN5IYPL919O",
         "WEBSOCKET_URL": "wss://c4qrksmig8.execute-api.eu-west-2.amazonaws.com/wss",
         "BIN_TABLE_NAME": "DotnetHelpDevToolsInfrastructureStack-BinTable2B5E8456-HSJQZPLQ4PF1",
-        "DISTRIBUTEDCACHE_TABLE_NAME" : "DotnetHelpDevToolsInfrastructureStack-APICacheTableEE59A42F-1TD5RW5N4BBQH"
+        "CACHE_TABLE_NAME" : "DotnetHelpDevToolsInfrastructureStack-APICacheTableEE59A42F-1TD5RW5N4BBQH"
       }
     }
   }

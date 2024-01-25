@@ -59,9 +59,10 @@
 	private IReadOnlyCollection<Application.SearchResult>? _results;
 	private CancellationTokenSource _cts = new();
 
-	protected override async Task OnInitializedAsync()
+	protected override Task OnInitializedAsync()
 	{
 		_ = Query(string.Empty);
+		return Task.CompletedTask;
 	}
 
 	private void OnSearch(ChangeEventArgs e)

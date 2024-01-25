@@ -1,4 +1,4 @@
-﻿<label class="block mb-4">
+﻿<label class="block">
 	<span class="block text-gray-700 dark:text-gray-400 mb-2">
         @Label
     </span>
@@ -15,13 +15,13 @@
 
     private string? _value;
 
-    [Parameter]
+    [Parameter, EditorRequired]
     public required string Label { get; set; }
 
     [Parameter]
     public bool Required { get; set; } = false;
 
-    [Parameter]
+    [Parameter, EditorRequired]
     public string? Value { get; set; }
 
     [Parameter]

@@ -6,6 +6,6 @@
 	[Parameter]
 	public RenderFragment? ChildContent { get; set; }
 
-	[Parameter]
-	public required Func<Task> OnClick { get; set; }
+	[Parameter, EditorRequired]
+	public EventCallback<MouseEventArgs> OnClick { get; set; }
 }

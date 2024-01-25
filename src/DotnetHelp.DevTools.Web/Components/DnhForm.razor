@@ -1,0 +1,17 @@
+﻿<form @onsubmit="OnSubmit" class="flex flex-col gap-2">
+	@ChildContent
+	<DnhFormButton>
+		@Text
+	</DnhFormButton>
+</form>
+
+@code {
+	[Parameter]
+	public RenderFragment? ChildContent { get; set; }
+
+	[Parameter, EditorRequired]
+	public EventCallback OnSubmit { get; set; }
+
+	[Parameter, EditorRequired]
+	public required string Text { get; set; }
+}

@@ -1,0 +1,12 @@
+﻿<span class="text-sm block mb-1">
+	<span class="text-sky-500 whitespace-nowrap dark:text-sky-400">@Name : </span>
+	<span class="text-wrap break-all">@Value</span>
+</span>
+
+@code {
+	[Parameter, EditorRequired]
+	public required string Name { get; set; }
+
+	[Parameter, EditorRequired]
+	public required object Value { get; set; }
+}

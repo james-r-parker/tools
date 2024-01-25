@@ -11,24 +11,19 @@
 			}) />
 
 <DnhSection>
-	<form @onsubmit="OnSubmit">
+	<DnhForm OnSubmit="OnSubmit" Text="Encode">
 		<DnhTextArea Label="Input" @bind-Value="_request" />
-		<DnhFormButton>Encode</DnhFormButton>
-	</form>
+	</DnhForm>
 </DnhSection>
-
 
 @if (_response is not null)
 {
 	<DnhSection Title="Result">
-
 		<DnhResult>
 			<p>@_response</p>
 		</DnhResult>
-
 	</DnhSection>
 }
-
 
 @code {
 	private string? _request;

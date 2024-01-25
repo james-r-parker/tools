@@ -12,10 +12,9 @@
 		   }) />
 
 <DnhSection>
-	<form @onsubmit="OnSubmit">
+	<DnhForm OnSubmit="OnSubmit" Text="Lookup">
 		<DnhTextBox Label="Domain" @bind-Value="_request" />
-		<DnhFormButton>Lookup</DnhFormButton>
-	</form>
+	</DnhForm>
 </DnhSection>
 
 @if (_loading)
@@ -25,11 +24,9 @@
 else if (_data is not null)
 {
 	<DnhSection Title="Result">
-
 		<DnhResult>
 			<DnhKvpCollection Items="_data" />
 		</DnhResult>
-
 	</DnhSection>
 }
 

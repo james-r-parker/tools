@@ -6,26 +6,21 @@
 <PageTitle>Hash</PageTitle>
 
 <DnhHeader Title="Hashing"
-			SubTitle="Collection of hashing algorithms"
-			Details=@(new List<string> {
-			$"Convert a string to a hashed version of the string."
-			}) />
+		   SubTitle="Collection of hashing algorithms"
+		   Details=@(new List<string> {
+		   $"Convert a string to a hashed version of the string."
+		   }) />
 
-<section class="mb-8 relative">
-
-	<label class="block mb-4">
-		<span class="block text-gray-700 dark:text-gray-400 mb-2">Encoding</span>
-		<InputSelect @bind-Value="_encoding" class="w-full text-sm leading-6 text-slate-400 rounded-md ring-1 ring-slate-900/10 shadow-sm py-1.5 pl-2 pr-3 hover:ring-slate-300 dark:bg-slate-800 dark:highlight-white/5 dark:hover:bg-slate-700" rows="3" placeholder="Enter some text.">
+<DnhSection>
+	<DnhForm OnSubmit="OnSubmit" Text="Hash">
+		<DnhSelect Label="Encoding" @bind-Value="_encoding">
 			<option>UTF8</option>
 			<option>UNICODE</option>
 			<option>UTF32</option>
 			<option>ASCII</option>
-		</InputSelect>
-	</label>
+		</DnhSelect>
 
-	<label class="block mb-4">
-		<span class="block text-gray-700 dark:text-gray-400 mb-2">Algorithm</span>
-		<InputSelect @bind-Value="_algorithm" class="w-full text-sm leading-6 text-slate-400 rounded-md ring-1 ring-slate-900/10 shadow-sm py-1.5 pl-2 pr-3 hover:ring-slate-300 dark:bg-slate-800 dark:highlight-white/5 dark:hover:bg-slate-700" rows="3" placeholder="Enter some text.">
+		<DnhSelect Label="Algorithm" @bind-Value="_algorithm">
 			<option>MD5</option>
 			<option>SHA1</option>
 			<option>SHA256</option>
@@ -33,62 +28,34 @@
 			<option>SHA512</option>
 			<option>HMACSHA256</option>
 			<option>HMACSHA512</option>
-		</InputSelect>
-	</label>
+		</DnhSelect>
 
-	<label class="block mb-4">
-		<span class="block text-gray-700 dark:text-gray-400 mb-2">Output Format</span>
-		<InputSelect @bind-Value="_format" class="w-full text-sm leading-6 text-slate-400 rounded-md ring-1 ring-slate-900/10 shadow-sm py-1.5 pl-2 pr-3 hover:ring-slate-300 dark:bg-slate-800 dark:highlight-white/5 dark:hover:bg-slate-700" rows="3" placeholder="Enter some text.">
+		<DnhSelect Label="Output Format" @bind-Value="_format">
 			<option>BASE64</option>
 			<option>HEX</option>
 			<option>UTF8</option>
-		</InputSelect>
-	</label>
+		</DnhSelect>
 
-	<label class="block mb-4">
-		<span class="block text-gray-700 dark:text-gray-400 mb-2">Message</span>
-		<InputText @bind-Value="_message" class="w-full text-sm leading-6 text-slate-400 rounded-md ring-1 ring-slate-900/10 shadow-sm py-1.5 pl-2 pr-3 hover:ring-slate-300 dark:bg-slate-800 dark:highlight-white/5 dark:hover:bg-slate-700" rows="3" placeholder="Enter some text."></InputText>
-	</label>
+		<DnhTextArea Label="Message" @bind-Value="_message" />
+		<DnhTextBox Label="Secret" @bind-Value="_secret" />
+	</DnhForm>
+</DnhSection>
 
-	<label class="block mb-4">
-		<span class="block text-gray-700 dark:text-gray-400 mb-2">Secret</span>
-		<InputText @bind-Value="_secret" class="w-full text-sm leading-6 text-slate-400 rounded-md ring-1 ring-slate-900/10 shadow-sm py-1.5 pl-2 pr-3 hover:ring-slate-300 dark:bg-slate-800 dark:highlight-white/5 dark:hover:bg-slate-700" rows="3" placeholder="Enter some text."></InputText>
-	</label>
-
-	<div class="flex justify-end">
-		<div>
-			<button @onclick="OnClick" type="button" class="bg-sky-500 hover:bg-sky-700 px-5 py-2 text-sm leading-5 rounded-full font-semibold text-white">
-				Hash
-			</button>
-		</div>
-	</div>
-
-
-</section>
-
-@if (_response is not null)
+@if (_loading)
 {
-	<section class="mb-8 relative">
-
-		<span class="block text-gray-700 dark:text-gray-400 mb-2">Result</span>
-
-		<div class="not-prose relative bg-slate-50 rounded-xl overflow-hidden dark:bg-slate-800/25">
-			<div style="background-position:10px 10px" class="absolute inset-0 bg-grid-slate-100 [mask-image:linear-gradient(0deg,#fff,rgba(255,255,255,0.6))] dark:bg-grid-slate-700/25 dark:[mask-image:linear-gradient(0deg,rgba(255,255,255,0.1),rgba(255,255,255,0.5))]"></div><div class="relative rounded-xl overflow-auto p-8">
-				<div class="space-y-8">
-					<div>
-						<div class="text-sm font-medium text-slate-900 dark:text-slate-200">
-							<p>@_response?.Response</p>
-						</div>
-					</div>
-				</div>
-			</div><div class="absolute inset-0 pointer-events-none border border-black/5 rounded-xl dark:border-white/5"></div>
-		</div>
-
-	</section>
+	<DnhLoading />
+}
+else if (_response is not null)
+{
+	<DnhSection Title="Result">
+		<DnhResult>
+			<p>@_response.Response</p>
+		</DnhResult>
+	</DnhSection>
 }
 
-
 @code {
+	private bool _loading = false;
 	private string _encoding = "UTF8";
 	private string _algorithm = "SHA256";
 	private string _format = "HEX";
@@ -107,12 +74,15 @@
 		await _disposalTokenSource.CancelAsync();
 	}
 
-	private async Task OnClick()
+	private async Task OnSubmit()
 	{
+		_response = null;
 		if (!string.IsNullOrWhiteSpace(_message))
 		{
+			_loading = true;
 			var request = new HashApiRequest(_algorithm, _message, _encoding, _format, _secret);
 			_response = await Http.Hash(request, _disposalTokenSource.Token);
+			_loading = false;
 			StateHasChanged();
 		}
 	}

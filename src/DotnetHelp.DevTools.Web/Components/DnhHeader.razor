@@ -1,4 +1,4 @@
-﻿<header id="header" class="mb-10 md:flex md:items-start">
+﻿<header id="header" class="mb-5 md:flex md:items-start">
 	<div class="flex-auto max-w-4xl">
 		<p class="mb-4 text-sm leading-6 font-semibold text-sky-500 dark:text-sky-400">
 			@Title
@@ -6,22 +6,25 @@
 		<h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight dark:text-slate-200">
 			@SubTitle
 		</h1>
-		@foreach(var detail in Details)
+		@if(Details is not null)
 		{
-			<p class="mt-4 text-lg text-slate-700 dark:text-slate-400">
-				@detail
-			</p>
+			@foreach (var detail in Details)
+			{
+				<p class="mt-4 text-lg text-slate-700 dark:text-slate-400">
+					@detail
+				</p>
+			}
 		}
 	</div>
 </header>
 
 @code {
-	[Parameter]
+	[Parameter, EditorRequired]
 	public required string Title { get; set; }
 
-	[Parameter]
+	[Parameter, EditorRequired]
 	public required string SubTitle { get; set; }
 
 	[Parameter]
-	public required IReadOnlyCollection<string> Details { get; set; }
+	public IReadOnlyCollection<string>? Details { get; set; }
 }
