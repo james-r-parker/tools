@@ -22,6 +22,12 @@ public class DotnetHelpDevToolsInfrastructureStack : Stack
             PointInTimeRecovery = false,
             TimeToLiveAttribute = "ttl",
         });
+
+        binTable.AddLocalSecondaryIndex(new LocalSecondaryIndexProps()
+        {
+            SortKey = new Attribute() { Name = "slug", Type = AttributeType.STRING },
+            IndexName = "ix_bucket_slug",
+        });
         
         var cacheTable = new Table(this, "APICacheTable", new TableProps()
         {
