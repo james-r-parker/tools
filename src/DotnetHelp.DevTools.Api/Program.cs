@@ -104,6 +104,7 @@ api.MapPost("/jwt/decode", JwtHandler.Decode);
 api.MapPost("/http/{bucket}", HttpRequestHandler.New);
 api.MapGet("/http/{bucket}", HttpRequestHandler.List);
 api.MapPost("/http", HttpRequestHandler.Send);
+api.MapDelete("/http/{bucket}/{created:long}", HttpRequestHandler.Delete);
 
 api.MapPost("/mock", MockHttpHandler.Create);
 api.MapPut("/mock", MockHttpHandler.Update);
@@ -114,5 +115,6 @@ api.Map("/mock/{bucket}/{slug}", MockHttpHandler.Execute);
 api.MapGet("/dns/{domain}", DnsHandler.Lookup);
 
 api.MapGet("/email/{bucket}", EmailRequestHandler.List);
+api.MapDelete("/email/{bucket}/{created:long}", EmailRequestHandler.Delete);
 
 app.Run();

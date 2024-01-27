@@ -26,7 +26,7 @@ internal class HttpMockRepository(IAmazonDynamoDB db) : IHttpMockRepository
 
         return db.PutItemAsync(new PutItemRequest
             {
-                TableName = Constants.BinTableName,
+                TableName = Constants.DbTableName,
                 Item = new Dictionary<string, AttributeValue>
                 {
                     { "bucket", new AttributeValue($"{Prefix}{request.Bucket}") },
@@ -55,7 +55,7 @@ internal class HttpMockRepository(IAmazonDynamoDB db) : IHttpMockRepository
 
         return db.UpdateItemAsync(new UpdateItemRequest
             {
-                TableName = Constants.BinTableName,
+                TableName = Constants.DbTableName,
                 Key = new Dictionary<string, AttributeValue>
                 {
                     { "bucket", new AttributeValue($"{Prefix}{request.Bucket}") },
@@ -83,7 +83,7 @@ internal class HttpMockRepository(IAmazonDynamoDB db) : IHttpMockRepository
     {
         return db.DeleteItemAsync(new DeleteItemRequest
             {
-                TableName = Constants.BinTableName,
+                TableName = Constants.DbTableName,
                 Key = new Dictionary<string, AttributeValue>
                 {
                     { "bucket", new AttributeValue($"{Prefix}{bucket}") },
@@ -97,7 +97,7 @@ internal class HttpMockRepository(IAmazonDynamoDB db) : IHttpMockRepository
     {
         var response = await db.QueryAsync(new QueryRequest()
         {
-            TableName = Constants.BinTableName,
+            TableName = Constants.DbTableName,
             IndexName = "ix_bucket_slug",
             KeyConditionExpression = "#b = :b AND #s = :s",
             ExpressionAttributeValues = new Dictionary<string, AttributeValue>
@@ -129,7 +129,7 @@ internal class HttpMockRepository(IAmazonDynamoDB db) : IHttpMockRepository
     {
         QueryResponse response = await db.QueryAsync(new QueryRequest
             {
-                TableName = Constants.BinTableName,
+                TableName = Constants.DbTableName,
                 KeyConditionExpression = "#b = :b AND #c > :c",
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue>
                 {

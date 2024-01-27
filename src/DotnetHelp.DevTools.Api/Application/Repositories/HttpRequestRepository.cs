@@ -6,6 +6,7 @@ internal interface IHttpRequestRepository
 {
     Task Save(BucketHttpRequest request, CancellationToken cancellationToken);
     Task<IReadOnlyCollection<BucketHttpRequest>> List(string bucket, long from, CancellationToken cancellationToken);
+    Task Delete(string bucket, long from, CancellationToken cancellationToken);
 }
 
 internal class HttpRequestRepository(IAmazonDynamoDB db) : IHttpRequestRepository
@@ -47,7 +48,7 @@ internal class HttpRequestRepository(IAmazonDynamoDB db) : IHttpRequestRepositor
 
         return db.PutItemAsync(new PutItemRequest
             {
-                TableName = Constants.BinTableName,
+                TableName = Constants.DbTableName,
                 Item = new Dictionary<string, AttributeValue>
                 {
                     { "bucket", new AttributeValue($"{Prefix}{request.Bucket}") },
@@ -70,7 +71,7 @@ internal class HttpRequestRepository(IAmazonDynamoDB db) : IHttpRequestRepositor
     {
         QueryResponse response = await db.QueryAsync(new QueryRequest
             {
-                TableName = Constants.BinTableName,
+                TableName = Constants.DbTableName,
                 KeyConditionExpression = "#b = :b AND #c > :c",
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue>
                 {
@@ -96,5 +97,20 @@ internal class HttpRequestRepository(IAmazonDynamoDB db) : IHttpRequestRepositor
                 x["query"].M.ToDictionary(y => y.Key, y => y.Value.S),
                 x["body"].S))
             .ToImmutableList();
+    }
+    
+    public Task Delete(string bucket, long from, CancellationToken cancellationToken)
+    {
+        return db.DeleteItemAsync(new DeleteItemRequest
+        {
+            TableName = Constants.DbTableName,
+            Key = new Dictionary<string, AttributeValue>
+            {
+                { "bucket", new AttributeValue($"{Prefix}{bucket}") },
+                {
+                    "created", new AttributeValue { N = from.ToString() }
+                }
+            }
+        }, cancellationToken);
     }
 }

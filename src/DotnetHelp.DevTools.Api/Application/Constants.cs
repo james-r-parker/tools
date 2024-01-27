@@ -6,7 +6,7 @@ public static class Constants
 {
     public const int TTLDays = 7;
 
-    public static string BinTableName =>
+    public static string DbTableName =>
         Environment.GetEnvironmentVariable("DB_TABLE_NAME")
         ?? throw new Exception("DB_TABLE_NAME environment variable not set");
 

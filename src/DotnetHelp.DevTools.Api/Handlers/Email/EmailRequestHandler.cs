@@ -25,4 +25,25 @@ internal static class EmailRequestHandler
 
         return Results.Ok(emails);
     }
+    
+    internal static async Task<IResult> Delete(
+        [FromRoute] string bucket,
+        [FromRoute] long created,
+        [FromServices] IEmailRepository db,
+        CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(bucket))
+        {
+            return Results.BadRequest();
+        }
+
+        if (created < 0)
+        {
+            return Results.BadRequest();
+        }
+
+        await db.Delete(bucket, created, cancellationToken);
+
+        return Results.NoContent();
+    }
 }
