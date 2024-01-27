@@ -152,30 +152,7 @@ public class DotnetHelpDevToolsWebStack : Stack
                 ViewerProtocolPolicy = ViewerProtocolPolicy.HTTPS_ONLY,
                 Compress = true,
                 AllowedMethods = AllowedMethods.ALLOW_ALL,
-                OriginRequestPolicy = new OriginRequestPolicy(this, "ApiOriginRequestPolicy",
-                    new OriginRequestPolicyProps
-                    {
-                        CookieBehavior = OriginRequestCookieBehavior.None(),
-                        HeaderBehavior = OriginRequestHeaderBehavior.AllowList(
-                            "Origin",
-                            "Access-Control-Request-Headers",
-                            "Access-Control-Request-Method",
-                            "Accept",
-                            "User-Agent",
-                            "CloudFront-Viewer-City",
-                            "CloudFront-Viewer-Country-Name",
-                            "CloudFront-Viewer-Latitude",
-                            "CloudFront-Viewer-Longitude",
-                            "CloudFront-Viewer-Postal-Code",
-                            "CloudFront-Viewer-Time-Zone",
-                            "CloudFront-Viewer-JA3-Fingerprint",
-                            "CloudFront-Viewer-Http-Version",
-                            "CloudFront-Is-Tablet-Viewer",
-                            "CloudFront-Is-Mobile-Viewer",
-                            "CloudFront-Is-Desktop-Viewer"),
-                        QueryStringBehavior = OriginRequestQueryStringBehavior.All(),
-                        Comment = "DotnetHelp Api Origin Request Policy"
-                    }),
+                OriginRequestPolicy = OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,
                 CachePolicy = new CachePolicy(this, "ApiCachePolicy", new CachePolicyProps
                 {
                     Comment = "DotnetHelp Api Cache Policy",
