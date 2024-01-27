@@ -15,7 +15,10 @@ public interface IWebsocketClient
     Task SendMessage(WebSocketMessage request, CancellationToken cancellationToken);
 }
 
-internal class ApiGatewayWebsocketClient(IAmazonApiGatewayManagementApi wss, IAmazonDynamoDB db, ILogger<ApiGatewayWebsocketClient> logger)
+internal class ApiGatewayWebsocketClient(
+    IAmazonApiGatewayManagementApi wss,
+    IAmazonDynamoDB db,
+    ILogger<ApiGatewayWebsocketClient> logger)
     : IWebsocketClient
 {
     public async Task SendMessage(WebSocketMessage request, CancellationToken cancellationToken)
@@ -49,10 +52,16 @@ internal class ApiGatewayWebsocketClient(IAmazonApiGatewayManagementApi wss, IAm
                         Data = new MemoryStream(Encoding.UTF8.GetBytes(payload)),
                     },
                     cancellationToken);
+                
+                logger.Send(connection["connectionId"].S);
+            }
+            catch (GoneException e)
+            {
+                logger.Gone(connection["connectionId"].S);
             }
             catch (Exception e)
             {
-                logger.SendMessage(e, connection["connectionId"].S);
+                logger.Error(e, connection["connectionId"].S);
             }
         }
     }
@@ -60,8 +69,14 @@ internal class ApiGatewayWebsocketClient(IAmazonApiGatewayManagementApi wss, IAm
 
 internal static partial class WebsocketClientLogger
 {
-    [LoggerMessage(LogLevel.Warning, "Failed to send websocket message to {connectionId}")]
-    public static partial void SendMessage(this ILogger<ApiGatewayWebsocketClient> logger, Exception ex, string connectionId);
+    [LoggerMessage(LogLevel.Error, "Failed to send websocket message to {connectionId}")]
+    public static partial void Error(this ILogger<ApiGatewayWebsocketClient> logger, Exception ex, string connectionId);
+
+    [LoggerMessage(LogLevel.Information, "Connection {connectionId} has gone away")]
+    public static partial void Gone(this ILogger<ApiGatewayWebsocketClient> logger, string connectionId);
+
+    [LoggerMessage(LogLevel.Information, "Sent message to connection {connectionId}")]
+    public static partial void Send(this ILogger<ApiGatewayWebsocketClient> logger, string connectionId);
 }
 
 [JsonSerializable(typeof(WebSocketMessage))]

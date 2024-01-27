@@ -6,6 +6,7 @@ using DotnetHelp.DevTools.Api.Handlers.Email;
 using DotnetHelp.DevTools.Api.Handlers.Hash;
 using DotnetHelp.DevTools.Api.Handlers.Http;
 using DotnetHelp.DevTools.Api.Handlers.Jwt;
+using DotnetHelp.DevTools.Api.HealthChecks;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Polly;
@@ -37,7 +38,9 @@ builder.Services.AddAWSLambdaHosting(LambdaEventSource.HttpApi,
                 ApiJsonContext>();
     });
 
-builder.Services.AddHealthChecks();
+builder.Services
+    .AddHealthChecks()
+    .AddCheck<CacheHealthCheck>("cache");
 
 builder.Services.AddCors(c => c.AddDefaultPolicy(p =>
     p.AllowCredentials().AllowAnyHeader().AllowAnyMethod()

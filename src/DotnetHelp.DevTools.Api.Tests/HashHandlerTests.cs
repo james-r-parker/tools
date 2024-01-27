@@ -1,19 +1,35 @@
-using System.Diagnostics;
-using DotnetHelp.DevTools.Api.Handlers.Hash;
+﻿using System.Net;
+using System.Net.Http.Json;
+using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace DotnetHelp.DevTools.Api.Tests;
 
-public class HashHandlerTests
+public class HashHandlerTests : IDisposable
 {
     private const string Message = "`#<12345678>` ~ Hello, ŵorld!\ud83e\udee0";
     private const string Secret = "secret";
     
+    private readonly WebApplicationFactory<Program> _server;
+    private readonly HttpClient _client;
+
+    public HashHandlerTests()
+    {
+        Environment.SetEnvironmentVariable(
+            "WEBSOCKET_URL",
+            "ws://localhost:5000/ws",
+            EnvironmentVariableTarget.Process);
+
+        _server = new WebApplicationFactory<Program>();
+        _client = _server.CreateClient();
+    }
+
     [Theory]
     [InlineData("MD5", Message, "UTF8", "HEX", null, "D009B5272525F4AD1FE60DC25CEBFA7C")]
     [InlineData("MD5", Message, "UTF32", "HEX", null, "069DB8C48B6DE492AFA14ED35A0D0FF4")]
     [InlineData("MD5", Message, "ASCII", "HEX", null, "A9E48942C3E8C07EB2588E6E6A97A313")]
     [InlineData("MD5", Message, "UNICODE", "HEX", null, "48238465D93D2B6A9CEA729928A8B62C")]
     
+    [InlineData("MD5", Message, "DEFAULT", "DEFAULT", null, "0Am1JyUl9K0f5g3CXOv6fA==")]
     [InlineData("MD5", Message, "UTF8", "BASE64", null, "0Am1JyUl9K0f5g3CXOv6fA==")]
     [InlineData("MD5", Message, "UTF32", "BASE64", null, "Bp24xItt5JKvoU7TWg0P9A==")]
     [InlineData("MD5", Message, "ASCII", "BASE64", null, "qeSJQsPowH6yWI5uapejEw==")]
@@ -38,15 +54,38 @@ public class HashHandlerTests
     [InlineData("HMACSHA512", Message, "UTF32", "HEX", Secret, "BEB1997DB6A325E572960A38F7B4290FD4F7809505AD1C81119BDC72D83A5A05DCF87D750A5AB7FC7FFDA98DE949F83A20E55BFEAB2BE300C3E9B79C2BEFA704")]
     [InlineData("HMACSHA512", Message, "ASCII", "HEX", Secret, "5A364062775A086832A954A2D348DFF3B75E3AF8D890FE5D4FD26D871BF7397ABB77F261AA15B3EA75EE1091FE1353D489222B9318C83E08DD2D5D2B26461358")]
     [InlineData("HMACSHA512", Message, "UNICODE", "HEX", Secret, "A779E9FE36B5EC60A8F357A410C37FE17F49186FC4B58FFA7026AC8EAEE45119B3EC1DF9363860403A905E2063E1B05B106D19F8EEBD492CC46FE19865BA62CC")]
-    public void HashTests(string algorithm, string message, string encoding, string format, string? secret, string expected)
+    public async Task Hash(string algorithm, string message, string encoding, string format, string? secret, string expected)
     {
-        IResult result = HashHandler.Hash(new HashApiRequest(algorithm, message, encoding, format, secret));
-        Ok<TextApiResponse> response = Assert.IsType<Ok<TextApiResponse>>(result);
-        Assert.Equal(200, response.StatusCode);
-        Assert.NotNull(response);
-        Assert.NotNull(response.Value);
-        
-        Debug.WriteLineIf(expected != response.Value.Response, $"Expected: {expected} | Actual: {response.Value.Response}");
-        Assert.Equal(expected, response.Value.Response);
+        var request =
+            new HashApiRequest(algorithm, message, encoding, format, secret);
+
+        using HttpResponseMessage response = await _client.PostAsJsonAsync(
+            "/api/hash",
+            request);
+
+        TextApiResponse? result = await response.Content.ReadFromJsonAsync<TextApiResponse>();
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.NotNull(result);
+        Assert.Equal(expected, result.Response);
+    }
+    
+    [Fact]
+    public async Task Hash_InvalidAlgorithm()
+    {
+        var request =
+            new HashApiRequest("SHA256", null!, "UTF8", "HEX", null);
+
+        using HttpResponseMessage response = await _client.PostAsJsonAsync(
+            "/api/hash",
+            request);
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    public void Dispose()
+    {
+        _client.Dispose();
+        _server.Dispose();
     }
 }

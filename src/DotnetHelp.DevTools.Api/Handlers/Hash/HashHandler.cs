@@ -5,6 +5,11 @@ internal static class HashHandler
     internal static IResult Hash(
         [FromBody] HashApiRequest request)
     {
+        if (string.IsNullOrWhiteSpace(request.Message))
+        {
+            return Results.BadRequest();
+        }
+
         var encoding = GetEncoding(request);
         var hashAlgorithm = GetHashAlgorithm(request, encoding);
         var hash = hashAlgorithm.ComputeHash(encoding.GetBytes(request.Message));
