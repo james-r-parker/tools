@@ -55,4 +55,8 @@
       <ProjectReference Include="..\DotnetHelp.DevTools.WebsocketClient\DotnetHelp.DevTools.WebsocketClient.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+        <InternalsVisibleTo Include="DotnetHelp.DevTools.Email.Tests" />
+    </ItemGroup>
+
 </Project>
