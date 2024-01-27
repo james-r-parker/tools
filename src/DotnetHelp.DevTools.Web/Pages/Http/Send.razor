@@ -1,5 +1,7 @@
 ﻿@page "/http/send"
 @inject ApiHttpClient ApiClient
+@inject IStateManagement State
+@inject IOptions<ApplicationOptions> Settings
 @implements IAsyncDisposable
 
 <DnhHeader Title="Http"
@@ -70,14 +72,34 @@ else if (_response is not null)
 
 @code {
 	private readonly CancellationTokenSource _disposalTokenSource = new();
-	private string _url = "";
+	private string _url = $"";
 	private string _body = "";
-	private string _method = "GET";
+	private string _method = "POST";
 	private string _headerKey = "";
 	private string _headerValue = "";
 	private IList<KeyValuePair<string, string>> _headers = new List<KeyValuePair<string, string>>();
 	private OutgoingHttpResponse? _response;
 	private bool _loading;
+
+	protected override async Task OnInitializedAsync()
+	{
+		var previousRequest = await State.GetOutgoingHttpRequestAsync(_disposalTokenSource.Token);
+
+		if (previousRequest is not null)
+		{
+			_url = previousRequest.Uri;
+			_body = previousRequest.Body ?? "";
+			_method = previousRequest.Method;
+			_headers = previousRequest.Headers?.ToList() ?? new List<KeyValuePair<string, string>>();
+		}
+		else
+		{
+			var bucket = await State.GetIdAsync(_disposalTokenSource.Token);
+			_url = $"{Settings.Value.BaseAddress}/api/http/{bucket}";
+		}
+
+		StateHasChanged();
+	}
 
 	private void OnAddHeader()
 	{
@@ -100,6 +122,7 @@ else if (_response is not null)
 			_loading = true;
 			var request = new OutgoingHttpRequest(_url, _method, _headers.ToDictionary(x => x.Key, x => x.Value), _body);
 			_response = await ApiClient.SendHttpRequest(request, _disposalTokenSource.Token);
+			await State.SetOutgoingHttpRequestAsync(request, _disposalTokenSource.Token);
 		}
 		catch
 		{

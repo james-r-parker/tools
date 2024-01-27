@@ -2,11 +2,11 @@
 	<div style="background-position:10px 10px" class="absolute inset-0 bg-grid-slate-100 [mask-image:linear-gradient(0deg,#fff,rgba(255,255,255,0.6))] dark:bg-grid-slate-700/25 dark:[mask-image:linear-gradient(0deg,rgba(255,255,255,0.1),rgba(255,255,255,0.5))]"></div>
 	@if (OnDelete.HasDelegate)
 	{
-		<div class="absolute right-0 z-20">
-			<button class="p-2 text-slate-700 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-300 cursor-pointer" @onclick="OnDelete">
-				<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+		<div class="absolute right-2 top-2 z-20">
+			<button class="text-slate-700 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-300 cursor-pointer" @onclick="OnDelete">
+				<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
 					 stroke="currentColor">
-					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
 						  d="M6 18L18 6M6 6l12 12" />
 				</svg>
 			</button>
@@ -14,7 +14,7 @@
 	}
 	@if (OnCopy.HasDelegate)
 	{
-		<div class="absolute right-1 z-20">
+		<div class="absolute right-3 z-20">
 			<div class="relative flex -mr-2">
 				<button class="@(_notifyCopy ? "text-sky-500" : "text-slate-500 hover:text-slate-400")" @onclick="OnClick">
 					<svg fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="w-8 h-8"><path d="M13 10.75h-1.25a2 2 0 0 0-2 2v8.5a2 2 0 0 0 2 2h8.5a2 2 0 0 0 2-2v-8.5a2 2 0 0 0-2-2H19"></path><path d="M18 12.25h-4a1 1 0 0 1-1-1v-1.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1.5a1 1 0 0 1-1 1ZM13.75 16.25h4.5M13.75 19.25h4.5"></path></svg>
@@ -34,11 +34,9 @@
 		</div>
 	}
 	<div class="relative rounded-xl overflow-auto p-8">
-		<div class="space-y-8">
-			<div>
-				<div class="text-sm font-medium text-slate-900 dark:text-slate-200">
-					@ChildContent
-				</div>
+		<div>
+			<div class="text-slate-900 dark:text-slate-200">
+				@ChildContent
 			</div>
 		</div>
 	</div>

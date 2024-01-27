@@ -28,7 +28,7 @@ internal class WebSocket(IStateManagement state, IOptions<WebSocketOptions> opti
 	public async Task ConnectAsync(CancellationToken cancellationToken)
 	{
 		_cancellationToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-		var bucket = await state.GetIdAsync();
+		var bucket = await state.GetIdAsync(_cancellationToken.Token);
 		await _wss.ConnectAsync(new Uri($"{options.Value.BaseAddress}?bucket={bucket}"), cancellationToken);
 		_receiveLoopTask = ReceiveLoop(_cancellationToken.Token);
 	}
@@ -115,7 +115,11 @@ internal class WebSocket(IStateManagement state, IOptions<WebSocketOptions> opti
 			_receiveLoopTask.Dispose();
 		}
 
-		await _wss.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closing", CancellationToken.None);
+		if (_wss.State == WebSocketState.Open)
+		{
+			await _wss.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closing", CancellationToken.None);
+		}
+
 		_wss.Dispose();
 	}
 }

@@ -4,14 +4,15 @@
 	</span>
 	<input @bind-value="@Value"
 	       @ref="Element"
-		   type="text"
+		   type="number"
+		   step="1"
 		   required="@Required"
 		   class="w-full text-sm leading-6 text-slate-400 rounded-md ring-1 ring-slate-900/10 shadow-sm py-1.5 pl-2 pr-3 hover:ring-slate-300 dark:bg-slate-800 dark:highlight-white/5 dark:hover:bg-slate-700" placeholder="Enter some text." />
 </label>
 
 @code {
 
-	private string? _value;
+	private int _value;
 
 	[Parameter, EditorRequired]
 	public required string Label { get; set; }
@@ -20,7 +21,7 @@
 	public bool Required { get; set; } = false;
 
 	[Parameter]
-	public string? Value
+	public int Value
 	{
 		get => _value;
 		set
@@ -36,7 +37,7 @@
 	}
 
 	[Parameter]
-	public EventCallback<string> ValueChanged { get; set; }
+	public EventCallback<int> ValueChanged { get; set; }
 
 	public ElementReference Element { get; set; }
 }

@@ -3,8 +3,8 @@
         @Label
     </span>
     <textarea 
-        @oninput="OnValueChanged"
-        value="@_value"
+        @bind="@Value"
+		@bind:event="oninput"
         required="@Required"
         class="w-full text-sm leading-6 text-slate-400 rounded-md ring-1 ring-slate-900/10 shadow-sm py-1.5 pl-2 pr-3 hover:ring-slate-300 dark:bg-slate-800 dark:highlight-white/5 dark:hover:bg-slate-700"
         rows="3" 
@@ -14,23 +14,30 @@
 
 @code {
 
-    private string? _value;
+	private string? _value;
 
-    [Parameter, EditorRequired]
-    public required string Label { get; set; }
+	[Parameter, EditorRequired]
+	public required string Label { get; set; }
 
-    [Parameter]
-    public bool Required { get; set; } = false;
+	[Parameter]
+	public bool Required { get; set; } = false;
 
-    [Parameter, EditorRequired]
-    public string? Value { get; set; }
+	[Parameter]
+	public string? Value
+	{
+		get => _value;
+		set
+		{
+			if (_value == value)
+			{
+				return;
+			}
 
-    [Parameter]
-    public EventCallback<string> ValueChanged { get; set; }
+			_value = value;
+			_ = ValueChanged.InvokeAsync(value);
+		}
+	}
 
-    private async Task OnValueChanged(ChangeEventArgs e)
-    {
-        Value = e?.Value?.ToString();
-        await ValueChanged.InvokeAsync(Value);
-    }
+	[Parameter]
+	public EventCallback<string> ValueChanged { get; set; }
 }

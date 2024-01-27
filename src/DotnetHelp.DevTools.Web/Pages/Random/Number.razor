@@ -1,0 +1,68 @@
+﻿@using System.Security.Cryptography
+@page "/random/number"
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Random Number</PageTitle>
+
+<DnhHeader Title="Random"
+		   SubTitle="Number"
+		   Details=@(new List<string> {
+		   $"Generates a random number between two values"
+		   }) />
+
+<DnhSection>
+	<DnhForm OnSubmit="OnSubmit" Text="Generate">
+		<DnhTextBoxNumber Label="Min" @bind-Value="_min" />
+		<DnhTextBoxNumber Label="Max" @bind-Value="_max" />
+	</DnhForm>
+</DnhSection>
+
+@if (_number is not null)
+{
+	<DnhSection>
+		<DnhResult OnCopy="OnCopy">
+			@_display
+		</DnhResult>
+	</DnhSection>
+}
+
+@code {
+	private const int Ticks = 10;
+	private int? _number = null;
+	private int? _display = 0;
+	private int _min = 0;
+	private int _max = 1000;
+	private CancellationTokenSource _disposalTokenSource = new();
+
+	private async Task OnSubmit()
+	{
+		await _disposalTokenSource.CancelAsync();
+		_disposalTokenSource.Dispose();
+		_disposalTokenSource = new();
+		_display = 0;
+		_number = RandomNumberGenerator.GetInt32(_min, _max);
+
+		var increment = _number / Ticks;
+
+		_ = Task.Run(async () =>
+		{
+			for (var i = 0; i < Ticks; i++)
+			{
+				_display += increment;
+				_ = InvokeAsync(StateHasChanged);
+				await Task.Delay(Ticks, _disposalTokenSource.Token);
+			}
+
+			_display = _number;
+			StateHasChanged();
+		}, _disposalTokenSource.Token);
+	}
+
+	private async Task OnCopy()
+	{
+		if (_number is not null)
+		{
+			await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", _number.Value.ToString());
+		}
+	}
+}

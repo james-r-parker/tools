@@ -13,7 +13,7 @@
 
 <DnhSection>
 	<DnhForm OnSubmit="OnSubmit" Text="Lookup">
-		<DnhTextBox Label="Domain" @bind-Value="_request" />
+		<DnhTextBox Label="Domain" @bind-Value="_request" @ref="_focusElement" />
 	</DnhForm>
 </DnhSection>
 
@@ -21,20 +21,29 @@
 {
 	<DnhLoading />
 }
-else if (_data is not null)
+else if (_response is not null)
 {
 	<DnhSection Title="Result">
 		<DnhResult>
-			<DnhKvpCollection Items="_data" />
+			<DnhTitle>@_response.Domain</DnhTitle>
+			@foreach (var item in _response.Responses)
+			{
+				<ul>
+					<li class="mb-1">
+						<DnhKvp Name="@item.Type" Value="@item.Address" />
+					</li>
+				</ul>
+			}
 		</DnhResult>
 	</DnhSection>
 }
 
 
 @code {
+	private DnhTextBox? _focusElement;
 	private bool _loading = false;
 	private string? _request;
-	private IReadOnlyCollection<KeyValuePair<string, string>>? _data;
+	private DnsLookupResponses? _response;
 	private readonly CancellationTokenSource _disposalTokenSource = new();
 
 	public async ValueTask DisposeAsync()
@@ -44,21 +53,21 @@ else if (_data is not null)
 
 	private async Task OnSubmit()
 	{
-		_data = null;
+		_response = null;
 		if (!string.IsNullOrWhiteSpace(_request))
 		{
 			_loading = true;
-			DnsLookupResponses? response = await Http.DnsLookup(_request, _disposalTokenSource.Token);
-
-			if (response is not null)
-			{
-				_data = response?.Responses?
-					.Select(x => new KeyValuePair<string, string>(x.Type, x.Address))
-					.ToList();
-			}
-
+			_response = await Http.DnsLookup(_request, _disposalTokenSource.Token);
+			_request = "";
 			_loading = false;
-			StateHasChanged();
+		}
+	}
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender && _focusElement is not null)
+		{
+			await _focusElement.Element.FocusAsync();
 		}
 	}
 }

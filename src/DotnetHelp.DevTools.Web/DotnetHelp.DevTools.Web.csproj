@@ -20,8 +20,4 @@
       <ProjectReference Include="..\DotnetHelp.DevTools.Shared\DotnetHelp.DevTools.Shared.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Pages\Random\" />
-    </ItemGroup>
-
 </Project>

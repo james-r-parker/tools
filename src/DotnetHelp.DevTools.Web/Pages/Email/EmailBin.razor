@@ -39,7 +39,7 @@ else
 
 	protected override async Task OnInitializedAsync()
 	{
-		_bucket = await State.GetIdAsync();
+		_bucket = await State.GetIdAsync(_disposalTokenSource.Token);
 
 		_ = Wss.ConnectAsync(_disposalTokenSource.Token)
 		.ContinueWith((c) =>

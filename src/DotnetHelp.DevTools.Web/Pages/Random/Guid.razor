@@ -1,0 +1,37 @@
+﻿@page "/random/guid"
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Random Guid</PageTitle>
+
+<DnhHeader Title="Random"
+		   SubTitle="GUID Generator"
+		   Details=@(new List<string> {
+		   $"Creates a random guid"
+		   }) />
+
+<DnhSection>
+	<DnhResult OnCopy="OnCopy">
+		@_guid
+	</DnhResult>
+</DnhSection>
+
+<DnhSection>
+	<DnhButton OnClick="Generate">Generate</DnhButton>
+</DnhSection>
+
+@code {
+	private string _guid = System.Guid.NewGuid().ToString();
+
+	private void Generate()
+	{
+		_guid = System.Guid.NewGuid().ToString();
+	}
+
+	private async Task OnCopy()
+	{
+		if (_guid is not null)
+		{
+			await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", _guid);
+		}
+	}
+}
