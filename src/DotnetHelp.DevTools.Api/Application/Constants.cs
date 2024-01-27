@@ -4,13 +4,15 @@ namespace DotnetHelp.DevTools.Api.Application;
 
 public static class Constants
 {
+    public const int TTLDays = 7;
+
     public static string BinTableName =>
-        Environment.GetEnvironmentVariable("BIN_TABLE_NAME")
-        ?? throw new Exception("BIN_TABLE_NAME environment variable not set");
+        Environment.GetEnvironmentVariable("DB_TABLE_NAME")
+        ?? throw new Exception("DB_TABLE_NAME environment variable not set");
 
     public static ProductInfoHeaderValue UserAgent =>
-        new ("DotnetHelp.DevTools.Api", "1.0.0");
-    
+        new("DotnetHelp.DevTools.Api", "1.0.0");
+
     public static readonly ImmutableHashSet<string> IgnoreHeaders =
         ImmutableHashSet.Create(StringComparer.OrdinalIgnoreCase,
             new[]

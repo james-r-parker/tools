@@ -1,4 +1,6 @@
-﻿namespace DotnetHelp.DevTools.Api.Handlers.Email;
+﻿using DotnetHelp.DevTools.Api.Application.Repositories;
+
+namespace DotnetHelp.DevTools.Api.Handlers.Email;
 
 internal static class EmailRequestHandler
 {

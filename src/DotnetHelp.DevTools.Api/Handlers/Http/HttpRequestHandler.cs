@@ -1,4 +1,5 @@
-﻿using DotnetHelp.DevTools.WebsocketClient;
+﻿using DotnetHelp.DevTools.Api.Application.Repositories;
+using DotnetHelp.DevTools.WebsocketClient;
 
 namespace DotnetHelp.DevTools.Api.Handlers.Http;
 
@@ -95,11 +96,12 @@ internal static class HttpRequestHandler
 
     internal static async Task<IResult> Send(
         [FromBody] OutgoingHttpRequest request,
-        [FromServices] OutgoingHttpClient client)
+        [FromServices] OutgoingHttpClient client,
+        CancellationToken cancellationToken)
     {
         try
         {
-			var result = await client.Send(request, CancellationToken.None);
+			var result = await client.Send(request, cancellationToken);
             return Results.Ok(result);
         }
         catch

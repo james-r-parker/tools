@@ -20,7 +20,7 @@ public class DotnetHelpDevToolsEmailStack : Stack
             RemovalPolicy = RemovalPolicy.DESTROY,
             BlockPublicAccess = BlockPublicAccess.BLOCK_ALL,
             Encryption = BucketEncryption.S3_MANAGED,
-            LifecycleRules = new[]
+            LifecycleRules = new ILifecycleRule[]
             {
                 new LifecycleRule
                 {
@@ -63,9 +63,10 @@ public class DotnetHelpDevToolsEmailStack : Stack
             {
                 { "WEBSOCKET_URL", Fn.ImportValue("DOTNETHELP:DEVTOOLS:WSS:URL") },
                 { "CONNECTION_TABLE_NAME", Fn.ImportValue("DOTNETHELP:DEVTOOLS:WSS:TABLE") },
-                { "BIN_TABLE_NAME", Fn.ImportValue("DOTNETHELP:DEVTOOLS:INFRASTRUCTURE:BIN:TABLE") },
+                { "DB_TABLE_NAME", Fn.ImportValue("DOTNETHELP:DEVTOOLS:INFRASTRUCTURE:DB:TABLE") },
                 { "EMAIL_BUCKET", emailBucket.BucketName },
-                { "AWS_STS_REGIONAL_ENDPOINTS", "regional" }
+                { "AWS_STS_REGIONAL_ENDPOINTS", "regional" },
+                { "ASPNETCORE_ENVIRONMENT", "Release" },
             }
         });
         
@@ -73,7 +74,7 @@ public class DotnetHelpDevToolsEmailStack : Stack
         //Trigger the lambda function when a new object is created in the bucket
         emailBucket.AddEventNotification(EventType.OBJECT_CREATED, new LambdaDestination(emailFunction));
 
-        new ReceiptRuleSet(this, "EmailRuleSet", new ReceiptRuleSetProps
+        _ = new ReceiptRuleSet(this, "EmailRuleSet", new ReceiptRuleSetProps
         {
             DropSpam = true,
             ReceiptRuleSetName = "DotnetHelp.DevTools.Email",

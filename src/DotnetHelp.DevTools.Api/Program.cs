@@ -1,5 +1,6 @@
 using DnsClient;
 using DotnetHelp.DevTools;
+using DotnetHelp.DevTools.Api.Application.Repositories;
 using DotnetHelp.DevTools.Api.Handlers.Dns;
 using DotnetHelp.DevTools.Api.Handlers.Email;
 using DotnetHelp.DevTools.Api.Handlers.Hash;
@@ -24,7 +25,7 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
     options.ForwardedHeaders =
-        ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+        ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedHost;
     options.ForwardLimit = 3;
 });
 
@@ -79,6 +80,7 @@ builder.Services.TryAddSingleton<IAmazonDynamoDB, AmazonDynamoDBClient>();
 
 builder.Services
     .AddHttpContextAccessor()
+    .AddSingleton<IHttpMockRepository, HttpMockRepository>()
     .AddSingleton<IHttpRequestRepository, HttpRequestRepository>()
     .AddSingleton<IEmailRepository, EmailRepository>();
 
@@ -102,6 +104,12 @@ api.MapPost("/jwt/decode", JwtHandler.Decode);
 api.MapPost("/http/{bucket}", HttpRequestHandler.New);
 api.MapGet("/http/{bucket}", HttpRequestHandler.List);
 api.MapPost("/http", HttpRequestHandler.Send);
+
+api.MapPost("/mock", MockHttpHandler.Create);
+api.MapPut("/mock", MockHttpHandler.Update);
+api.MapDelete("/mock", MockHttpHandler.Delete);
+api.MapGet("/mock/{bucket}", MockHttpHandler.List);
+api.Map("/mock/{bucket}/{slug}", MockHttpHandler.Execute);
 
 api.MapGet("/dns/{domain}", DnsHandler.Lookup);
 

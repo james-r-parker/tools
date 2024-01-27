@@ -1,6 +1,6 @@
 ﻿using System.Collections.Immutable;
 
-namespace DotnetHelp.DevTools.Api.Application;
+namespace DotnetHelp.DevTools.Api.Application.Repositories;
 
 internal interface IEmailRepository
 {

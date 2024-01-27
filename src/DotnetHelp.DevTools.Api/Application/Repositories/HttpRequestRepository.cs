@@ -1,6 +1,6 @@
 ﻿using System.Collections.Immutable;
 
-namespace DotnetHelp.DevTools.Api.Application;
+namespace DotnetHelp.DevTools.Api.Application.Repositories;
 
 internal interface IHttpRequestRepository
 {
@@ -54,7 +54,7 @@ internal class HttpRequestRepository(IAmazonDynamoDB db) : IHttpRequestRepositor
                     { "created", new AttributeValue { N = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString() } },
                     {
                         "ttl",
-                        new AttributeValue { N = DateTimeOffset.UtcNow.AddDays(1).ToUnixTimeSeconds().ToString() }
+                        new AttributeValue { N = DateTimeOffset.UtcNow.AddDays(Constants.TTLDays).ToUnixTimeSeconds().ToString() }
                     },
                     { "ip", ip },
                     { "headers", headers },
