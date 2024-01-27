@@ -31,7 +31,7 @@ public class Function
 
     private static readonly IServiceProvider Services;
 
-    private static readonly string TableName = Environment.GetEnvironmentVariable("BIN_TABLE_NAME") ??
+    private static readonly string TableName = Environment.GetEnvironmentVariable("DB_TABLE_NAME") ??
                                                throw new ApplicationException(
                                                    "TABLE_NAME environment variable not set");
 
