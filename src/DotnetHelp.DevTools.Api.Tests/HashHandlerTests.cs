@@ -14,6 +14,11 @@ public class HashHandlerTests
     [InlineData("MD5", Message, "ASCII", "HEX", null, "A9E48942C3E8C07EB2588E6E6A97A313")]
     [InlineData("MD5", Message, "UNICODE", "HEX", null, "48238465D93D2B6A9CEA729928A8B62C")]
     
+    [InlineData("MD5", Message, "UTF8", "BASE64", null, "0Am1JyUl9K0f5g3CXOv6fA==")]
+    [InlineData("MD5", Message, "UTF32", "BASE64", null, "Bp24xItt5JKvoU7TWg0P9A==")]
+    [InlineData("MD5", Message, "ASCII", "BASE64", null, "qeSJQsPowH6yWI5uapejEw==")]
+    [InlineData("MD5", Message, "UNICODE", "BASE64", null, "SCOEZdk9K2qc6nKZKKi2LA==")]
+    
     [InlineData("SHA1", Message, "UTF8", "HEX", null, "76BB8AAE622823F6054A857E4E79C68E64E44DC5")]
     [InlineData("SHA1", Message, "UTF32", "HEX", null, "3C5C6DC2263D75DCD9F69E420B61E0EA71DD49A8")]
     [InlineData("SHA1", Message, "ASCII", "HEX", null, "F5BDA7F83E19F9F889683094A44787AB4007D955")]
