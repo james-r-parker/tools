@@ -5,14 +5,12 @@
 @inject IOptions<ApplicationOptions> Settings
 @implements IAsyncDisposable
 
-<DnhHeader 
-	Title="Http" 
-	SubTitle="Receive HTTP requests"
-	Details=@(new List<string> { 
-		$"EndPoint: {Settings.Value.BaseAddress}/api/http/{_bucket}", 
-		$"State: {Wss.State}" 
-	})
-/>
+<DnhHeader Title="Http"
+		   SubTitle="Receive HTTP requests"
+		   Details=@(new List<string> {
+		   $"EndPoint: {Settings.Value.BaseAddress}/api/http/{_bucket}",
+		   $"State: {Wss.State}"
+		   }) />
 
 @if (_loading)
 {
@@ -27,7 +25,7 @@ else
 	@foreach (BucketHttpRequest request in _requests.OrderByDescending(x => x.Created))
 	{
 		<DnhSection>
-			<DnhResult>
+			<DnhResult OnDelete="() => OnDelete(request)">
 				<DnhKvp Name="Timestamp" Value="@request.Created.ToString("yyyy-MM-dd HH:mm:ss")" />
 				<DnhKvp Name="IP" Value="@request.IpAddress" />
 
@@ -53,7 +51,7 @@ else
 @code {
 	private string _bucket = string.Empty;
 	private bool _loading = true;
-	private readonly CancellationTokenSource _disposalTokenSource = new ();
+	private readonly CancellationTokenSource _disposalTokenSource = new();
 	private readonly List<BucketHttpRequest> _requests = new();
 
 	protected override async Task OnInitializedAsync()
@@ -84,6 +82,13 @@ else
 		_requests.AddRange(await ApiClient.GetHttpRequests(_bucket, from, _disposalTokenSource.Token));
 		_loading = false;
 		StateHasChanged();
+	}
+
+	private Task OnDelete(BucketHttpRequest item)
+	{
+		_requests.Remove(item);
+		_ = ApiClient.DeleteHttpRequest(item.Bucket, item.Created.ToUnixTimeSeconds(), _disposalTokenSource.Token);
+		return Task.CompletedTask;
 	}
 
 	public async ValueTask DisposeAsync()

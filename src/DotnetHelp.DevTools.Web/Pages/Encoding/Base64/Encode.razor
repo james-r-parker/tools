@@ -1,4 +1,5 @@
 ﻿@page "/encoding/base64/encode"
+@inject IJSRuntime JSRuntime
 @using Encoding = System.Text.Encoding
 
 <PageTitle>Base64 Encode</PageTitle>
@@ -19,7 +20,7 @@
 {
 	<DnhSection Title="Result">
 
-		<DnhResult>
+		<DnhResult OnCopy="OnCopy">
 			<p>@_response</p>
 		</DnhResult>
 
@@ -37,6 +38,14 @@
 		{
 			_response = Convert.ToBase64String(Encoding.UTF8.GetBytes(_request));
 			StateHasChanged();
+		}
+	}
+
+	private async Task OnCopy()
+	{
+		if (_response is not null)
+		{
+			await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", _response);
 		}
 	}
 }

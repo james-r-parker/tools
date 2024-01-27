@@ -72,4 +72,20 @@ internal class ApiHttpClient(HttpClient httpClient)
 
 		return await response.Content.ReadFromJsonAsync<JwtApiResponse>(cancellationToken);
 	}
+
+	public async Task DeleteHttpRequest(string bucket, long created, CancellationToken cancellationToken)
+	{
+		HttpResponseMessage response =
+			await httpClient.DeleteAsync($"/api/http/{bucket}/{created}", cancellationToken);
+
+		response.EnsureSuccessStatusCode();
+	}
+
+	public async Task DeleteIncommingEmail(string bucket, long created, CancellationToken cancellationToken)
+	{
+		HttpResponseMessage response =
+			await httpClient.DeleteAsync($"/api/email/{bucket}/{created}", cancellationToken);
+
+		response.EnsureSuccessStatusCode();
+	}
 }

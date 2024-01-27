@@ -1,4 +1,5 @@
 ﻿@page "/encoding/html/decode"
+@inject IJSRuntime JSRuntime
 @using DotnetHelp.DevTools.Shared
 @using System.Net
 
@@ -21,7 +22,7 @@
 {
 	<DnhSection Title="Result">
 
-		<DnhResult>
+		<DnhResult OnCopy="OnCopy">
 			<p>@_response</p>
 		</DnhResult>
 
@@ -39,6 +40,14 @@
 		{
 			_response = WebUtility.HtmlDecode(_request);
 			StateHasChanged();
+		}
+	}
+
+	private async Task OnCopy()
+	{
+		if (_response is not null)
+		{
+			await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", _response);
 		}
 	}
 }

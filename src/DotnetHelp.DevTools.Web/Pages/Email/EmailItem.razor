@@ -1,6 +1,19 @@
 ﻿<div class="not-prose relative bg-slate-50 rounded-xl overflow-hidden dark:bg-slate-800/25">
 	<div style="background-position:10px 10px" class="absolute inset-0 bg-grid-slate-100 [mask-image:linear-gradient(0deg,#fff,rgba(255,255,255,0.6))] dark:bg-grid-slate-700/25 dark:[mask-image:linear-gradient(0deg,rgba(255,255,255,0.1),rgba(255,255,255,0.5))]"></div>
 
+	@if (OnDelete.HasDelegate)
+	{
+		<div class="absolute right-0 z-20">
+			<button class="p-2 text-slate-700 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-300 cursor-pointer" @onclick="OnDelete">
+				<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+					 stroke="currentColor">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+						  d="M6 18L18 6M6 6l12 12" />
+				</svg>
+			</button>
+		</div>
+	}
+
 	<div class="relative mb-3 flex pt-2 bg-slate-800 shadow-lg ">
 		<div class="@((_view == View.Overview ? "flex-none text-sky-300 border-t border-b border-t-transparent border-b-sky-300 px-4 py-1 flex items-center" : "flex-none text-300 border-t border-b border-t-transparent border-b-300 px-4 py-1 flex items-center"))">
 			<button @onclick="() => OnChangeView(View.Overview)">Overview</button>
@@ -49,6 +62,9 @@
 @code {
 	[Parameter]
 	public required IncomingEmail Model { get; set; }
+
+	[Parameter]
+	public EventCallback OnDelete { get; set; }
 
 	private View _view = View.Overview;
 

@@ -1,4 +1,5 @@
 ﻿@page "/json/format"
+@inject IJSRuntime JSRuntime
 @using DotnetHelp.DevTools.Shared
 @using System.Net
 
@@ -19,7 +20,7 @@
 @if (_response is not null)
 {
 	<DnhSection>
-		<DnhResult>
+		<DnhResult OnCopy="OnCopy">
 			<pre>@_response</pre>
 		</DnhResult>
 	</DnhSection>
@@ -41,6 +42,14 @@
 		{
 			_response = JsonSerializer.Serialize(JsonSerializer.Deserialize<object>(_request), new JsonSerializerOptions { WriteIndented = true });
 			StateHasChanged();
+		}
+	}
+
+	private async Task OnCopy()
+	{
+		if (_response is not null)
+		{
+			await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", _response);
 		}
 	}
 }

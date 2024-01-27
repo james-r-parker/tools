@@ -1,6 +1,7 @@
 ﻿@page "/hashing"
 @using DotnetHelp.DevTools.Shared
 @inject ApiHttpClient Http
+@inject IJSRuntime JSRuntime
 @implements IAsyncDisposable
 
 <PageTitle>Hash</PageTitle>
@@ -48,7 +49,7 @@
 else if (_response is not null)
 {
 	<DnhSection Title="Result">
-		<DnhResult>
+		<DnhResult OnCopy="OnCopy">
 			<p>@_response.Response</p>
 		</DnhResult>
 	</DnhSection>
@@ -72,6 +73,14 @@ else if (_response is not null)
 	public async ValueTask DisposeAsync()
 	{
 		await _disposalTokenSource.CancelAsync();
+	}
+
+	private async Task OnCopy()
+	{
+		if (_response is not null)
+		{
+			await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", _response.Response);
+		}
 	}
 
 	private async Task OnSubmit()
