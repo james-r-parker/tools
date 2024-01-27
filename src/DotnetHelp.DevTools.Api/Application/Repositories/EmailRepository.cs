@@ -80,7 +80,7 @@ internal class EmailRepository(IAmazonDynamoDB db) : IEmailRepository
             TableName = Constants.DbTableName,
             Key = new Dictionary<string, AttributeValue>
             {
-                { "bucket", new AttributeValue($"{Prefix}{bucket}") },
+                { "bucket", new AttributeValue(bucket) },
                 {
                     "created", new AttributeValue { N = from.ToString() }
                 }
