@@ -1,0 +1,82 @@
+﻿@using System.Security.Cryptography
+@page "/random/string"
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Random Number</PageTitle>
+
+<DnhHeader Title="Random"
+		   SubTitle="String"
+		   Details=@(new List<string> {
+		   $"Generates a random string of a given length"
+		   }) />
+
+<DnhSection>
+	<DnhForm OnSubmit="OnSubmit" Text="Generate">
+		<DnhTextBoxNumber Label="Length" @bind-Value="_length" />
+	</DnhForm>
+</DnhSection>
+
+@if (_display is not null)
+{
+	<DnhSection>
+		<DnhResult OnCopy="OnCopy">
+			@_display
+		</DnhResult>
+	</DnhSection>
+}
+
+@code {
+	private string? _result = null;
+	private string? _display = null;
+	private int _length = 32;
+	private CancellationTokenSource _disposalTokenSource = new();
+
+	private static readonly char[] _letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
+	private static readonly char[] _numbers = "0123456789".ToCharArray();
+	private static readonly char[] _symbols = "!@#$%^&*()_+-=[]{};':\",./<>?".ToCharArray();
+
+	private async Task OnSubmit()
+	{
+		await _disposalTokenSource.CancelAsync();
+		_disposalTokenSource.Dispose();
+		_disposalTokenSource = new();
+
+		var sb = new StringBuilder();
+		for (var i = 0; i < _length; i++)
+		{
+			var part = RandomNumberGenerator.GetInt32(0, 3);
+			char[] items = part switch
+			{
+				1 => _numbers,
+				2 => _symbols,
+				_ => _letters
+			};
+			var item = RandomNumberGenerator.GetInt32(0, (items.Length - 1));
+			sb.Append(items[item]);
+		};
+		_result = sb.ToString();
+
+		_ = Task.Run(async () =>
+		{
+			var sb = new StringBuilder();
+			for (var i = 0; i < _result.Length; i++)
+			{
+				sb.Append(_result[i]);
+				_display = sb.ToString();
+				_ = InvokeAsync(StateHasChanged);
+				await Task.Delay(5, _disposalTokenSource.Token);
+			}
+
+			_display = sb.ToString();
+			StateHasChanged();
+		}, _disposalTokenSource.Token);
+	}
+
+	private async Task OnCopy()
+	{
+		if (_result is not null)
+		{
+			await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", _result);
+		}
+	}
+}

@@ -13,7 +13,7 @@
 
 <DnhSection>
 	<DnhForm OnSubmit="OnSubmit" Text="Encode">
-		<DnhTextArea Label="Input" @bind-Value="_request" />
+		<DnhTextArea Label="Input" @bind-Value="_request" @ref="_focusElement" />
 	</DnhForm>
 </DnhSection>
 
@@ -27,6 +27,7 @@
 }
 
 @code {
+	private DnhTextArea? _focusElement;
 	private string? _request;
 	private string? _response;
 
@@ -44,6 +45,14 @@
 		if (_response is not null)
 		{
 			await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", _response);
+		}
+	}
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender && _focusElement is not null)
+		{
+			await _focusElement.Element.FocusAsync();
 		}
 	}
 }

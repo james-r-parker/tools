@@ -7,10 +7,10 @@
 
 <AuthorizeView>
     <Authorized>
-        <a href="#" class="bg-sky-500 hover:bg-sky-700 px-5 py-2 text-sm leading-5 rounded-full font-semibold text-white" @onclick="BeginSignOut">Log out</a>
+        <a href="#" class="ml-3 text-xs leading-5 font-medium text-sky-600 dark:text-sky-400 bg-sky-400/10 rounded-full py-1 px-3 hidden xl:flex items-center hover:bg-sky-400/20" @onclick="BeginSignOut">Log out</a>
     </Authorized>
     <NotAuthorized>
-        <a class="bg-sky-500 hover:bg-sky-700 px-5 py-2 text-sm leading-5 rounded-full font-semibold text-white" href="authentication/login">Log in</a>
+        <a class="ml-3 text-xs leading-5 font-medium text-sky-600 dark:text-sky-400 bg-sky-400/10 rounded-full py-1 px-3 hidden xl:flex items-center hover:bg-sky-400/20" href="authentication/login">Log in</a>
     </NotAuthorized>
     <Authorizing>
         <span>

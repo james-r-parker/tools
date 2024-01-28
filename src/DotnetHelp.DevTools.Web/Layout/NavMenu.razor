@@ -1,4 +1,7 @@
-﻿<nav class="lg:text-sm lg:leading-6 relative">
+﻿@inject NavigationManager NavigationManager
+@implements IDisposable
+
+<nav class="lg:text-sm lg:leading-6 relative">
 
 	<div class="sticky top-0 -ml-0.5 pointer-events-none">
 		<div class="h-10 bg-white dark:bg-slate-900"></div>
@@ -44,11 +47,22 @@
 				<ul class="space-y-6 lg:space-y-2 border-l border-slate-100 dark:border-slate-800">
 					@foreach (var subMenuItem in subMenuGroup.Items)
 					{
-						<li>
-							<NavLink class="block border-l pl-4 -ml-px border-transparent hover:border-slate-400 dark:hover:border-slate-500 text-slate-700 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-300" href="@subMenuItem.Link">
-								@subMenuItem.Text
-							</NavLink>
-						</li>
+						if(subMenuItem.Selected)
+						{
+							<li>
+								<NavLink class="block border-l pl-4 -ml-px text-sky-500 border-current font-semibold dark:text-sky-400" href="@subMenuItem.Link">
+									@subMenuItem.Text
+								</NavLink>
+							</li>
+						}
+						else
+						{
+							<li>
+								<NavLink class="block border-l pl-4 -ml-px border-transparent hover:border-slate-400 dark:hover:border-slate-500 text-slate-700 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-300" href="@subMenuItem.Link">
+									@subMenuItem.Text
+								</NavLink>
+							</li>
+						}
 					}
 				</ul>
 			</li>
@@ -66,61 +80,103 @@
 		new MainMenuItem(
 			"Home",
 			"/",
-			new MarkupString("<svg class=\"h-6 w-6\" viewBox=\"0 0 24 24\" fill=\"none\"><path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M8.5 7c1.093 0 2.117.27 3 .743V17a6.345 6.345 0 0 0-3-.743c-1.093 0-2.617.27-3.5.743V7.743C5.883 7.27 7.407 7 8.5 7Z\" class=\"fill-sky-200 group-hover:fill-sky-500 dark:fill-sky-300 dark:group-hover:fill-sky-300\"></path><path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M15.5 7c1.093 0 2.617.27 3.5.743V17c-.883-.473-2.407-.743-3.5-.743s-2.117.27-3 .743V7.743a6.344 6.344 0 0 1 3-.743Z\" class=\"fill-sky-400 group-hover:fill-sky-500 dark:fill-sky-200 dark:group-hover:fill-sky-200\"></path></svg>"),
-			true),
+			new MarkupString("<svg class=\"h-6 w-6\" viewBox=\"0 0 24 24\" fill=\"none\"><path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M8.5 7c1.093 0 2.117.27 3 .743V17a6.345 6.345 0 0 0-3-.743c-1.093 0-2.617.27-3.5.743V7.743C5.883 7.27 7.407 7 8.5 7Z\" class=\"fill-sky-200 group-hover:fill-sky-500 dark:fill-sky-300 dark:group-hover:fill-sky-300\"></path><path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M15.5 7c1.093 0 2.617.27 3.5.743V17c-.883-.473-2.407-.743-3.5-.743s-2.117.27-3 .743V7.743a6.344 6.344 0 0 1 3-.743Z\" class=\"fill-sky-400 group-hover:fill-sky-500 dark:fill-sky-200 dark:group-hover:fill-sky-200\"></path></svg>")),
 		new MainMenuItem(
 			"About",
 			"/about",
-			new MarkupString("<svg class=\"h-6 w-6\" viewBox=\"0 0 24 24\" fill=\"none\"><path d=\"m6 9 6-3 6 3v6l-6 3-6-3V9Z\" class=\"fill-indigo-100 group-hover:fill-indigo-200 dark:fill-slate-400\"></path><path d=\"m6 9 6 3v7l-6-3V9Z\" class=\"fill-indigo-300 group-hover:fill-indigo-400 dark:group-hover:fill-indigo-300 dark:fill-slate-500\"></path><path d=\"m18 9-6 3v7l6-3V9Z\" class=\"fill-indigo-400 group-hover:fill-indigo-500 dark:group-hover:fill-indigo-400 dark:fill-slate-600\"></path></svg>"),
-			false),
+			new MarkupString("<svg class=\"h-6 w-6\" viewBox=\"0 0 24 24\" fill=\"none\"><path d=\"m6 9 6-3 6 3v6l-6 3-6-3V9Z\" class=\"fill-indigo-100 group-hover:fill-indigo-200 dark:fill-slate-400\"></path><path d=\"m6 9 6 3v7l-6-3V9Z\" class=\"fill-indigo-300 group-hover:fill-indigo-400 dark:group-hover:fill-indigo-300 dark:fill-slate-500\"></path><path d=\"m18 9-6 3v7l6-3V9Z\" class=\"fill-indigo-400 group-hover:fill-indigo-500 dark:group-hover:fill-indigo-400 dark:fill-slate-600\"></path></svg>")),
 	};
 
 	private static readonly IReadOnlyCollection<SubMenuGroup> SubMenuGroups = new List<SubMenuGroup>
 	{
-		new SubMenuGroup("Http", false, new List<SubMenuItem>
+		new SubMenuGroup("Http", new List<SubMenuItem>
 		{
-			new SubMenuItem("Request Bin", "/http/bin", false),
-			new SubMenuItem("Send Request", "/http/send", false),
+			new SubMenuItem("Request Bin", "/http/bin"),
+			new SubMenuItem("Send Request", "/http/send"),
 		}),
-		new SubMenuGroup("Email", false, new List<SubMenuItem>
+		new SubMenuGroup("Email", new List<SubMenuItem>
 		{
-			new SubMenuItem("Email Bin", "/email/bin", false),
+			new SubMenuItem("Email Bin", "/email/bin"),
 		}),
-		new SubMenuGroup("Dns", false, new List<SubMenuItem>
+		new SubMenuGroup("Dns", new List<SubMenuItem>
 		{
-			new SubMenuItem("Lookup", "/dns/lookup", false),
+			new SubMenuItem("Lookup", "/dns/lookup"),
 		}),
-		new SubMenuGroup("Encoding", false, new List<SubMenuItem>
+		new SubMenuGroup("Encoding", new List<SubMenuItem>
 		{
-			new SubMenuItem("Url Encode", "/encoding/url/encode", false),
-			new SubMenuItem("Url Decode", "/encoding/url/decode", false),
-			new SubMenuItem("Html Encode", "/encoding/html/encode", false),
-			new SubMenuItem("Html Decode", "/encoding/html/decode", false),
-			new SubMenuItem("Base64 Encode", "/encoding/base64/encode", false),
-			new SubMenuItem("Base64 Decode", "/encoding/base64/decode", false),
+			new SubMenuItem("Url Encode", "/encoding/url/encode"),
+			new SubMenuItem("Url Decode", "/encoding/url/decode"),
+			new SubMenuItem("Html Encode", "/encoding/html/encode"),
+			new SubMenuItem("Html Decode", "/encoding/html/decode"),
+			new SubMenuItem("Base64 Encode", "/encoding/base64/encode"),
+			new SubMenuItem("Base64 Decode", "/encoding/base64/decode"),
 		}),
-		new SubMenuGroup("Hashing", false, new List<SubMenuItem>
+		new SubMenuGroup("Hashing", new List<SubMenuItem>
 		{
-			new SubMenuItem("Hmac", "/hashing", false),
-			new SubMenuItem("Sha", "/hashing", false),
-			new SubMenuItem("Md5", "/hashing", false),
+			new SubMenuItem("Hmac", "/hashing"),
+			new SubMenuItem("Sha", "/hashing"),
+			new SubMenuItem("Md5", "/hashing"),
 		}),
-		new SubMenuGroup("Random", false, new List<SubMenuItem>
+		new SubMenuGroup("Random", new List<SubMenuItem>
 		{
-			new SubMenuItem("Guid", "/random/guid", false),
-			new SubMenuItem("Number", "/random/number", false),
+			new SubMenuItem("Guid", "/random/guid"),
+			new SubMenuItem("Number", "/random/number"),
+			new SubMenuItem("String", "/random/string"),
 		}),
-		new SubMenuGroup("Json", false, new List<SubMenuItem>
+		new SubMenuGroup("Json", new List<SubMenuItem>
 		{
-			new SubMenuItem("Format", "/json/format", false),
+			new SubMenuItem("Format", "/json/format"),
 		}),
-		new SubMenuGroup("Jwt", false, new List<SubMenuItem>
+		new SubMenuGroup("Jwt", new List<SubMenuItem>
 		{
-			new SubMenuItem("Decode", "/jwt/decode", false),
+			new SubMenuItem("Decode", "/jwt/decode"),
 		}),
 	};
 
-	private record SubMenuGroup(string Text, bool Selected, IReadOnlyCollection<SubMenuItem> Items);
-	private record SubMenuItem(string Text, string Link, bool Selected);
-	private record MainMenuItem(string Text, string Link, MarkupString Icon, bool Selected);
+	protected override Task OnInitializedAsync()
+	{
+		NavigationManager.LocationChanged += OnLocationChanged;
+		return Task.CompletedTask;
+	}
+
+	private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+	{
+		var uri = new Uri(NavigationManager.Uri);
+		var path = uri.AbsolutePath;
+
+		foreach (var menuItem in MenuItems)
+		{
+			menuItem.Selected = menuItem.Link == path;
+		}
+
+		foreach (var subMenuGroup in SubMenuGroups)
+		{
+			foreach (var subMenuItem in subMenuGroup.Items)
+			{
+				subMenuItem.Selected = subMenuItem.Link == path;
+			}
+		}
+
+		StateHasChanged();
+	}
+
+	public void Dispose()
+	{
+		NavigationManager.LocationChanged -= OnLocationChanged;
+	}
+
+	private record SubMenuGroup(string Text, IReadOnlyCollection<SubMenuItem> Items)
+	{
+		public bool Selected { get; set; }
+	}
+
+	private record SubMenuItem(string Text, string Link)
+	{
+		public bool Selected { get; set; }
+	}
+
+	private record MainMenuItem(string Text, string Link, MarkupString Icon)
+	{
+		public bool Selected { get; set; }
+	}
 }

@@ -5,6 +5,7 @@
     <textarea 
         @bind="@Value"
 		@bind:event="oninput"
+		@ref="Element"
         required="@Required"
         class="w-full text-sm leading-6 text-slate-400 rounded-md ring-1 ring-slate-900/10 shadow-sm py-1.5 pl-2 pr-3 hover:ring-slate-300 dark:bg-slate-800 dark:highlight-white/5 dark:hover:bg-slate-700"
         rows="3" 
@@ -40,4 +41,6 @@
 
 	[Parameter]
 	public EventCallback<string> ValueChanged { get; set; }
+
+	public ElementReference Element { get; set; }
 }

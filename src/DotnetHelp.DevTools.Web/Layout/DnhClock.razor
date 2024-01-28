@@ -1,0 +1,29 @@
+﻿@implements IAsyncDisposable
+
+<span class="text-sm font-bold">@_date</span>
+
+@code {
+
+	private string _date = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+	private readonly CancellationTokenSource _disposalTokenSource = new();
+
+	protected override Task OnInitializedAsync()
+	{
+		_ = Task.Run(async () =>
+		{
+			while (!_disposalTokenSource.IsCancellationRequested)
+			{
+				_date = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+				StateHasChanged();
+				await Task.Delay(1000, _disposalTokenSource.Token);
+			}
+		}, _disposalTokenSource.Token);
+
+		return Task.CompletedTask;
+	}
+
+	public async ValueTask DisposeAsync()
+	{
+		await _disposalTokenSource.CancelAsync();
+	}
+}

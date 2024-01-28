@@ -1,0 +1,37 @@
+﻿@inject ApiHttpClient ApiClient
+@implements IAsyncDisposable
+
+@if(!_healthy)
+{
+	<div class="text-xs bg-emerald-900 hover:bg-emerald-950 px-3 py-1 text-sm rounded-full text-white">
+		API : Down
+	</div>
+}
+
+@code {
+	private bool _loading = true;
+	private bool _healthy = true;
+	private readonly CancellationTokenSource _disposalTokenSource = new();
+
+	protected override Task OnInitializedAsync()
+	{
+		_ = Task.Run(async () =>
+		{
+			while (!_disposalTokenSource.IsCancellationRequested)
+			{
+				_loading = true;
+				_healthy = await ApiClient.ApiHealth(_disposalTokenSource.Token);
+				_loading = false;
+				StateHasChanged();
+				await Task.Delay(10000, _disposalTokenSource.Token);
+			}
+		}, _disposalTokenSource.Token);
+
+		return Task.CompletedTask;
+	}
+
+	public async ValueTask DisposeAsync()
+	{
+		await _disposalTokenSource.CancelAsync();
+	}
+}
