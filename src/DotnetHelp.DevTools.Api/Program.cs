@@ -96,7 +96,7 @@ WebApplication app = builder.Build();
 app
     .UseForwardedHeaders()
     .UseCors()
-    .UseHealthChecks("/_health");
+    .UseHealthChecks("/api/_health");
 
 RouteGroupBuilder api = app.MapGroup("/api");
 

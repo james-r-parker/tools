@@ -46,13 +46,13 @@ public class Function
             InvocationType = InvocationType.RequestResponse,
             Payload = JsonSerializer.Serialize(new APIGatewayHttpApiV2ProxyRequest
             {
-                RawPath = "/health",
+                RawPath = "/api/_health",
                 RequestContext = new APIGatewayHttpApiV2ProxyRequest.ProxyRequestContext()
                 {
                     Http = new APIGatewayHttpApiV2ProxyRequest.HttpDescription()
                     {
                         Method = "GET",
-                        Path = "/_health",
+                        Path = "/api/_health",
                         SourceIp = "127.0.0.1",
                         UserAgent = "DotnetHelp.DevTools.Api.PreTraffic",
                         Protocol = "HTTP/1.1"
