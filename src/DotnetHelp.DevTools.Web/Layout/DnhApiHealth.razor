@@ -23,7 +23,7 @@
 				_healthy = await ApiClient.ApiHealth(_disposalTokenSource.Token);
 				_loading = false;
 				StateHasChanged();
-				await Task.Delay(10000, _disposalTokenSource.Token);
+				await Task.Delay(60000, _disposalTokenSource.Token);
 			}
 		}, _disposalTokenSource.Token);
 
