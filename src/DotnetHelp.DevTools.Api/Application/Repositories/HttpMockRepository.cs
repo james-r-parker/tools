@@ -18,12 +18,19 @@ internal class HttpMockRepository(IAmazonDynamoDB db) : IHttpMockRepository
     public Task Create(NewHttpMock request, CancellationToken cancellationToken)
     {
         var headers = new AttributeValue();
-        foreach (var header in request.Headers)
+        if (request.Headers.Count > 0)
         {
-            headers.M ??= new Dictionary<string, AttributeValue>();
-            headers.M.TryAdd(header.Key, new AttributeValue(header.Value));
+            headers.M = new Dictionary<string, AttributeValue>();
+            foreach (var header in request.Headers)
+            {
+                headers.M.TryAdd(header.Key, new AttributeValue(header.Value));
+            }
         }
-
+        else
+        {
+            headers = new AttributeValue { NULL = true };
+        }
+        
         return db.PutItemAsync(new PutItemRequest
             {
                 TableName = Constants.DbTableName,
