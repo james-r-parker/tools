@@ -9,9 +9,9 @@
       "applicationUrl": "http://localhost:5035",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "CONNECTION_TABLE_NAME" : "DotnetHelpDevToolsWebsocketStack-WebsocketConnectionsTableF4429B25-MN5IYPL919O",
+        "CONNECTION_TABLE_NAME" : "DotnetHelpDevToolsWebsocketStack-WebsocketConnectionsTableF4429B25-MN5IYPL919O7",
         "WEBSOCKET_URL": "wss://c4qrksmig8.execute-api.eu-west-2.amazonaws.com/wss",
-        "BIN_TABLE_NAME": "DotnetHelpDevToolsInfrastructureStack-BinTable2B5E8456-HSJQZPLQ4PF1",
+        "DB_TABLE_NAME": "DotnetHelpDevToolsInfrastructureStack-DnhDb2F5D8548-LHT2YPC8M5G3",
         "CACHE_TABLE_NAME" : "DotnetHelpDevToolsInfrastructureStack-APICacheTableEE59A42F-1TD5RW5N4BBQH"
       }
     }

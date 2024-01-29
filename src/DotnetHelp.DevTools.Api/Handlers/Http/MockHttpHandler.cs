@@ -9,15 +9,8 @@ internal static class MockHttpHandler
         [FromServices] IHttpMockRepository db,
         CancellationToken cancellationToken)
     {
-        try
-        {
-            await db.Create(request, cancellationToken);
-            return Results.Created();
-        }
-        catch
-        {
-            return Results.BadRequest();
-        }
+        await db.Create(request, cancellationToken);
+        return Results.Created();
     }
 
     internal static async Task<IResult> Update(
@@ -25,15 +18,8 @@ internal static class MockHttpHandler
         [FromServices] IHttpMockRepository db,
         CancellationToken cancellationToken)
     {
-        try
-        {
-            await db.Update(request, cancellationToken);
-            return Results.Accepted();
-        }
-        catch
-        {
-            return Results.BadRequest();
-        }
+        await db.Update(request, cancellationToken);
+        return Results.Accepted();
     }
 
     internal static async Task<IResult> Delete(
@@ -42,15 +28,8 @@ internal static class MockHttpHandler
         [FromServices] IHttpMockRepository db,
         CancellationToken cancellationToken)
     {
-        try
-        {
-            await db.Delete(bucket, created, cancellationToken);
-            return Results.Accepted();
-        }
-        catch
-        {
-            return Results.BadRequest();
-        }
+        await db.Delete(bucket, created, cancellationToken);
+        return Results.Accepted();
     }
     
     internal static async Task<IResult> List(
@@ -59,15 +38,8 @@ internal static class MockHttpHandler
         [FromServices] IHttpMockRepository db,
         CancellationToken cancellationToken)
     {
-        try
-        {
-            var items = await db.List(bucket, created, cancellationToken);
-            return Results.Ok(items);
-        }
-        catch
-        {
-            return Results.BadRequest();
-        }
+        var items = await db.List(bucket, created, cancellationToken);
+        return Results.Ok(items);
     }
     
     internal static async Task<IResult> Execute(
@@ -76,13 +48,6 @@ internal static class MockHttpHandler
         [FromServices] IHttpMockRepository db,
         CancellationToken cancellationToken)
     {
-        try
-        {
-            return Results.Ok();
-        }
-        catch
-        {
-            return Results.BadRequest();
-        }
+        return Results.Ok();
     }
 }
