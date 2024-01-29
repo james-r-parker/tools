@@ -39,6 +39,7 @@ builder.Services.AddAWSLambdaHosting(LambdaEventSource.HttpApi,
     });
 
 builder.Services
+    .AddExceptionHandler<ExceptionLogger>()
     .AddHealthChecks()
     .AddCheck<CacheHealthCheck>("cache");
 
@@ -94,6 +95,7 @@ builder.Services
 WebApplication app = builder.Build();
 
 app
+    .UseExceptionHandler("/api/error")
     .UseForwardedHeaders()
     .UseCors()
     .UseHealthChecks("/api/_health");
