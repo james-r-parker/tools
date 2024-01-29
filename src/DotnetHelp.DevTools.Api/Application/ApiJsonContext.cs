@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using System.Text.Json.Nodes;
 using Amazon.Lambda.APIGatewayEvents;
 
 namespace DotnetHelp.DevTools.Api.Application;
@@ -19,6 +20,7 @@ namespace DotnetHelp.DevTools.Api.Application;
 [JsonSerializable(typeof(NewHttpMock))]
 [JsonSerializable(typeof(HttpMock))]
 [JsonSerializable(typeof(IReadOnlyCollection<HttpMock>))]
+[JsonSerializable(typeof(JsonNode))]
 internal partial class ApiJsonContext : JsonSerializerContext
 {
 }

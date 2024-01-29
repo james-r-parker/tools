@@ -1,0 +1,181 @@
+﻿@page "/http/mock"
+@inject ApiHttpClient ApiClient
+@inject IWebSocket Wss
+@inject IStateManagement State
+@inject IOptions<ApplicationOptions> Settings
+@implements IAsyncDisposable
+
+<DnhHeader Title="Http"
+	SubTitle="Mock Http requests"
+	Details=@(new List<string> {
+	$"Build a collection of Http requests to return a given response to a incoming request",
+}) />
+
+<DnhSection>
+	<DnhForm OnSubmit="OnSubmit" Text="Create">
+		<DnhTextBox Label="Name" @bind-Value="_slug" />
+		<DnhSelect Label="Method" @bind-Value="_method">
+			<option>GET</option>
+			<option>HEAD</option>
+			<option>POST</option>
+			<option>PUT</option>
+			<option>DELETE</option>
+		</DnhSelect>
+		<div class="flex gap-4 items-end">
+			<DnhTextBox Label="Key" @bind-Value="_headerKey" />
+			<DnhTextBox Label="Value" @bind-Value="_headerValue" />
+			<div>
+				<DnhButton OnClick="OnAddHeader">
+					Add
+				</DnhButton>
+			</div>
+		</div>
+		@if (_headers.Count > 0)
+		{
+			<div class="divide-y divide-slate-700">
+				@foreach (var header in _headers)
+				{
+					<div class="flex py-2 items-center">
+						<div class="flex-grow">
+							<DnhKvp Name="@header.Key" Value="@header.Value" />
+						</div>
+						<DnhButton OnClick="() => OnRemoveHeader(header)">
+							Remove
+						</DnhButton>
+					</div>
+				}
+			</div>
+		}
+		<DnhTextArea Label="Body" @bind-Value="_body" />
+	</DnhForm>
+</DnhSection>
+
+@if (_loading)
+{
+	<DnhLoading />
+}
+else if (_mocks.Count == 0)
+{
+	<DnhEmpty />
+}
+else
+{
+	<DnhSection>
+		<DnhResult>
+			<table class="w-full text-left border-collapse table-auto">
+			  <thead>
+				<tr>
+				  <th class="py-2 pl-2 leading-6 font-semibold">Name</th>
+				  <th class="py-2 pl-2 leading-6 font-semibold">Method</th>
+				  <th class="py-2 pl-2 leading-6 font-semibold">Created</th>
+				  <th></th>
+				</tr>
+			  </thead>
+			  <tbody>
+				@foreach (HttpMock mock in _mocks.OrderByDescending(x => x.Created))
+				{
+					<tr>
+					  <td class="py-2 pl-2 leading-6 whitespace-pre border-t border-slate-100 dark:border-slate-400/10">@mock.Slug</td>
+					  <td class="py-2 pl-2 leading-6 whitespace-pre border-t border-slate-100 dark:border-slate-400/10">@mock.Method</td>
+					  <td class="py-2 pl-2 leading-6 whitespace-pre border-t border-slate-100 dark:border-slate-400/10">@mock.Created</td>
+					  <td class="py-2 pl-2 leading-6 whitespace-pre border-t border-slate-100 dark:border-slate-400/10">
+						<button class="text-slate-700 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-300 cursor-pointer" @onclick="() => OnDelete(mock)">
+							<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+								 stroke="currentColor">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+									  d="M6 18L18 6M6 6l12 12" />
+							</svg>
+						</button>
+					  </td>
+					</tr>
+				}
+			  </tbody>
+			</table>
+		</DnhResult>
+		
+	</DnhSection>
+}
+
+@code {
+	private string _bucket = string.Empty;
+	private bool _loading = true;
+	private string _slug = "";
+	private string _body = "";
+	private string _method = "POST";
+	private string _headerKey = "";
+	private string _headerValue = "";
+	private List<KeyValuePair<string, string>> _headers = new List<KeyValuePair<string, string>>();
+
+	private readonly CancellationTokenSource _disposalTokenSource = new();
+	private readonly List<HttpMock> _mocks = new();
+
+	protected override async Task OnInitializedAsync()
+	{
+		_bucket = await State.GetIdAsync(_disposalTokenSource.Token);
+
+		_ = Wss.ConnectAsync(_disposalTokenSource.Token)
+		.ContinueWith((c) =>
+		{
+			Wss.OnMessage += OnMessage;
+			StateHasChanged();
+		});
+
+		_ = GetList();
+	}
+
+	private void OnMessage(object? sender, WebSocketMessage? message)
+	{
+		if (message?.Action == "HTTP_MOCK")
+		{
+
+		}
+	}
+
+	private void OnAddHeader()
+	{
+		if (!string.IsNullOrWhiteSpace(_headerKey) && !string.IsNullOrWhiteSpace(_headerValue))
+		{
+			_headers.Add(new KeyValuePair<string, string>(_headerKey, _headerValue));
+		}
+	}
+
+	private void OnRemoveHeader(KeyValuePair<string, string> header)
+	{
+		_headers.Remove(header);
+	}
+
+	private async Task OnSubmit()
+	{
+		var model = new NewHttpMock(_bucket, _slug, _method, _headers, _body);
+		await ApiClient.CreateHttpMock(model, _disposalTokenSource.Token);
+		_slug = "";
+		_body = "";
+		_method = "POST";
+		_headerKey = "";
+		_headerValue = "";
+		_headers = new List<KeyValuePair<string, string>>();
+		_ = GetList();
+	}
+
+	private async Task GetList()
+	{
+		long from = _mocks.Count == 0 ? 0 : _mocks.Max(x => x.Created).ToUnixTimeSeconds();
+		_mocks.AddRange(await ApiClient.ListHttpMocks(_bucket, from, _disposalTokenSource.Token));
+		_loading = false;
+		StateHasChanged();
+	}
+
+	private Task OnDelete(HttpMock item)
+	{
+		_mocks.Remove(item);
+		_ = ApiClient.DeleteHttpMock(item.Bucket, item.Created.ToUnixTimeSeconds(), _disposalTokenSource.Token);
+		return Task.CompletedTask;
+	}
+
+	public async ValueTask DisposeAsync()
+	{
+		Wss.OnMessage -= OnMessage;
+		await _disposalTokenSource.CancelAsync();
+		await Wss.DisposeAsync();
+	}
+}

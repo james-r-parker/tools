@@ -1,4 +1,5 @@
-﻿using DotnetHelp.DevTools.Api.Application.Repositories;
+﻿using System.Text.Json.Nodes;
+using DotnetHelp.DevTools.Api.Application.Repositories;
 
 namespace DotnetHelp.DevTools.Api.Handlers.Http;
 
@@ -31,7 +32,7 @@ internal static class MockHttpHandler
         await db.Delete(bucket, created, cancellationToken);
         return Results.Accepted();
     }
-    
+
     internal static async Task<IResult> List(
         [FromRoute] string bucket,
         [FromQuery] long created,
@@ -41,13 +42,26 @@ internal static class MockHttpHandler
         var items = await db.List(bucket, created, cancellationToken);
         return Results.Ok(items);
     }
-    
+
     internal static async Task<IResult> Execute(
         [FromRoute] string bucket,
         [FromRoute] string slug,
         [FromServices] IHttpMockRepository db,
+        HttpContext http,
         CancellationToken cancellationToken)
     {
-        return Results.Ok();
+        HttpMock? item = await db.Get(bucket, slug, cancellationToken);
+
+        if (item is null)
+        {
+            return Results.BadRequest();
+        }
+
+        foreach (KeyValuePair<string, string> header in item.Headers)
+        {
+            http.Response.Headers.Append(header.Key, header.Value);
+        }
+
+        return Results.Ok(JsonNode.Parse(item.Body));
     }
 }

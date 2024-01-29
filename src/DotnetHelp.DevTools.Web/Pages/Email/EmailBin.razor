@@ -70,7 +70,7 @@ else
 	private Task OnDelete(IncomingEmail item)
 	{
 		_requests.Remove(item);
-		_ = ApiClient.DeleteIncommingEmail(_bucket, item.Created.ToUnixTimeSeconds(), _disposalTokenSource.Token);
+		_ = ApiClient.DeleteIncomingEmail(_bucket, item.Created.ToUnixTimeSeconds(), _disposalTokenSource.Token);
 		return Task.CompletedTask;
 	}
 

@@ -5,108 +5,149 @@ namespace DotnetHelp.DevTools.Web;
 
 internal class ApiHttpClient(HttpClient httpClient)
 {
-    public async Task<IReadOnlyCollection<BucketHttpRequest>> GetHttpRequests(string bucket, long from,
-        CancellationToken cancellationToken)
-    {
-        using HttpResponseMessage response =
-            await httpClient.GetAsync($"/api/http/{bucket}?from={from}", cancellationToken);
+	public async Task<IReadOnlyCollection<HttpMock>> ListHttpMocks(string bucket, long from,
+		CancellationToken cancellationToken)
+	{
+		using HttpResponseMessage response =
+			await httpClient.GetAsync($"/api/mock/{bucket}?created={from}", cancellationToken);
 
-        response.EnsureSuccessStatusCode();
+		response.EnsureSuccessStatusCode();
 
-        IReadOnlyCollection<BucketHttpRequest>? result =
-            await response.Content.ReadFromJsonAsync<IReadOnlyCollection<BucketHttpRequest>>(cancellationToken);
+		IReadOnlyCollection<HttpMock>? result =
+			await response.Content.ReadFromJsonAsync<IReadOnlyCollection<HttpMock>>(cancellationToken);
 
-        return result ?? Array.Empty<BucketHttpRequest>();
-    }
+		return result ?? Array.Empty<HttpMock>();
+	}
 
-    public async Task<IReadOnlyCollection<IncomingEmail>> GetIncomingEmails(string bucket, long from,
-        CancellationToken cancellationToken)
-    {
-        using HttpResponseMessage response =
-            await httpClient.GetAsync($"/api/email/{bucket}?from={from}", cancellationToken);
+	public async Task CreateHttpMock(NewHttpMock model,
+		CancellationToken cancellationToken)
+	{
+		using HttpResponseMessage response =
+			await httpClient.PostAsJsonAsync($"/api/mock", model, cancellationToken);
 
-        response.EnsureSuccessStatusCode();
+		response.EnsureSuccessStatusCode();
+	}
 
-        IReadOnlyCollection<IncomingEmail>? result =
-            await response.Content.ReadFromJsonAsync<IReadOnlyCollection<IncomingEmail>>(cancellationToken);
+	public async Task UpdateHttpMock(HttpMock model,
+		CancellationToken cancellationToken)
+	{
+		using HttpResponseMessage response =
+			await httpClient.PutAsJsonAsync($"/api/mock", model, cancellationToken);
 
-        return result ?? Array.Empty<IncomingEmail>();
-    }
+		response.EnsureSuccessStatusCode();
+	}
 
-    public async Task<OutgoingHttpResponse?> SendHttpRequest(OutgoingHttpRequest request, CancellationToken cancellationToken)
-    {
-        HttpResponseMessage response =
-            await httpClient.PostAsJsonAsync("/api/http", request, cancellationToken);
-        response.EnsureSuccessStatusCode();
+	public async Task DeleteHttpMock(string bucket, long from,
+		CancellationToken cancellationToken)
+	{
+		using HttpResponseMessage response =
+			await httpClient.DeleteAsync($"/api/mock/{bucket}/{from}", cancellationToken);
 
-        return await response.Content.ReadFromJsonAsync<OutgoingHttpResponse>(cancellationToken);
-    }
+		response.EnsureSuccessStatusCode();
+	}
 
-    public async Task<DnsLookupResponses?> DnsLookup(string domain, CancellationToken cancellationToken)
-    {
-        using HttpResponseMessage response =
-            await httpClient.GetAsync($"/api/dns/{domain}", cancellationToken);
+	public async Task<IReadOnlyCollection<BucketHttpRequest>> GetHttpRequests(string bucket, long from,
+		CancellationToken cancellationToken)
+	{
+		using HttpResponseMessage response =
+			await httpClient.GetAsync($"/api/http/{bucket}?from={from}", cancellationToken);
 
-        response.EnsureSuccessStatusCode();
+		response.EnsureSuccessStatusCode();
 
-        return await response.Content.ReadFromJsonAsync<DnsLookupResponses>(cancellationToken);
-    }
+		IReadOnlyCollection<BucketHttpRequest>? result =
+			await response.Content.ReadFromJsonAsync<IReadOnlyCollection<BucketHttpRequest>>(cancellationToken);
 
-    public async Task<TextApiResponse?> Hash(HashApiRequest request, CancellationToken cancellationToken)
-    {
-        HttpResponseMessage response =
-            await httpClient.PostAsJsonAsync("/api/hash", request, cancellationToken);
+		return result ?? Array.Empty<BucketHttpRequest>();
+	}
 
-        response.EnsureSuccessStatusCode();
+	public async Task<IReadOnlyCollection<IncomingEmail>> GetIncomingEmails(string bucket, long from,
+		CancellationToken cancellationToken)
+	{
+		using HttpResponseMessage response =
+			await httpClient.GetAsync($"/api/email/{bucket}?from={from}", cancellationToken);
+
+		response.EnsureSuccessStatusCode();
+
+		IReadOnlyCollection<IncomingEmail>? result =
+			await response.Content.ReadFromJsonAsync<IReadOnlyCollection<IncomingEmail>>(cancellationToken);
+
+		return result ?? Array.Empty<IncomingEmail>();
+	}
+
+	public async Task<OutgoingHttpResponse?> SendHttpRequest(OutgoingHttpRequest request, CancellationToken cancellationToken)
+	{
+		HttpResponseMessage response =
+			await httpClient.PostAsJsonAsync("/api/http", request, cancellationToken);
+		response.EnsureSuccessStatusCode();
+
+		return await response.Content.ReadFromJsonAsync<OutgoingHttpResponse>(cancellationToken);
+	}
+
+	public async Task<DnsLookupResponses?> DnsLookup(string domain, CancellationToken cancellationToken)
+	{
+		using HttpResponseMessage response =
+			await httpClient.GetAsync($"/api/dns/{domain}", cancellationToken);
+
+		response.EnsureSuccessStatusCode();
+
+		return await response.Content.ReadFromJsonAsync<DnsLookupResponses>(cancellationToken);
+	}
+
+	public async Task<TextApiResponse?> Hash(HashApiRequest request, CancellationToken cancellationToken)
+	{
+		HttpResponseMessage response =
+			await httpClient.PostAsJsonAsync("/api/hash", request, cancellationToken);
+
+		response.EnsureSuccessStatusCode();
 
 
-        return await response.Content.ReadFromJsonAsync<TextApiResponse>(cancellationToken);
-    }
+		return await response.Content.ReadFromJsonAsync<TextApiResponse>(cancellationToken);
+	}
 
-    public async Task<JwtApiResponse?> JwtDecode(JwtApiRequest request, CancellationToken cancellationToken)
-    {
-        HttpResponseMessage response =
-            await httpClient.PostAsJsonAsync("/api/jwt/decode", request, cancellationToken);
+	public async Task<JwtApiResponse?> JwtDecode(JwtApiRequest request, CancellationToken cancellationToken)
+	{
+		HttpResponseMessage response =
+			await httpClient.PostAsJsonAsync("/api/jwt/decode", request, cancellationToken);
 
-        response.EnsureSuccessStatusCode();
+		response.EnsureSuccessStatusCode();
 
 
-        return await response.Content.ReadFromJsonAsync<JwtApiResponse>(cancellationToken);
-    }
+		return await response.Content.ReadFromJsonAsync<JwtApiResponse>(cancellationToken);
+	}
 
-    public async Task DeleteHttpRequest(string bucket, long created, CancellationToken cancellationToken)
-    {
-        HttpResponseMessage response =
-            await httpClient.DeleteAsync($"/api/http/{bucket}/{created}", cancellationToken);
+	public async Task DeleteHttpRequest(string bucket, long created, CancellationToken cancellationToken)
+	{
+		HttpResponseMessage response =
+			await httpClient.DeleteAsync($"/api/http/{bucket}/{created}", cancellationToken);
 
-        response.EnsureSuccessStatusCode();
-    }
+		response.EnsureSuccessStatusCode();
+	}
 
-    public async Task DeleteIncommingEmail(string bucket, long created, CancellationToken cancellationToken)
-    {
-        HttpResponseMessage response =
-            await httpClient.DeleteAsync($"/api/email/{bucket}/{created}", cancellationToken);
+	public async Task DeleteIncomingEmail(string bucket, long created, CancellationToken cancellationToken)
+	{
+		HttpResponseMessage response =
+			await httpClient.DeleteAsync($"/api/email/{bucket}/{created}", cancellationToken);
 
-        response.EnsureSuccessStatusCode();
-    }
+		response.EnsureSuccessStatusCode();
+	}
 
-    public async Task<bool> ApiHealth(CancellationToken cancellationToken)
-    {
-        HttpResponseMessage response =
-            await httpClient.GetAsync("/api/_health", cancellationToken);
+	public async Task<bool> ApiHealth(CancellationToken cancellationToken)
+	{
+		HttpResponseMessage response =
+			await httpClient.GetAsync("/api/_health", cancellationToken);
 
-        if (response.StatusCode != HttpStatusCode.OK)
-        {
-            return false;
-        }
+		if (response.StatusCode != HttpStatusCode.OK)
+		{
+			return false;
+		}
 
-        var body = await response.Content.ReadAsStringAsync(cancellationToken);
+		var body = await response.Content.ReadAsStringAsync(cancellationToken);
 
-        if (body == "Healthy")
-        {
-            return true;
-        }
+		if (body == "Healthy")
+		{
+			return true;
+		}
 
-        return false;
-    }
+		return false;
+	}
 }
