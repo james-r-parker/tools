@@ -111,9 +111,9 @@ api.MapDelete("/http/{bucket}/{created:long}", HttpRequestHandler.Delete);
 
 api.MapPost("/mock", MockHttpHandler.Create);
 api.MapPut("/mock", MockHttpHandler.Update);
-api.MapDelete("/mock", MockHttpHandler.Delete);
+api.MapDelete("/mock/{bucket}/{created}", MockHttpHandler.Delete);
 api.MapGet("/mock/{bucket}", MockHttpHandler.List);
-api.Map("/mock/{bucket}/{slug}", MockHttpHandler.Execute);
+api.Map("/mock/execute/{bucket}/{slug}", MockHttpHandler.Execute);
 
 api.MapGet("/dns/{domain}", DnsHandler.Lookup);
 
