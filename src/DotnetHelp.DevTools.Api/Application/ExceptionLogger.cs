@@ -15,6 +15,6 @@ public class ExceptionLogger(ILogger<ExceptionLogger> logger) : IExceptionHandle
 
 internal static partial class ExceptionLogging
 {
-    [LoggerMessage(LogLevel.Error, "An unhandled exception has occurred: {Exception}")]
+    [LoggerMessage(LogLevel.Error, "An unhandled exception has occurred")]
     public static partial void UnhandledException(ILogger<ExceptionLogger> logger, Exception exception);
 }

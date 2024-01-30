@@ -1,0 +1,8 @@
+<table class="w-full text-left border-collapse table-auto">
+    @ChildContent
+</table>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}

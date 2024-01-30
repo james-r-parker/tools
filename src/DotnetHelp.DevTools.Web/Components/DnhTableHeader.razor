@@ -1,0 +1,10 @@
+<thead>
+    <tr>
+        @ChildContent
+    </tr>
+</thead>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}

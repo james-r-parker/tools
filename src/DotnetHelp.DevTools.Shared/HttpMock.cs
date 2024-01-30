@@ -13,5 +13,8 @@ public record HttpMock(
     string Method,
     IReadOnlyCollection<KeyValuePair<string,string>> Headers,
     string Body,
+    int Executions,
     DateTimeOffset Ttl,
-    DateTimeOffset Created);
+    DateTimeOffset Created,
+    DateTimeOffset Updated,
+    DateTimeOffset? LastExecuted);

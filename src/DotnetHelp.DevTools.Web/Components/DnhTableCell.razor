@@ -1,0 +1,8 @@
+<td class="py-2 pl-2 leading-6 whitespace-pre border-t border-slate-100 dark:border-slate-400/10">
+    @ChildContent
+</td>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}

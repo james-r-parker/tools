@@ -1,0 +1,8 @@
+<th class="py-2 pl-2 leading-6 font-semibold">
+    @ChildContent
+</th>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}

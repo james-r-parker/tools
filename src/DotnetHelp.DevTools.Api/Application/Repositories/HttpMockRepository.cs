@@ -4,6 +4,7 @@ namespace DotnetHelp.DevTools.Api.Application.Repositories;
 
 internal interface IHttpMockRepository
 {
+    Task Increment(HttpMock mock, CancellationToken cancellationToken);
     Task Create(NewHttpMock request, CancellationToken cancellationToken);
     Task Update(HttpMock request, CancellationToken cancellationToken);
     Task Delete(string bucket, long created, CancellationToken cancellationToken);
@@ -14,6 +15,42 @@ internal interface IHttpMockRepository
 internal class HttpMockRepository(IAmazonDynamoDB db) : IHttpMockRepository
 {
     private const string Prefix = "http_mock-";
+
+    public Task Increment(HttpMock mock, CancellationToken cancellationToken)
+    {
+        return db.UpdateItemAsync(new UpdateItemRequest
+            {
+                TableName = Constants.DbTableName,
+                Key = new Dictionary<string, AttributeValue>
+                {
+                    { "bucket", new AttributeValue(mock.Bucket) },
+                    { "created", new AttributeValue { N = mock.Created.ToUnixTimeSeconds().ToString() } }
+                },
+                AttributeUpdates = new Dictionary<string, AttributeValueUpdate>
+                {
+                    {
+                        "ttl",
+                        new AttributeValueUpdate(
+                            new AttributeValue
+                                { N = DateTimeOffset.UtcNow.AddMonths(1).ToUnixTimeSeconds().ToString() },
+                            AttributeAction.PUT)
+                    },
+                    {
+                        "executions",
+                        new AttributeValueUpdate(
+                            new AttributeValue { N = "1" },
+                            AttributeAction.ADD)
+                    },
+                    {
+                        "last_executed",
+                        new AttributeValueUpdate(
+                            new AttributeValue { N = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString() },
+                            AttributeAction.PUT)
+                    }
+                }
+            },
+            cancellationToken);
+    }
 
     public Task Create(NewHttpMock request, CancellationToken cancellationToken)
     {
@@ -30,7 +67,7 @@ internal class HttpMockRepository(IAmazonDynamoDB db) : IHttpMockRepository
         {
             headers = new AttributeValue { NULL = true };
         }
-        
+
         return db.PutItemAsync(new PutItemRequest
             {
                 TableName = Constants.DbTableName,
@@ -45,7 +82,10 @@ internal class HttpMockRepository(IAmazonDynamoDB db) : IHttpMockRepository
                     { "slug", new AttributeValue(request.Slug) },
                     { "method", new AttributeValue(request.Method) },
                     { "headers", headers },
-                    { "body", new AttributeValue(request.Body) }
+                    { "body", new AttributeValue(request.Body) },
+                    { "executions", new AttributeValue() { N = "0" } },
+                    { "updated", new AttributeValue { N = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString() } },
+                    { "last_executed", new AttributeValue { NULL = true } },
                 }
             },
             cancellationToken);
@@ -126,8 +166,11 @@ internal class HttpMockRepository(IAmazonDynamoDB db) : IHttpMockRepository
                 x["method"].S,
                 x["headers"].M.ToDictionary(y => y.Key, y => y.Value.S),
                 x["body"].S,
+                int.Parse(x["executions"].N),
                 DateTimeOffset.FromUnixTimeSeconds(long.Parse(x["ttl"].N)),
-                DateTimeOffset.FromUnixTimeSeconds(long.Parse(x["created"].N))))
+                DateTimeOffset.FromUnixTimeSeconds(long.Parse(x["created"].N)),
+                DateTimeOffset.FromUnixTimeSeconds(long.Parse(x["updated"].N)),
+                DateTimeOffset.FromUnixTimeSeconds(long.Parse(x["last_executed"].N))))
             .FirstOrDefault();
     }
 
@@ -159,8 +202,11 @@ internal class HttpMockRepository(IAmazonDynamoDB db) : IHttpMockRepository
                 x["method"].S,
                 x["headers"].M.ToDictionary(y => y.Key, y => y.Value.S),
                 x["body"].S,
+                int.Parse(x["executions"].N),
                 DateTimeOffset.FromUnixTimeSeconds(long.Parse(x["ttl"].N)),
-                DateTimeOffset.FromUnixTimeSeconds(long.Parse(x["created"].N))))
+                DateTimeOffset.FromUnixTimeSeconds(long.Parse(x["created"].N)),
+                DateTimeOffset.FromUnixTimeSeconds(long.Parse(x["updated"].N)),
+                DateTimeOffset.FromUnixTimeSeconds(long.Parse(x["last_executed"].N))))
             .ToImmutableList();
     }
 }

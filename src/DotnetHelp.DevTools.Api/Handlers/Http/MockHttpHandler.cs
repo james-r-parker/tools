@@ -1,5 +1,6 @@
 ﻿using System.Text.Json.Nodes;
 using DotnetHelp.DevTools.Api.Application.Repositories;
+using DotnetHelp.DevTools.WebsocketClient;
 
 namespace DotnetHelp.DevTools.Api.Handlers.Http;
 
@@ -47,6 +48,7 @@ internal static class MockHttpHandler
         [FromRoute] string bucket,
         [FromRoute] string slug,
         [FromServices] IHttpMockRepository db,
+        [FromServices] IWebsocketClient wss,
         HttpContext http,
         CancellationToken cancellationToken)
     {
