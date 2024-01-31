@@ -59,6 +59,13 @@ internal static class MockHttpHandler
             return Results.BadRequest();
         }
 
+        var update = await db.Increment(item, cancellationToken);
+        await wss.SendMessage(new WebSocketMessage(
+                "HTTP_MOCK",
+                bucket,
+                JsonSerializer.Serialize(update, ApiJsonContext.Default.HttpMockUpdate)),
+            cancellationToken);
+
         foreach (KeyValuePair<string, string> header in item.Headers)
         {
             http.Response.Headers.Append(header.Key, header.Value);

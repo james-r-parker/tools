@@ -2,6 +2,7 @@
 @inject ApiHttpClient ApiClient
 @inject IWebSocket Wss
 @inject IStateManagement State
+@inject IJSRuntime JSRuntime
 @inject IOptions<ApplicationOptions> Settings
 @implements IAsyncDisposable
 
@@ -64,6 +65,8 @@ else
                 <DnhTableHeader>
                     <DnhTableHeaderCell>Name</DnhTableHeaderCell>
                     <DnhTableHeaderCell>Method</DnhTableHeaderCell>
+                    <DnhTableHeaderCell>Executions</DnhTableHeaderCell>
+                    <DnhTableHeaderCell>Last Executed</DnhTableHeaderCell>
                     <DnhTableHeaderCell>Created</DnhTableHeaderCell>
                     <th></th>
                 </DnhTableHeader>
@@ -73,9 +76,23 @@ else
                         <tr>
                             <DnhTableCell>@mock.Slug</DnhTableCell>
                             <DnhTableCell>@mock.Method</DnhTableCell>
-                            <DnhTableCell>@mock.Created</DnhTableCell>
+                            <DnhTableCell>@mock.Executions</DnhTableCell>
                             <DnhTableCell>
-                                <DnhButtonCross OnClick="() => OnDelete(mock)" />
+                                <DnhTimeSince Date="@mock.LastExecuted" />
+                            </DnhTableCell>
+                            <DnhTableCell>
+                                <DnhTimeSince Date="@mock.Created" />
+                            </DnhTableCell>
+                            <DnhTableCell>
+                                <div class="flex gap-2 items-center">
+                                    <div>
+                                        <DnhButtonCopy Confirm="false" OnCopy="() => OnCopy(mock)" />
+                                    </div>
+                                    <div class="pt-2">
+                                        <DnhButtonCross OnClick="() => OnDelete(mock)" />
+                                    </div>
+                                </div>
+
                             </DnhTableCell>
                         </tr>
                     }
@@ -152,6 +169,11 @@ else
         _ = ApiClient.DeleteHttpMock(item.Bucket, item.Created.ToUnixTimeSeconds(), _disposalTokenSource.Token);
         return Task.CompletedTask;
     }
+
+    private async Task OnCopy(HttpMock item)
+	{
+		await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", $"{Settings.Value.BaseAddress}/api/mock/execute/{_bucket}/{item.Slug}");
+	}
 
     public async ValueTask DisposeAsync()
     {

@@ -1,0 +1,90 @@
+﻿@implements IAsyncDisposable
+
+<span>@_display</span>
+
+@code {
+
+	private readonly CancellationTokenSource _disposalTokenSource = new();
+	private Task? _task;
+	private string _display = string.Empty;
+
+	[Parameter, EditorRequired]
+	public required DateTimeOffset? Date { get; set; }
+
+	protected override Task OnInitializedAsync()
+	{
+		_task = Task.Run(async () =>
+		{
+			while (!_disposalTokenSource.IsCancellationRequested)
+			{
+				var difference = DateTimeOffset.UtcNow - Date;
+
+				if (difference is null)
+				{
+					_display = "Never";
+					break;
+				}
+
+				_display = ToRelativeString(difference.Value);
+				StateHasChanged();
+
+				if (difference.Value.TotalSeconds < 60)
+				{
+					await Task.Delay(1000, _disposalTokenSource.Token);
+				}
+				else if (difference.Value.TotalMinutes < 60)
+				{
+					await Task.Delay(60000, _disposalTokenSource.Token);
+				}
+				else
+				{
+					break;
+				}
+			}
+		}, _disposalTokenSource.Token);
+
+
+
+		return Task.CompletedTask;
+	}
+
+	private static string ToRelativeString(TimeSpan difference)
+	{
+		if (difference.TotalSeconds < 60)
+		{
+			return $"{difference.TotalSeconds:0} seconds ago";
+		}
+
+		if (difference.TotalMinutes < 60)
+		{
+			return $"{difference.TotalMinutes:0} minutes ago";
+		}
+
+		if (difference.TotalHours < 24)
+		{
+			return $"{difference.TotalHours:0} hours ago";
+		}
+
+		if (difference.TotalDays < 7)
+		{
+			return $"{difference.TotalDays:0} days ago";
+		}
+
+		if (difference.TotalDays < 30)
+		{
+			return $"{difference.TotalDays / 7:0} weeks ago";
+		}
+
+		if (difference.TotalDays < 365)
+		{
+			return $"{difference.TotalDays / 30:0} months ago";
+		}
+
+		return $"{difference.TotalDays / 365:0} years ago";
+	}
+
+	public async ValueTask DisposeAsync()
+	{
+		await _disposalTokenSource.CancelAsync();
+	}
+}

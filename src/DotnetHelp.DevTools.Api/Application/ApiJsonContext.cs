@@ -21,6 +21,7 @@ namespace DotnetHelp.DevTools.Api.Application;
 [JsonSerializable(typeof(HttpMock))]
 [JsonSerializable(typeof(IReadOnlyCollection<HttpMock>))]
 [JsonSerializable(typeof(JsonNode))]
+[JsonSerializable(typeof(HttpMockUpdate))]
 internal partial class ApiJsonContext : JsonSerializerContext
 {
 }

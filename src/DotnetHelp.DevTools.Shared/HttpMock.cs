@@ -4,17 +4,19 @@ public record NewHttpMock(
     string Bucket,
     string Slug,
     string Method,
-    IReadOnlyCollection<KeyValuePair<string,string>> Headers,
+    IReadOnlyCollection<KeyValuePair<string, string>> Headers,
     string Body);
 
 public record HttpMock(
     string Bucket,
     string Slug,
     string Method,
-    IReadOnlyCollection<KeyValuePair<string,string>> Headers,
+    IReadOnlyCollection<KeyValuePair<string, string>> Headers,
     string Body,
     int Executions,
     DateTimeOffset Ttl,
     DateTimeOffset Created,
     DateTimeOffset Updated,
     DateTimeOffset? LastExecuted);
+
+public record HttpMockUpdate(string Name, int Executions, DateTimeOffset LastExecuted);

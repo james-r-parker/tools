@@ -4,7 +4,7 @@ namespace DotnetHelp.DevTools.Api.Application.Repositories;
 
 internal interface IHttpMockRepository
 {
-    Task Increment(HttpMock mock, CancellationToken cancellationToken);
+    Task<HttpMockUpdate> Increment(HttpMock mock, CancellationToken cancellationToken);
     Task Create(NewHttpMock request, CancellationToken cancellationToken);
     Task Update(HttpMock request, CancellationToken cancellationToken);
     Task Delete(string bucket, long created, CancellationToken cancellationToken);
@@ -16,11 +16,12 @@ internal class HttpMockRepository(IAmazonDynamoDB db) : IHttpMockRepository
 {
     private const string Prefix = "http_mock-";
 
-    public Task Increment(HttpMock mock, CancellationToken cancellationToken)
+    public async Task<HttpMockUpdate> Increment(HttpMock mock, CancellationToken cancellationToken)
     {
-        return db.UpdateItemAsync(new UpdateItemRequest
+        var result = await db.UpdateItemAsync(new UpdateItemRequest
             {
                 TableName = Constants.DbTableName,
+                ReturnValues = ReturnValue.UPDATED_NEW,
                 Key = new Dictionary<string, AttributeValue>
                 {
                     { "bucket", new AttributeValue(mock.Bucket) },
@@ -50,22 +51,27 @@ internal class HttpMockRepository(IAmazonDynamoDB db) : IHttpMockRepository
                 }
             },
             cancellationToken);
+
+        if (result is null)
+        {
+            throw new ApplicationException("Failed to update Http Mock");
+        }
+
+        return new HttpMockUpdate(
+            mock.Slug,
+            int.Parse(result.Attributes["executions"].N),
+            DateTimeOffset.FromUnixTimeSeconds(long.Parse(result.Attributes["last_executed"].N)));
     }
 
     public Task Create(NewHttpMock request, CancellationToken cancellationToken)
     {
-        var headers = new AttributeValue();
+        var headers = new AttributeValue { M = new Dictionary<string, AttributeValue>() };
         if (request.Headers.Count > 0)
         {
-            headers.M = new Dictionary<string, AttributeValue>();
             foreach (var header in request.Headers)
             {
                 headers.M.TryAdd(header.Key, new AttributeValue(header.Value));
             }
-        }
-        else
-        {
-            headers = new AttributeValue { NULL = true };
         }
 
         return db.PutItemAsync(new PutItemRequest
@@ -170,7 +176,7 @@ internal class HttpMockRepository(IAmazonDynamoDB db) : IHttpMockRepository
                 DateTimeOffset.FromUnixTimeSeconds(long.Parse(x["ttl"].N)),
                 DateTimeOffset.FromUnixTimeSeconds(long.Parse(x["created"].N)),
                 DateTimeOffset.FromUnixTimeSeconds(long.Parse(x["updated"].N)),
-                DateTimeOffset.FromUnixTimeSeconds(long.Parse(x["last_executed"].N))))
+                x["last_executed"].NULL ? null : DateTimeOffset.FromUnixTimeSeconds(long.Parse(x["last_executed"].N))))
             .FirstOrDefault();
     }
 
@@ -206,7 +212,7 @@ internal class HttpMockRepository(IAmazonDynamoDB db) : IHttpMockRepository
                 DateTimeOffset.FromUnixTimeSeconds(long.Parse(x["ttl"].N)),
                 DateTimeOffset.FromUnixTimeSeconds(long.Parse(x["created"].N)),
                 DateTimeOffset.FromUnixTimeSeconds(long.Parse(x["updated"].N)),
-                DateTimeOffset.FromUnixTimeSeconds(long.Parse(x["last_executed"].N))))
+                x["last_executed"].NULL ? null : DateTimeOffset.FromUnixTimeSeconds(long.Parse(x["last_executed"].N))))
             .ToImmutableList();
     }
 }
