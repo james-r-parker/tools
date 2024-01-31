@@ -59,11 +59,16 @@ internal static class MockHttpHandler
             return Results.BadRequest();
         }
 
+        if (item.Method.Equals(http.Request.Method, StringComparison.OrdinalIgnoreCase) is false)
+        {
+            return Results.BadRequest();
+        }
+
         var update = await db.Increment(item, cancellationToken);
         await wss.SendMessage(new WebSocketMessage(
                 "HTTP_MOCK",
                 bucket,
-                JsonSerializer.Serialize(update, ApiJsonContext.Default.HttpMockUpdate)),
+                JsonSerializer.Serialize(update, ApiJsonContext.Default.HttpMockOverview)),
             cancellationToken);
 
         foreach (KeyValuePair<string, string> header in item.Headers)
@@ -71,6 +76,8 @@ internal static class MockHttpHandler
             http.Response.Headers.Append(header.Key, header.Value);
         }
 
-        return Results.Ok(JsonNode.Parse(item.Body));
+        await http.Response.WriteAsync(item.Body, cancellationToken);
+
+        return Results.Ok();
     }
 }

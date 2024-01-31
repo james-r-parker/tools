@@ -55,7 +55,7 @@ internal class ApiGatewayWebsocketClient(
                 
                 logger.Send(connection["connectionId"].S);
             }
-            catch (GoneException e)
+            catch (GoneException)
             {
                 logger.Gone(connection["connectionId"].S);
             }

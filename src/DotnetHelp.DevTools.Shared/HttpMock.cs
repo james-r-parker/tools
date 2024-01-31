@@ -19,4 +19,9 @@ public record HttpMock(
     DateTimeOffset Updated,
     DateTimeOffset? LastExecuted);
 
-public record HttpMockUpdate(string Name, int Executions, DateTimeOffset LastExecuted);
+public record HttpMockOverview(
+    string Name,
+    string Method,
+    int Executions,
+    DateTimeOffset Created,
+    DateTimeOffset? LastExecuted);

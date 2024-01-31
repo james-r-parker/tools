@@ -5,7 +5,7 @@ namespace DotnetHelp.DevTools.Web;
 
 internal class ApiHttpClient(HttpClient httpClient)
 {
-	public async Task<IReadOnlyCollection<HttpMock>> ListHttpMocks(string bucket, long from,
+	public async Task<IReadOnlyCollection<HttpMockOverview>> ListHttpMocks(string bucket, long from,
 		CancellationToken cancellationToken)
 	{
 		using HttpResponseMessage response =
@@ -13,10 +13,10 @@ internal class ApiHttpClient(HttpClient httpClient)
 
 		response.EnsureSuccessStatusCode();
 
-		IReadOnlyCollection<HttpMock>? result =
-			await response.Content.ReadFromJsonAsync<IReadOnlyCollection<HttpMock>>(cancellationToken);
+		IReadOnlyCollection<HttpMockOverview>? result =
+			await response.Content.ReadFromJsonAsync<IReadOnlyCollection<HttpMockOverview>>(cancellationToken);
 
-		return result ?? Array.Empty<HttpMock>();
+		return result ?? Array.Empty<HttpMockOverview>();
 	}
 
 	public async Task CreateHttpMock(NewHttpMock model,

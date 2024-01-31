@@ -4,19 +4,19 @@ namespace DotnetHelp.DevTools.Api.Application.Repositories;
 
 internal interface IHttpMockRepository
 {
-    Task<HttpMockUpdate> Increment(HttpMock mock, CancellationToken cancellationToken);
+    Task<HttpMockOverview> Increment(HttpMock mock, CancellationToken cancellationToken);
     Task Create(NewHttpMock request, CancellationToken cancellationToken);
     Task Update(HttpMock request, CancellationToken cancellationToken);
     Task Delete(string bucket, long created, CancellationToken cancellationToken);
     Task<HttpMock?> Get(string bucket, string slug, CancellationToken cancellationToken);
-    Task<IReadOnlyCollection<HttpMock>> List(string bucket, long from, CancellationToken cancellationToken);
+    Task<IReadOnlyCollection<HttpMockOverview>> List(string bucket, long from, CancellationToken cancellationToken);
 }
 
 internal class HttpMockRepository(IAmazonDynamoDB db) : IHttpMockRepository
 {
     private const string Prefix = "http_mock-";
 
-    public async Task<HttpMockUpdate> Increment(HttpMock mock, CancellationToken cancellationToken)
+    public async Task<HttpMockOverview> Increment(HttpMock mock, CancellationToken cancellationToken)
     {
         var result = await db.UpdateItemAsync(new UpdateItemRequest
             {
@@ -57,9 +57,11 @@ internal class HttpMockRepository(IAmazonDynamoDB db) : IHttpMockRepository
             throw new ApplicationException("Failed to update Http Mock");
         }
 
-        return new HttpMockUpdate(
+        return new HttpMockOverview(
             mock.Slug,
+            mock.Method,
             int.Parse(result.Attributes["executions"].N),
+            mock.Created,
             DateTimeOffset.FromUnixTimeSeconds(long.Parse(result.Attributes["last_executed"].N)));
     }
 
@@ -72,6 +74,10 @@ internal class HttpMockRepository(IAmazonDynamoDB db) : IHttpMockRepository
             {
                 headers.M.TryAdd(header.Key, new AttributeValue(header.Value));
             }
+        }
+        else
+        {
+            headers.M.TryAdd("Content-Type", new AttributeValue("text/plain"));
         }
 
         return db.PutItemAsync(new PutItemRequest
@@ -180,7 +186,7 @@ internal class HttpMockRepository(IAmazonDynamoDB db) : IHttpMockRepository
             .FirstOrDefault();
     }
 
-    public async Task<IReadOnlyCollection<HttpMock>> List(string bucket, long from,
+    public async Task<IReadOnlyCollection<HttpMockOverview>> List(string bucket, long from,
         CancellationToken cancellationToken)
     {
         QueryResponse response = await db.QueryAsync(new QueryRequest
@@ -202,16 +208,11 @@ internal class HttpMockRepository(IAmazonDynamoDB db) : IHttpMockRepository
             },
             cancellationToken);
 
-        return response.Items.Select(x => new HttpMock(
-                x["bucket"].S,
+        return response.Items.Select(x => new HttpMockOverview(
                 x["slug"].S,
                 x["method"].S,
-                x["headers"].M.ToDictionary(y => y.Key, y => y.Value.S),
-                x["body"].S,
                 int.Parse(x["executions"].N),
-                DateTimeOffset.FromUnixTimeSeconds(long.Parse(x["ttl"].N)),
                 DateTimeOffset.FromUnixTimeSeconds(long.Parse(x["created"].N)),
-                DateTimeOffset.FromUnixTimeSeconds(long.Parse(x["updated"].N)),
                 x["last_executed"].NULL ? null : DateTimeOffset.FromUnixTimeSeconds(long.Parse(x["last_executed"].N))))
             .ToImmutableList();
     }
