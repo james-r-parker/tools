@@ -42,7 +42,7 @@
 						<div class="flex-grow">
 							<DnhKvp Name="@header.Key" Value="@header.Value" />
 						</div>
-						<DnhButton OnClick="() => OnRemoveHeader(header)">
+						<DnhButton OnClick="() => OnRemoveHeader(header.Key)">
 							Remove
 						</DnhButton>
 					</div>
@@ -148,12 +148,12 @@ else
 		if (!string.IsNullOrWhiteSpace(_header.Key) &&
 			!string.IsNullOrWhiteSpace(_header.Value))
 		{
-			_model.Headers.Add(new(_header.Key, _header.Value));
+			_model.Headers.Add(_header.Key, _header.Value);
 			_header = new("", "");
 		}
 	}
 
-	private void OnRemoveHeader(KeyValuePair<string, string> header)
+	private void OnRemoveHeader(string header)
 	{
 		_model.Headers.Remove(header);
 	}
@@ -198,7 +198,7 @@ else
 		public string Slug { get; set; } = "";
 		public string Method { get; set; } = "POST";
 		public string Body { get; set; } = "";
-		public List<KeyValuePair<string, string>> Headers { get; } = new();
+		public Dictionary<string, string> Headers { get; } = new();
 	}
 
 }
