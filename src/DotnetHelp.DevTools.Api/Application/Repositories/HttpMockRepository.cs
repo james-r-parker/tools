@@ -6,7 +6,6 @@ internal interface IHttpMockRepository
 {
     Task<HttpMockOverview> Increment(HttpMock mock, CancellationToken cancellationToken);
     Task Create(NewHttpMock request, CancellationToken cancellationToken);
-    Task Update(HttpMock request, CancellationToken cancellationToken);
     Task Delete(string bucket, long created, CancellationToken cancellationToken);
     Task<HttpMock?> Get(string bucket, string slug, CancellationToken cancellationToken);
     Task<IReadOnlyCollection<HttpMockOverview>> List(string bucket, long from, CancellationToken cancellationToken);
@@ -103,41 +102,6 @@ internal class HttpMockRepository(IAmazonDynamoDB db) : IHttpMockRepository
             cancellationToken);
     }
 
-    public Task Update(HttpMock request, CancellationToken cancellationToken)
-    {
-        var headers = new AttributeValue();
-        foreach (var header in request.Headers)
-        {
-            headers.M ??= new Dictionary<string, AttributeValue>();
-            headers.M.TryAdd(header.Key, new AttributeValue(header.Value));
-        }
-
-        return db.UpdateItemAsync(new UpdateItemRequest
-            {
-                TableName = Constants.DbTableName,
-                Key = new Dictionary<string, AttributeValue>
-                {
-                    { "bucket", new AttributeValue(request.Bucket) },
-                    { "created", new AttributeValue { N = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString() } },
-                },
-                AttributeUpdates = new Dictionary<string, AttributeValueUpdate>
-                {
-                    {
-                        "ttl",
-                        new AttributeValueUpdate(
-                            new AttributeValue
-                                { N = DateTimeOffset.UtcNow.AddMonths(1).ToUnixTimeSeconds().ToString() },
-                            AttributeAction.PUT)
-                    },
-                    { "slug", new AttributeValueUpdate(new AttributeValue(request.Slug), AttributeAction.PUT) },
-                    { "method", new AttributeValueUpdate(new AttributeValue(request.Method), AttributeAction.PUT) },
-                    { "headers", new AttributeValueUpdate(headers, AttributeAction.PUT) },
-                    { "body", new AttributeValueUpdate(new AttributeValue(request.Body), AttributeAction.PUT) }
-                }
-            },
-            cancellationToken);
-    }
-
     public Task Delete(string bucket, long created, CancellationToken cancellationToken)
     {
         return db.DeleteItemAsync(new DeleteItemRequest
@@ -145,7 +109,7 @@ internal class HttpMockRepository(IAmazonDynamoDB db) : IHttpMockRepository
                 TableName = Constants.DbTableName,
                 Key = new Dictionary<string, AttributeValue>
                 {
-                    { "bucket", new AttributeValue(bucket) },
+                    { "bucket", new AttributeValue($"{Prefix}{bucket}") },
                     { "created", new AttributeValue { N = created.ToString() } }
                 }
             },

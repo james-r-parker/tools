@@ -112,7 +112,6 @@ api.MapPost("/http", HttpRequestHandler.Send);
 api.MapDelete("/http/{bucket}/{created:long}", HttpRequestHandler.Delete);
 
 api.MapPost("/mock", MockHttpHandler.Create);
-api.MapPut("/mock", MockHttpHandler.Update);
 api.MapDelete("/mock/{bucket}/{created}", MockHttpHandler.Delete);
 api.MapGet("/mock/{bucket}", MockHttpHandler.List);
 api.Map("/mock/execute/{bucket}/{slug}", MockHttpHandler.Execute);

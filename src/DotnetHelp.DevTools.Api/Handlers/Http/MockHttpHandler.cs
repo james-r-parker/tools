@@ -15,15 +15,6 @@ internal static class MockHttpHandler
         return Results.Created();
     }
 
-    internal static async Task<IResult> Update(
-        [FromBody] HttpMock request,
-        [FromServices] IHttpMockRepository db,
-        CancellationToken cancellationToken)
-    {
-        await db.Update(request, cancellationToken);
-        return Results.Accepted();
-    }
-
     internal static async Task<IResult> Delete(
         [FromRoute] string bucket,
         [FromRoute] long created,
