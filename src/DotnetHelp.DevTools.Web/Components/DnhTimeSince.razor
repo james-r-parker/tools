@@ -11,41 +11,53 @@
 	[Parameter, EditorRequired]
 	public required DateTimeOffset? Date { get; set; }
 
-	protected override Task OnInitializedAsync()
+	protected override void OnParametersSet()
 	{
-		_task = Task.Run(async () =>
+		base.OnParametersSet();
+
+		TimeSpan? difference = DateTimeOffset.UtcNow - Date;
+
+		if (difference is null)
 		{
-			while (!_disposalTokenSource.IsCancellationRequested)
+			_display = "Never";
+		}
+		else
+		{
+			_display = ToRelativeString(difference.Value);
+
+			if (difference.Value.TotalMinutes < 60)
 			{
-				var difference = DateTimeOffset.UtcNow - Date;
+				_task = Task.Run(async () =>
+				{
+					while (!_disposalTokenSource.IsCancellationRequested)
+					{
+						var difference = DateTimeOffset.UtcNow - Date;
 
-				if (difference is null)
-				{
-					_display = "Never";
-					break;
-				}
+						if (difference is null)
+						{
+							_display = "Never";
+							break;
+						}
 
-				_display = ToRelativeString(difference.Value);
-				StateHasChanged();
+						_display = ToRelativeString(difference.Value);
+						StateHasChanged();
 
-				if (difference.Value.TotalSeconds < 60)
-				{
-					await Task.Delay(1000, _disposalTokenSource.Token);
-				}
-				else if (difference.Value.TotalMinutes < 60)
-				{
-					await Task.Delay(60000, _disposalTokenSource.Token);
-				}
-				else
-				{
-					break;
-				}
+						if (difference.Value.TotalSeconds < 60)
+						{
+							await Task.Delay(1000, _disposalTokenSource.Token);
+						}
+						else if (difference.Value.TotalMinutes < 60)
+						{
+							await Task.Delay(60000, _disposalTokenSource.Token);
+						}
+						else
+						{
+							break;
+						}
+					}
+				}, _disposalTokenSource.Token);
 			}
-		}, _disposalTokenSource.Token);
-
-
-
-		return Task.CompletedTask;
+		}
 	}
 
 	private static string ToRelativeString(TimeSpan difference)
@@ -85,6 +97,12 @@
 
 	public async ValueTask DisposeAsync()
 	{
+
 		await _disposalTokenSource.CancelAsync();
+		if(_task is not null)
+		{
+			await _task;
+			_task.Dispose();
+		}
 	}
 }
