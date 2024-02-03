@@ -1,6 +1,7 @@
 import { RichText } from "@graphcms/rich-text-react-renderer";
 import Link from "next/link";
 import Image from "next/image";
+import { Metadata, ResolvingMetadata } from "next";
 
 type BlogPost = {
     createdAt: string,
@@ -31,6 +32,22 @@ type CmsBlogsResponse = {
     }
 };
 
+type CmsMetaResponse = {
+    data: {
+        blog: {
+            metadata: {
+                title: string,
+                description: string,
+                image: {
+                    width: number,
+                    height: number,
+                    url: string
+                }
+            }
+        }
+    }
+};
+
 async function getPage(slug: string): Promise<BlogPost | null> {
     try {
         console.debug('FETCHING PAGE', slug);
@@ -43,7 +60,7 @@ async function getPage(slug: string): Promise<BlogPost | null> {
                 'content-type': 'application/json'
             },
             body: JSON.stringify({
-                query: `query getBlogPost($slug:String!) {
+                query: `query getBlogPostMeta($slug:String!) {
                     blog(where:{slug:$slug}) {
                       createdAt
                       slug
@@ -132,4 +149,49 @@ export async function generateStaticParams() {
     return result.data.blogs.map((post) => ({
         slug: post.slug,
     }))
+}
+
+export async function generateMetadata({ params }: { params: { slug: string } }, parent: ResolvingMetadata): Promise<Metadata> {
+
+    const slug = params.slug;
+    // fetch data
+    console.debug('FETCHING META', slug);
+
+    const response = await fetch(process.env.NEXT_HYGRAPH_API_URL!, {
+        next: {
+            revalidate: 900,
+        },
+        method: 'POST',
+        headers: {
+            'content-type': 'application/json'
+        },
+        body: JSON.stringify({
+            query: `query getBlogPost($slug:String!) {
+                    blog(where:{slug:$slug}) {
+                        metadata {
+                            title,
+                            description,
+                            image {
+                                width,
+                                height,
+                                url
+                            }
+                        }
+                    }
+                  }`,
+            variables: { slug }
+        }),
+    });
+    const result = await response.json() as CmsMetaResponse;
+    console.debug('RESPONSE FROM FETCH META', result.data.blog.metadata);
+
+    return {
+        title: result.data.blog.metadata.title,
+        description: result.data.blog.metadata.description,
+        openGraph: {
+            images: [result.data.blog.metadata.image?.url],
+            title: result.data.blog.metadata.title,
+            description: result.data.blog.metadata.description,
+        },
+    }
 }
