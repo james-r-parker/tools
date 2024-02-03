@@ -1,15 +1,11 @@
 import { Metadata, ResolvingMetadata } from "next";
 import CmsContentRender from "@/components/rich-text";
-import FormattedDated from "@/components/date";
-import Tags from "@/components/tags";
 
-type BlogPost = {
+type Page = {
     createdAt: string,
     slug: string,
-    tags: string[],
     title: string,
     overview: string,
-    category: string,
     body: {
         json: any
     }
@@ -17,24 +13,23 @@ type BlogPost = {
 
 type CmsResponse = {
     data: {
-        blog: BlogPost
+        page: Page
     }
 };
 
-type CmsBlogsResponse = {
+type CmsPagesResponse = {
     data: {
-        blogs: {
+        pages: {
             createdAt: string,
             slug: string,
             title: string,
-            category: string
         }[]
     }
 };
 
 type CmsMetaResponse = {
     data: {
-        blog: {
+        page: {
             metadata: {
                 title: string,
                 description: string,
@@ -48,9 +43,9 @@ type CmsMetaResponse = {
     }
 };
 
-async function getPage(slug: string): Promise<BlogPost | null> {
+async function getPage(slug: string): Promise<Page | null> {
     try {
-        console.debug('FETCHING BLOG', slug);
+        console.debug('FETCHING PAGE', slug);
         const response = await fetch(process.env.NEXT_HYGRAPH_API_URL!, {
             next: {
                 revalidate: 900,
@@ -60,14 +55,12 @@ async function getPage(slug: string): Promise<BlogPost | null> {
                 'content-type': 'application/json'
             },
             body: JSON.stringify({
-                query: `query getBlogPost($slug:String!) {
-                    blog(where:{slug:$slug}) {
-                      createdAt
-                      slug
-                      tags
+                query: `query getPage($slug:String!) {
+                    page(where:{slug:$slug}) {
+                      createdAt,
+                      slug,
                       title,
                       overview,
-                      category,
                       body {
                         json
                       }
@@ -77,8 +70,8 @@ async function getPage(slug: string): Promise<BlogPost | null> {
             }),
         });
         const result = await response.json() as CmsResponse;
-        console.debug('BLOG CONTENT', result);
-        return result.data.blog;
+        console.debug('PAGE', result);
+        return result.data.page;
     }
     catch (err) {
         console.error('ERROR DURING FETCH REQUEST', err);
@@ -87,8 +80,8 @@ async function getPage(slug: string): Promise<BlogPost | null> {
     return null;
 }
 
-export default async function Blog({ params }: { params: { slug: string } }) {
-    const page = await getPage(params.slug);
+export default async function Page({ params }: { params: { slug: string[] } }) {
+    const page = await getPage(params.slug?.join('/') || 'home');
 
     if (!page) {
         return <div>404</div>;
@@ -98,11 +91,7 @@ export default async function Blog({ params }: { params: { slug: string } }) {
         <header className="mb-5 md:flex md:items-start">
             <div className="flex-auto max-w-4xl">
                 <h1 className="mb-4 text-sm leading-6 font-semibold text-sky-500 dark:text-sky-400">{page.title}</h1>
-                <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight dark:text-slate-200">{page.overview}</h2>
-                <h2 className="text-xs mt-2 text-slate-900 tracking-tight dark:text-slate-200"><FormattedDated date={page.createdAt} /></h2>
-            </div>
-            <div>
-                <Tags tags={page.tags} />
+                <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight dark:text-slate-200">{page.overview}</h2>
             </div>
         </header>
         <CmsContentRender options={{ content: page.body.json }} />
@@ -119,19 +108,19 @@ export async function generateStaticParams() {
             'content-type': 'application/json'
         },
         body: JSON.stringify({
-            query: `query Blogs {
-                blogs {
+            query: `query Pages {
+                pages {
                   slug
                 }
               }`,
         }),
     });
-    const result = await response.json() as CmsBlogsResponse;
-    console.debug('ALL BLOGS', result.data.blogs);
+    const result = await response.json() as CmsPagesResponse;
+    console.debug('ALL PAGES', result.data.pages);
 
-    return result.data.blogs.map((post) => ({
-        slug: post.slug,
-    }))
+    return result.data.pages.map((post) => ({
+        slug: [post.slug],
+    })).concat({ slug: [''] });
 }
 
 export async function generateMetadata({ params }: { params: { slug: string } }, parent: ResolvingMetadata): Promise<Metadata> {
@@ -149,8 +138,8 @@ export async function generateMetadata({ params }: { params: { slug: string } },
             'content-type': 'application/json'
         },
         body: JSON.stringify({
-            query: `query getBlogPostMeta($slug:String!) {
-                    blog(where:{slug:$slug}) {
+            query: `query getPageMeta($slug:String!) {
+                    page(where:{slug:$slug}) {
                         metadata {
                             title,
                             description,
@@ -166,15 +155,15 @@ export async function generateMetadata({ params }: { params: { slug: string } },
         }),
     });
     const result = await response.json() as CmsMetaResponse;
-    console.debug('BLOG META', result.data.blog.metadata);
+    console.debug('PAGE META', result.data?.page?.metadata);
 
     return {
-        title: result.data.blog.metadata.title,
-        description: result.data.blog.metadata.description,
+        title: result.data?.page?.metadata.title,
+        description: result.data?.page?.metadata.description,
         openGraph: {
-            images: [result.data.blog.metadata.image?.url],
-            title: result.data.blog.metadata.title,
-            description: result.data.blog.metadata.description,
+            images: [result.data?.page?.metadata.image?.url],
+            title: result.data?.page?.metadata.title,
+            description: result.data?.page?.metadata.description,
         },
     }
 }
