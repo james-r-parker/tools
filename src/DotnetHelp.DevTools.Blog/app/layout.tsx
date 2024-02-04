@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   manifest: "/site.webmanifest",
   robots: "index, follow",
   icons: {
-    "icon": "/facivon.ico",
+    "icon": "/favicon.ico",
     "shortcut": "/icon.png",
     "apple": "/apple-touch-icon.png"
   }

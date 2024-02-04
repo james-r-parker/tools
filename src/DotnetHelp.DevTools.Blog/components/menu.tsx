@@ -1,64 +1,5 @@
+import { buildBlogMenu } from "@/lib/blog";
 import Link from "next/link";
-
-type CmsResponse = {
-    data: {
-        blogs: {
-            createdAt: string,
-            slug: string,
-            title: string,
-            category: string
-        }[]
-    }
-};
-
-type CmsMenuItem = {
-    text: string,
-    link: string,
-}
-
-type CmsMenu = { [key: string]: CmsMenuItem[] }
-
-async function getMenuItems(): Promise<CmsMenu> {
-    try {
-        const response = await fetch(process.env.NEXT_HYGRAPH_API_URL!, {
-            next: {
-                revalidate: 900,
-            },
-            method: 'POST',
-            headers: {
-                'content-type': 'application/json'
-            },
-            body: JSON.stringify({
-                query: `query Blogs {
-                    blogs {
-                      createdAt,
-                      slug,
-                      title,
-                      category
-                    }
-                  }`,
-            }),
-        });
-        const result = await response.json() as CmsResponse;
-        console.debug('RESPONSE FROM FETCH REQUEST', result.data.blogs);
-
-        return result.data.blogs.reduce((acc, blog) => {
-            if (!acc[blog.category]) {
-                acc[blog.category] = [];
-            }
-            acc[blog.category].push({
-                text: blog.title,
-                link: `/blog/${blog.slug}`
-            });
-            return acc;
-        }, {} as CmsMenu);
-    }
-    catch (err) {
-        console.error('ERROR DURING FETCH REQUEST', err);
-    }
-
-    return {};
-}
 
 function MenuItem({ text, link, selected }: { text: string, link: string, selected: boolean }) {
     return (
@@ -72,7 +13,7 @@ function MenuItem({ text, link, selected }: { text: string, link: string, select
 
 export default async function Menu() {
 
-    const menu = await getMenuItems();
+    const menu = await buildBlogMenu();
 
     return (
         <nav className="lg:text-sm lg:leading-6 relative">

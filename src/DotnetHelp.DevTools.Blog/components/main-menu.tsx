@@ -1,56 +1,7 @@
+import { buildPageMenu } from "@/lib/page";
 import Link from "next/link";
 
-type CmsResponse = {
-    data: {
-        pages: {
-            createdAt: string,
-            slug: string,
-            title: string,
-        }[]
-    }
-};
 
-type CmsMenuItem = {
-    text: string,
-    link: string,
-}
-
-async function getMenuItems(): Promise<CmsMenuItem[]> {
-    try {
-        const response = await fetch(process.env.NEXT_HYGRAPH_API_URL!, {
-            next: {
-                revalidate: 900,
-            },
-            method: 'POST',
-            headers: {
-                'content-type': 'application/json'
-            },
-            body: JSON.stringify({
-                query: `query Pages {
-                    pages {
-                      createdAt,
-                      slug,
-                      title,
-                    }
-                  }`,
-            }),
-        });
-        const result = await response.json() as CmsResponse;
-        console.debug('RESPONSE FROM FETCH REQUEST', result.data.pages);
-
-        return result.data.pages.map(page => {
-            return {
-                text: page.title,
-                link: `/${page.slug}`
-            };
-        });
-    }
-    catch (err) {
-        console.error('ERROR DURING FETCH REQUEST', err);
-    }
-
-    return [];
-}
 
 function MenuItem({ text, link }: { text: string, link: string }) {
     return (
@@ -64,7 +15,7 @@ function MenuItem({ text, link }: { text: string, link: string }) {
 
 export default async function MainMenu() {
 
-    const menu = await getMenuItems();
+    const menu = await buildPageMenu();
 
     return (
         <nav>
