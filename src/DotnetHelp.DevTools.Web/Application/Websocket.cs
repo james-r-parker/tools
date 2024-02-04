@@ -105,22 +105,19 @@ internal class WebSocket(IStateManagement state, IOptions<WebSocketOptions> opti
 	{
 		if (_cancellationToken is not null)
 		{
-			await _cancellationToken.CancelAsync();
-			_cancellationToken.Dispose();
+			if (_cancellationToken.Token.CanBeCanceled)
+			{
+				await _cancellationToken.CancelAsync();
+			}
 		}
-
-		if (_receiveLoopTask is not null)
-		{
-			await _receiveLoopTask;
-			_receiveLoopTask.Dispose();
-		}
-
+		
 		if (_wss.State == WebSocketState.Open)
 		{
 			await _wss.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closing", CancellationToken.None);
 		}
 
 		_wss.Dispose();
+		_cancellationToken?.Dispose();
 	}
 }
 
