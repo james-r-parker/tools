@@ -97,12 +97,7 @@
 
 	public async ValueTask DisposeAsync()
 	{
-
 		await _disposalTokenSource.CancelAsync();
-		if(_task is not null)
-		{
-			await _task;
-			_task.Dispose();
-		}
+		_task?.Dispose();
 	}
 }
